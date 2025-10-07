@@ -1,5 +1,9 @@
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
 
+ext {
+    ndkVersion = "29.0.14206865"
+}
+
 buildscript {
   repositories {
     google()
