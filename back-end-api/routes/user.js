@@ -9,8 +9,20 @@ router.put("/", async (req, res) => {
     testing = false
     if (req.body) {testing = dataTypes.isDefined(req.body.testing)}
     if (testing) {console.log("Running put user in test mode")}
-    let userObj = new User(testing)
-    let result = await userObj.userCreate(req.body)
+    const userObj = new User(testing)
+    const result = await userObj.userCreate(req.body)
+    res.status(result.statusCode).send(result)
+})
+
+router.delete("/", async (req, res) => {
+    // required body is [sessionToken]
+    testing = false
+    if (req.body) {testing = dataTypes.isDefined(req.body.testing)}
+    if(testing) {console.log("Running delete user in test mode")}
+
+    const userID = getUserIDFromToken(req.body.token)
+    const userObj = new User(testing)
+    const result = await userObj.deleteUser(userID)
     res.status(result.statusCode).send(result)
 })
 
