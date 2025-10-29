@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<coverage generated="1761717670731" clover="3.2.0">
-  <project timestamp="1761717670731" name="All files">
-    <metrics statements="82" coveredstatements="81" conditionals="33" coveredconditionals="30" methods="27" coveredmethods="26" elements="142" coveredelements="137" complexity="0" loc="82" ncloc="82" packages="4" files="5" classes="5"/>
+<coverage generated="1761720902961" clover="3.2.0">
+  <project timestamp="1761720902961" name="All files">
+    <metrics statements="95" coveredstatements="82" conditionals="37" coveredconditionals="30" methods="28" coveredmethods="26" elements="160" coveredelements="138" complexity="0" loc="95" ncloc="95" packages="4" files="5" classes="5"/>
     <package name="controllers">
-      <metrics statements="16" coveredstatements="16" conditionals="5" coveredconditionals="4" methods="3" coveredmethods="3"/>
+      <metrics statements="29" coveredstatements="17" conditionals="9" coveredconditionals="4" methods="4" coveredmethods="3"/>
       <file name="user.js" path="D:\Programming\Group20F25\back-end-api\controllers\user.js">
-        <metrics statements="16" coveredstatements="16" conditionals="5" coveredconditionals="4" methods="3" coveredmethods="3"/>
+        <metrics statements="29" coveredstatements="17" conditionals="9" coveredconditionals="4" methods="4" coveredmethods="3"/>
         <line num="1" count="2" type="stmt"/>
         <line num="2" count="2" type="stmt"/>
         <line num="6" count="6" type="stmt"/>
@@ -15,13 +15,26 @@
         <line num="13" count="8" type="stmt"/>
         <line num="14" count="7" type="stmt"/>
         <line num="15" count="21" type="cond" truecount="2" falsecount="0"/>
-        <line num="19" count="6" type="stmt"/>
-        <line num="20" count="4" type="stmt"/>
-        <line num="21" count="4" type="stmt"/>
-        <line num="24" count="4" type="cond" truecount="2" falsecount="0"/>
-        <line num="25" count="3" type="stmt"/>
-        <line num="27" count="1" type="stmt"/>
-        <line num="33" count="2" type="stmt"/>
+        <line num="18" count="6" type="stmt"/>
+        <line num="19" count="4" type="stmt"/>
+        <line num="22" count="4" type="stmt"/>
+        <line num="23" count="4" type="cond" truecount="2" falsecount="0"/>
+        <line num="24" count="3" type="stmt"/>
+        <line num="26" count="1" type="stmt"/>
+        <line num="29" count="8" type="stmt"/>
+        <line num="34" count="0" type="stmt"/>
+        <line num="35" count="0" type="cond" truecount="0" falsecount="2"/>
+        <line num="37" count="0" type="stmt"/>
+        <line num="38" count="0" type="stmt"/>
+        <line num="39" count="0" type="stmt"/>
+        <line num="41" count="0" type="stmt"/>
+        <line num="42" count="0" type="stmt"/>
+        <line num="43" count="0" type="stmt"/>
+        <line num="45" count="0" type="cond" truecount="0" falsecount="2"/>
+        <line num="46" count="0" type="stmt"/>
+        <line num="48" count="0" type="stmt"/>
+        <line num="51" count="0" type="stmt"/>
+        <line num="56" count="2" type="stmt"/>
       </file>
     </package>
     <package name="models">
@@ -43,11 +56,11 @@
         <line num="29" count="1" type="stmt"/>
         <line num="30" count="1" type="stmt"/>
         <line num="32" count="19" type="stmt"/>
-        <line num="38" count="17" type="stmt"/>
-        <line num="39" count="17" type="cond" truecount="2" falsecount="0"/>
-        <line num="40" count="16" type="stmt"/>
-        <line num="41" count="16" type="cond" truecount="2" falsecount="0"/>
-        <line num="42" count="15" type="stmt"/>
+        <line num="38" count="21" type="stmt"/>
+        <line num="39" count="21" type="cond" truecount="2" falsecount="0"/>
+        <line num="40" count="20" type="stmt"/>
+        <line num="41" count="20" type="cond" truecount="2" falsecount="0"/>
+        <line num="42" count="19" type="stmt"/>
         <line num="45" count="1" type="stmt"/>
         <line num="51" count="16" type="stmt"/>
         <line num="52" count="16" type="stmt"/>

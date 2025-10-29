@@ -53,6 +53,40 @@ describe('PUT /user', () => {
 
         expect(res.statusCode).toBe(500)
         expect(res.body.statusCode).toBe(500)
-        expect(res.body.message).toBe('Unknown serverSide error')
+        expect(res.body.message).toBe('Unknown serverside error')
     })
 });
+
+
+describe('DELETE /user', () => {
+    d = null
+
+    beforeAll(async () => {
+        d = new Database(true);
+        await d.connect();
+    })
+
+    beforeEach(async () => {
+        await d.dropSafety();
+        const query = `TRUNCATE  TABLE ${d.usersTable}`
+        await d.submitQuery(query, [], true)
+        await d.raiseSafety();
+    })
+
+    afterAll(async () => {
+        await d.close()
+    })
+
+
+    it('should delete the requested user', async () => {
+        
+    })
+
+    it('should throw on non-existing users', async () => {
+
+    })
+
+    it('should deny malformed requests', async () => {
+        
+    })
+})

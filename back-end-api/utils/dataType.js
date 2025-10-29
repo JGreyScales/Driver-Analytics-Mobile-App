@@ -16,6 +16,14 @@ class dataTypes{
             return false
         }
     }
+
+    static isID(value){
+        try {
+            return (Number.isInteger(value) && value > 0)
+        } catch {
+            return false
+        }
+    }
 }
 
 module.exports = dataTypes
