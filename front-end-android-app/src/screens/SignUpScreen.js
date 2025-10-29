@@ -8,7 +8,7 @@ import {
   KeyboardAvoidingView,
   Platform,
   Animated,
-  Image,
+  Alert,
 } from "react-native";
 import { GLOBAL_STYLES, COLORS } from "../styles/GlobalStyles";
 
@@ -21,7 +21,6 @@ export default function SignUpScreen() {
 
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-  // Animate fade-in
   useEffect(() => {
     Animated.timing(fadeAnim, {
       toValue: 1,
@@ -46,9 +45,34 @@ export default function SignUpScreen() {
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSignUp = () => {
-    if (validate()) {
-      alert("Account created successfully (mock).");
+  const handleSignUp = async () => {
+    if (!validate()) return;
+
+    try {
+      const response = await fetch("http://10.0.2.2:3000/status/users", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email,
+          username,
+          password,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        Alert.alert("✅ Success", data.message || "Account created successfully!");
+        setEmail("");
+        setUsername("");
+        setPassword("");
+        setErrors({});
+      } else {
+        Alert.alert("⚠️ Error", data.message || "Failed to create account.");
+      }
+    } catch (error) {
+      console.error("Signup error:", error);
+      Alert.alert("❌ Network Error", "Could not connect to the server.");
     }
   };
 
