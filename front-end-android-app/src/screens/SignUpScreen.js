@@ -48,7 +48,7 @@ export default function SignUpScreen() {
 
   const handleSignUp = () => {
     if (validate()) {
-      alert("✅ Account created successfully (mock).");
+      alert("Account created successfully (mock).");
     }
   };
 
