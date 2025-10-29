@@ -1,6 +1,5 @@
 const Database = require("../../models/db");
 const dotenv = require("dotenv");
-const { param } = require("../../routes/assurance");
 
 describe('create database instance', () => {
     beforeEach(() => {
