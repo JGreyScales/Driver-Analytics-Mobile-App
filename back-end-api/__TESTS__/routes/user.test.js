@@ -2,6 +2,7 @@ const request = require('supertest');
 const express = require('express');
 const user = require("../../routes/user");
 const Database = require("../../models/db")
+const JWT_AUTH = require("../../middleware/auth")
 
 const app = express();
 app.use(express.json());
@@ -79,7 +80,15 @@ describe('DELETE /user', () => {
 
 
     it('should delete the requested user', async () => {
-        
+        const body = {username: "someUsername", email: "someEmail", passwordHash: "somePasswordHash", testing:true};
+        await request(app).put('/user').send(body).set('Accept', 'application/json');
+        const res = await request(app).delete('/user').set('Authorization', `bearer ${JWT_AUTH.generateToken(1)}`).set('Accept', 'application/json');
+
+        expect(res.statusCode).toBe(200);
+        expect(res.body.statusCode).toBe(200);
+        expect(res.body.message).toBe('User created successfully');
+
+       
     })
 
     it('should throw on non-existing users', async () => {

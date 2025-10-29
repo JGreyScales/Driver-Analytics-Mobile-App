@@ -68,3 +68,21 @@ yarn-error.*
 
 # typescript
 *.tsbuildinfo
+back-end-api/coverage/clover.xml
+back-end-api/coverage/coverage-final.json
+back-end-api/coverage/lcov-report/controllers/index.html
+back-end-api/coverage/lcov-report/controllers/user.js.html
+back-end-api/coverage/lcov-report/index.html
+back-end-api/coverage/lcov-report/middleware/auth.js.html
+back-end-api/coverage/lcov-report/middleware/index.html
+back-end-api/coverage/lcov-report/models/db.js.html
+back-end-api/coverage/lcov-report/models/index.html
+back-end-api/coverage/lcov-report/routes/assurance.js.html
+back-end-api/coverage/lcov-report/routes/index.html
+back-end-api/coverage/lcov-report/routes/user.js.html
+back-end-api/coverage/lcov-report/utils/dataType.js.html
+back-end-api/coverage/lcov-report/utils/index.html
+back-end-api/coverage/lcov.info
+*.xml
+*.html
+/back-end-api/coverage

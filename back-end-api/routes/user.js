@@ -1,6 +1,7 @@
 const express = require("express");
 const User = require("../controllers/user");
 const dataTypes = require("../utils/dataType");
+const JWT_AUTH = require("../middleware/auth")
 const router = express.Router();
 
 
@@ -20,7 +21,7 @@ router.delete("/", async (req, res) => {
     if (req.body) {testing = dataTypes.isDefined(req.body.testing)}
     if(testing) {console.log("Running delete user in test mode")}
 
-    const userID = getUserIDFromToken(req.body.token)
+    const userID = JWT_AUTH.getUserIDFromToken(req)
     const userObj = new User(testing)
     const result = await userObj.deleteUser(userID)
     res.status(result.statusCode).send(result)
