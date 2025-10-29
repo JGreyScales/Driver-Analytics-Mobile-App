@@ -33,7 +33,6 @@ class JWT_AUTH {
         return new Promise((resolve, reject) => {
             const token = this.__extractToken(req);     
             jwt.verify(token, process.env.JWT_SECRET, (err, payload) => {
-                console.log(err)
                 if (err) return reject(false);
                 if (!dataType.isDefined(payload.userID)) return reject(false)
     

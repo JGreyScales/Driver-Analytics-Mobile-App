@@ -80,9 +80,9 @@ describe('DELETE /user', () => {
 
 
     it('should delete the requested user', async () => {
-        const body = {username: "someUsername", email: "someEmail", passwordHash: "somePasswordHash", testing:true};
+        const body = {testing:true};
         await request(app).put('/user').send(body).set('Accept', 'application/json');
-        const res = await request(app).delete('/user').set('Authorization', `bearer ${JWT_AUTH.generateToken(1)}`).set('Accept', 'application/json');
+        const res = await request(app).delete('/user').send(body).set('Authorization', `bearer ${JWT_AUTH.generateToken(1)}`).set('Accept', 'application/json');
 
         expect(res.statusCode).toBe(200);
         expect(res.body.statusCode).toBe(200);
