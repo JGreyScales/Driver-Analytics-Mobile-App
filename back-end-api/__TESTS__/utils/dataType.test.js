@@ -79,6 +79,59 @@ describe('validate isDefined assert accuracy', () => {
         let value = null
         expect(dataType.isDefined(value)).toBeFalsy()
     })
+})
 
+describe('validate isID assert accuracy', () => {
+    it('should allow ints above 0', () => {
+        const value = 1231
 
+        expect(dataType.isID(value)).toBeTruthy()
+    })
+
+    it('should deny dicts', () => {
+        const value = {somedict: "someValue"}
+
+        expect(dataType.isID(value)).toBeFalsy()
+    })
+
+    it('should deny strings', () => {
+        const value = "someValue"
+
+        expect(dataType.isID(value)).toBeFalsy()
+    })
+
+    it('should deny ints at 0', () => {
+        const value = 0
+
+        expect(dataType.isID(value)).toBeFalsy()
+    })
+
+    it('should deny ints below 0', () => {
+        const value = -1
+
+        expect(dataType.isID(value)).toBeFalsy()
+    })
+
+    it('should deny floats', () => {
+        const value = 1231.1231
+
+        expect(dataType.isID(value)).toBeFalsy()
+    })
+
+    it('should deny objects', () => {
+        const value = [324, 2342, 2342]
+
+        expect(dataType.isID(value)).toBeFalsy()
+    })
+
+    it('should deny undefined', () => {
+        let value = undefined
+
+        expect(dataType.isID(value)).toBeFalsy()
+    })
+
+    it('should deny null', () => {
+        let value = null
+        expect(dataType.isID(value)).toBeFalsy()
+    })
 })
