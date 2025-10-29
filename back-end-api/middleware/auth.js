@@ -1,4 +1,5 @@
 const jwt = require("jsonwebtoken")
+const dataType = require('../utils/dataType')
 
 class JWT_AUTH {
     constructor(){}
@@ -22,6 +23,8 @@ class JWT_AUTH {
         const token = this.__extractToken(req);        
         jwt.verify(token, process.env.JWT_SECRET, (err, payload) => {
             if (err) return reject(false);
+            if (!dataType.isDefined(payload.userID)) return reject(false)
+                
             return resolve(true)
         })
     }
