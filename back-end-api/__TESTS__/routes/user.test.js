@@ -2,6 +2,7 @@ const request = require('supertest');
 const express = require('express');
 const user = require("../../routes/user");
 const Database = require("../../models/db")
+const JWT_AUTH = require("../../middleware/auth")
 
 const app = express();
 app.use(express.json());
@@ -17,7 +18,7 @@ describe('PUT /user', () => {
 
     beforeEach(async () => {
         await d.dropSafety();
-        const query = `TRUNCATE  TABLE ${d.usersTable}`
+        const query = `TRUNCATE TABLE ${d.usersTable}`
         await d.submitQuery(query, [], true)
         await d.raiseSafety();
     })
@@ -53,6 +54,61 @@ describe('PUT /user', () => {
 
         expect(res.statusCode).toBe(500)
         expect(res.body.statusCode).toBe(500)
-        expect(res.body.message).toBe('Unknown serverSide error')
+        expect(res.body.message).toBe('Unknown serverside error')
     })
 });
+
+
+describe('DELETE /user', () => {
+    d = null
+
+    beforeEach(async () => {
+        d = new Database(true);
+        await d.connect();
+        await d.dropSafety();
+        await d.submitQuery(`TRUNCATE TABLE ${d.usersTable}`, [], true);
+        await d.raiseSafety();
+
+    
+        // Optional: tiny delay to ensure MySQL fully commits before test
+        await new Promise(r => setTimeout(r, 20));
+    });
+    
+
+    afterEach(async () => {
+        await d.close()
+    })
+
+
+    it('should delete the requested user', async () => {
+        await d.submitQuery(
+            `INSERT INTO ${d.usersTable} (userID, username, email, passwordHash) VALUES (1, "xx", "yy", "tt")`,
+            []
+        );
+        const token = `Bearer ${JWT_AUTH.generateToken(1)}`
+        const res = await request(app).delete('/user').send({testing:true}).set('Authorization', token).set('Accept', 'application/json');
+
+        expect(res.statusCode).toBe(200);
+        expect(res.body.statusCode).toBe(200);
+        expect(res.body.message).toBe('User successfully deleted with ID:1');
+
+       
+    })
+
+    it('should throw on non-existing users', async () => {
+        const token = `Bearer ${JWT_AUTH.generateToken(1)}`
+        const res = await request(app).delete('/user').send({testing:true}).set('Authorization', token).set('Accept', 'application/json');
+
+        expect(res.statusCode).toBe(404);
+        expect(res.body.statusCode).toBe(404);
+        expect(res.body.message).toBe('No rows updated');
+    })
+
+    it('should deny malformed requests', async () => {
+        const res = await request(app).delete('/user').send({testing:true}).set('Accept', 'application/json');
+
+        expect(res.statusCode).toBe(400);
+        expect(res.body.statusCode).toBe(400);
+        expect(res.body.message).toBe('No token attached');
+    })
+})
