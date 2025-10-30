@@ -68,3 +68,4 @@ yarn-error.*
 
 # typescript
 *.tsbuildinfo
+/front-end-android-app/coverage
