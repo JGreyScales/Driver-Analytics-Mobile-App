@@ -1,3 +1,4 @@
+const JWT_AUTH = require("../middleware/auth")
 let Database = require("../models/db")
 let dataTypes = require("../utils/dataType")
 
@@ -45,6 +46,29 @@ class User {
             } else {
                 return {statusCode: 500, message: 'Unknown serverside error'}
             }
+        } finally {
+            await this.db.close()
+        }
+    }
+
+    async authenticateUser(body) {
+        try{
+            if (!dataTypes.isDefined(body.username) || !dataTypes.isDefined(body.passwordHash)) {throw {statusCode: 400, message: "Invalid paramaters"}}
+            await this.db.connect()
+            const query = `SELECT userID FROM ${this.db.usersTable} WHERE username = ? passwordHash = ? LIMIT 1`
+            const params = [body.username, body.passwordHash]
+
+            const response = await this.db.fetchQuery(query, params)
+            if (!dataTypes.isDefined(response[0].userID)) {throw {statusCode: 400, message: "Couldnt gather userID"}}
+
+            return {statusCode: 200, message: 'User authenticated', token: `Bearer ${JWT_AUTH.generateToken(response[0].userID)}`}
+
+        } catch (e) {
+            if (dataTypes.isDict(e)) {
+                return e
+            } else {
+                return {statusCode: 500, message: 'Unknown serverside error'}
+            } 
         } finally {
             await this.db.close()
         }
