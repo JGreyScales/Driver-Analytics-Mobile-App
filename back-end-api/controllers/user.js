@@ -63,7 +63,7 @@ class User {
             if (!dataTypes.isDefined(response[0].userID)) {throw {statusCode: 400, message: "Couldnt gather userID"}}
             await this.db.close()
 
-            return {statusCode: 200, message: 'User authenticated', token: `Bearer ${JWT_AUTH.generateToken(response[0].userID)}`}
+            return {statusCode: 202, message: 'User authenticated', token: `Bearer ${JWT_AUTH.generateToken(response[0].userID)}`}
 
         } catch (e) {
             await this.db.close()

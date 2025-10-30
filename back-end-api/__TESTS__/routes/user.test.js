@@ -137,8 +137,8 @@ describe('POST /user', () => {
         const body = {username: "someUsername", passwordHash: "somePasswordHash", testing:true}
         const res = await request(app).post('/user').send(body).set('Accept', 'application/json');
 
-        expect(res.statusCode).toBe(200)
-        expect(res.body.statusCode).toBe(200)
+        expect(res.statusCode).toBe(202)
+        expect(res.body.statusCode).toBe(202)
         expect(res.body.message).toBe('User authenticated')
         expect(res.body.token.startsWith('Bearer ey')).toBe(true)
     })  

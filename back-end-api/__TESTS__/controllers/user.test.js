@@ -89,7 +89,7 @@ describe('user authentication', () => {
         const body = {username: "someUsername", passwordHash: "somePasswordHash"}
         const response = await user.authenticateUser(body)
 
-        expect(response.statusCode).toBe(200)
+        expect(response.statusCode).toBe(202)
         expect(response.message).toBe('User authenticated')
         expect(response.token.startsWith('Bearer ey')).toBe(true)
     })  
