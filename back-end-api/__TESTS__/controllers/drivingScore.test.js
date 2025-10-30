@@ -1,6 +1,7 @@
 const Database = require("../../models/db")
 const Driving_Score = require("../../controllers/drivingScore")
 const User = require("../../controllers/user")
+const JWT_AUTH = require("../../middleware/auth")
 
 
 describe('upload new driving score', () => {
@@ -192,5 +193,96 @@ describe('upload new driving score', () => {
         const actualResults = await d.submitQuery(`SELECT score, tripCount FROM ${d.usersTable} WHERE userID = ? LIMIT 1`, [userID])
         expect(actualResults[0].score).toBe(10)
         expect(actualResults[0].tripCount).toBe(11)
+    })
+})
+
+
+describe('getting comparative score', () => {
+    let d = null
+
+    beforeAll(async () => {
+        d = new Database(true)
+        await d.connect()
+    })
+
+    beforeEach(async () => {
+        await d.dropSafety();
+        const query = `TRUNCATE TABLE ${d.usersTable}`
+        await d.submitQuery(query, [], true)
+        await d.raiseSafety();
+
+        let user = new User(true)
+        await user.userCreate({username: "someUsessdrnameasdsa", email: "23432", passwordHash: "somePasswoasrdHashasdsa"})
+        user = new User(true)
+        await user.userCreate({username: "fgdgd", email: "342", passwordHash: "asdad"})
+        user = new User(true)
+        await user.userCreate({username: "dfgd", email: "2342", passwordHash: "werwe"})
+    })
+
+    afterAll(async () => {
+        await d.close()
+    })
+    
+    it('should calculate comparative score between 3+ users', async () => {
+        let user = new User(true)
+        await user.updateUserDetails({score: 100}, 1)
+        user = new User(true)
+        await user.updateUserDetails({score: 150}, 2)
+        user = new User(true)
+        await user.updateUserDetails({score: 50}, 3)
+
+        const DS = new Driving_Score(true)
+        const res = await DS.getComparativeScore(1)
+        expect(res.statusCode).toBe(200)
+        expect(res.message).toBe('comparativeScore computed')
+        expect(res.data.comparativeScore).toBe(50)
+    })
+
+    it('should calculate comparative score between 2 users', async () => {
+        let user = new User(true)
+        await user.updateUserDetails({score: 100}, 1)
+        user = new User(true)
+        await user.updateUserDetails({score: 150}, 2)
+
+        const DS = new Driving_Score(true)
+        const res = await DS.getComparativeScore(1)
+        expect(res.statusCode).toBe(200)
+        expect(res.message).toBe('comparativeScore computed')
+        expect(res.data.comparativeScore).toBe(0)
+    })
+
+    it('should calculate comparative score between 1 user', async () => {
+        let user = new User(true)
+        await user.updateUserDetails({score: 100}, 1)
+
+        const DS = new Driving_Score(true)
+        const res = await DS.getComparativeScore(1)
+        expect(res.statusCode).toBe(200)
+        expect(res.message).toBe('No other scores to compare to')
+        expect(res.data.comparativeScore).toBe(100)
+    })
+
+    it('should reject an invalid userID', async () => {
+        let user = new User(true)
+        await user.updateUserDetails({score: 100}, 1)
+
+        const DS = new Driving_Score(true)
+        const res = await DS.getComparativeScore(-1)
+        expect(res.statusCode).toBe(400)
+        expect(res.message).toBe("Invalid userID")
+    })
+
+    it('should reject if user doesnt exist', async () => {
+        const DS = new Driving_Score(true)
+        const res = await DS.getComparativeScore(500)
+        expect(res.statusCode).toBe(404)
+        expect(res.message).toBe("No objects found")
+    })
+
+    it('should reject if no scores are in system', async() => {
+        const DS = new Driving_Score(true)
+        const res = await DS.getComparativeScore(1)
+        expect(res.statusCode).toBe(500)
+        expect(res.message).toBe("Not all values could be gathered")
     })
 })

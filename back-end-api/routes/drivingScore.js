@@ -38,7 +38,20 @@ router.put("/score", async(req, res) => {
 })
 
 router.get("/comparativeScore", async (req, res) => {
+  let testing = false
+  if (req.body) {testing = dataTypes.isDefined(req.body.testing)}
+  if(testing) {console.log("Running delete user in test mode")}
+  
+  let userID = undefined
+  try {
+      userID = await JWT_AUTH.getUserIDFromToken(req)
+  } catch (err) {
+      res.status(400).send({statusCode:400, message:'No token attached'})
+  }
 
+  const DS = new Driving_Score(testing)
+  const result = await DS.getComparativeScore(userID)
+  res.status(result.statusCode).send(result)
 })
 
 

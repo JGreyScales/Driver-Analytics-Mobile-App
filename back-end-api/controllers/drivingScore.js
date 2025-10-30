@@ -79,6 +79,46 @@ class Driving_Score {
             await this.db.close()
         }
     }
+
+    async getComparativeScore(userID){
+        try {
+            if (!dataTypes.isID(userID)) {throw {statusCode:400, message:"Invalid userID"}}
+
+            const globalQuery = `SELECT MIN(score) AS minScore, MAX(score) AS maxScore from ${this.db.usersTable}`
+            const userQuery = `SELECT score FROM ${this.db.usersTable} WHERE userID = ?`
+            const userQueryParams = [userID]
+
+
+            await this.db.connect()
+            const globalScoreResult = await this.db.fetchQuery(globalQuery, [])
+            const userScoreResult = await this.db.fetchQuery(userQuery, userQueryParams)
+ 
+            const userScore = userScoreResult[0].score
+            const maxScore = globalScoreResult[0].maxScore
+            const minScore = globalScoreResult[0].minScore
+
+            if(!Number.isInteger(userScore) || !Number.isInteger(maxScore) || !Number.isInteger(minScore)){
+                throw {statusCode: 500, message:"Not all values could be gathered"}
+            }
+
+            if (maxScore === minScore) {return {statusCode: 200, message: 'No other scores to compare to', data: {comparativeScore: 100.00}}}
+
+            const comparativeScore = parseFloat((((userScore - minScore) / (maxScore - minScore)) * 100).toFixed(2))
+
+            if (comparativeScore === NaN) {
+                throw {statusCode: 500, message: 'Unable to properly compute comparativeScore'}
+            }
+            return {statusCode: 200, message: 'comparativeScore computed', data: {comparativeScore: comparativeScore}}
+        } catch (e) {
+            if (dataTypes.isDict(e)) {
+                return e
+            } else {
+                return {statusCode: 500, message: 'Unknown serverside error'}
+            } 
+        } finally {
+            await this.db.close()
+        }
+    }
 }
 
 module.exports = Driving_Score
