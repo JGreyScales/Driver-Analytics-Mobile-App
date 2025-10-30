@@ -17,10 +17,7 @@ describe('user creation method', () => {
         user = new User(true)
         d = new Database(true)
         await d.connect()
-        await d.dropSafety();
-        const query = `TRUNCATE  TABLE ${d.usersTable}`
-        await d.submitQuery(query, [], true)
-        await d.raiseSafety();
+
     })
 
     afterEach(async () => {
@@ -48,9 +45,6 @@ describe('user creation method', () => {
         const result = await user.userCreate(input)
         const secondResult = await user.userCreate(input)
 
-        console.log(result)
-        console.log(secondResult)
-
         expect(result.statusCode).toBe(200)
         expect(result.message).toBe('User created successfully')
         expect(secondResult.statusCode).toBe(400)
@@ -64,5 +58,63 @@ describe('user creation method', () => {
 
         expect(result.statusCode).toBe(400)
         expect(result.message).toBe("Required element not defined")
+    })
+})
+
+describe('user authentication', () => {
+    let d = null
+    let user = null
+
+    beforeAll(async () => {
+        d = new Database(true)
+        await d.connect()
+        await d.dropSafety();
+        const query = `TRUNCATE  TABLE ${d.usersTable}`
+        await d.submitQuery(query, [], true)
+        await d.raiseSafety();
+        user = new User(true)
+        await user.userCreate({username: "someUsername", email: "someEmail", passwordHash: "somePasswordHash"}) // closes the connection as users are only alive for 1 command
+    })
+
+    beforeEach(async () => {
+
+        user = new User(true)
+    })
+
+    afterAll(async () => {
+        await d.close()
+    })
+
+    it('should provide a bearer token on success', async () =>{
+        const body = {username: "someUsername", passwordHash: "somePasswordHash"}
+        const response = await user.authenticateUser(body)
+
+        expect(response.statusCode).toBe(200)
+        expect(response.message).toBe('User authenticated')
+        expect(response.token.startsWith('Bearer ey')).toBe(true)
+    })  
+
+    it('should throw error if passwordHash doesnt link to account', async () => {
+        const body = {username: "someUsername", passwordHash: "someOtherPasswordHash"}
+        const response = await user.authenticateUser(body)
+
+        expect(response.statusCode).toBe(404)
+        expect(response.message).toBe('No objects found')
+    })
+
+    it('should throw error if username doesnt link to account', async () => {
+        const body = {username: "someOtherUsername", passwordHash: "somePasswordHash"}
+        const response = await user.authenticateUser(body)
+
+        expect(response.statusCode).toBe(404)
+        expect(response.message).toBe('No objects found')
+    })
+
+    it('should throw error on malformed data', async () => {
+        const body = {passwordHash: "somePasswordHash"}
+        const response = await user.authenticateUser(body)
+
+        expect(response.statusCode).toBe(400)
+        expect(response.message).toBe('Invalid parameters')
     })
 })
