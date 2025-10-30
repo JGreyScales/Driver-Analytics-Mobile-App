@@ -35,7 +35,6 @@ class JWT_AUTH {
             jwt.verify(token, process.env.JWT_SECRET, (err, payload) => {
                 if (err) return reject(false);
                 if (!dataType.isDefined(payload.userID)) return reject(false)
-    
                 return resolve(true)
             })
         })
