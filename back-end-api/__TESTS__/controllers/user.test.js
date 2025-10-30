@@ -1,5 +1,4 @@
 const User = require("../../controllers/user")
-const JWT_AUTH = require("../../middleware/auth")
 const Database = require("../../models/db")
 
 describe('user object', () => {
@@ -155,6 +154,7 @@ describe('gathering user details', () => {
         expect(response.message).toBe('User data gathered')
         expect(response.data.username).toBe('someUsername')
         expect(response.data.score).toBeNull()
+        expect(response.data.tripCount).toBe(0)
     })
 
     it('should return error on a user that doesnt exist', async () => {

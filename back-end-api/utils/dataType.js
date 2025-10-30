@@ -13,6 +13,11 @@ class dataTypes{
         return value != null
     }
 
+    // wrapper for this.isID
+    static isValidDrivingParam(value){
+        return this.isID(value)
+    }
+
     static isID(value){
         return (Number.isInteger(value) && value > 0)
     }

@@ -55,7 +55,7 @@ class User {
     async getUserDetails(userID) {
         try{
             if (!dataTypes.isID(userID)) {throw {statusCode: 400, message: "Invalid userID"}}
-            const query = `SELECT username, score FROM ${this.db.usersTable} WHERE userID = ? LIMIT 1`
+            const query = `SELECT username, score, tripCount FROM ${this.db.usersTable} WHERE userID = ? LIMIT 1`
             const params = [userID]
 
             await this.db.connect()
@@ -110,7 +110,7 @@ class User {
                 valuesList.push(body[field])
             }
 
-            query += updates.join(', ') + " WHERE userID = ?";
+            query += updates.join(', ') + " WHERE userID = ? LIMIT 1";
             valuesList.push(userID);
 
             await this.db.submitQuery(query, valuesList)

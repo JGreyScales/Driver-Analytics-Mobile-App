@@ -1,5 +1,4 @@
 let mysql = require('mysql');
-const { param } = require('../routes/assurance');
 require('dotenv').config({ quiet: true });
 
 class Database {
@@ -7,7 +6,6 @@ class Database {
     this.testing = testing;
     this.connection = null;
     this.usersTable = "Users"
-
 
 
     this.defaultTable = this.usersTable
@@ -67,7 +65,7 @@ class Database {
 
   // used for write only
   async submitQuery(query, params, bypassNoResult = false){
-    console.log(`executing: ${mysql.format(query, params)}`)
+    console.log(`TESTING: ${this.testing} | executing: ${mysql.format(query, params)}`)
 
     return new Promise((resolve, reject) => {
       this.connection.query(query, params, (err, results) => {
@@ -82,7 +80,7 @@ class Database {
 
   // used for read only
   async fetchQuery(query, params){
-    console.log(`executing: ${mysql.format(query, params)}`)
+    console.log(`TESTING: ${this.testing} | executing: ${mysql.format(query, params)}`)
 
     return new Promise((resolve, reject) => {
       this.connection.query(query, params, (err, results) => {

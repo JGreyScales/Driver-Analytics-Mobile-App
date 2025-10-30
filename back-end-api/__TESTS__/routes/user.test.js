@@ -70,10 +70,6 @@ describe('DELETE /user', () => {
         await d.dropSafety();
         await d.submitQuery(`TRUNCATE TABLE ${d.usersTable}`, [], true);
         await d.raiseSafety();
-
-    
-        // Optional: tiny delay to ensure MySQL fully commits before test
-        await new Promise(r => setTimeout(r, 20));
     });
     
 
