@@ -18,7 +18,7 @@ class User {
             });
 
             await this.db.submitQuery(query, params)
-            return {statusCode: 200, message: 'User created successfully'}
+            return {statusCode: 201, message: 'User created successfully'}
         } 
         catch (e) {
             if (dataTypes.isDict(e)){
@@ -67,7 +67,6 @@ class User {
             if (dataTypes.isDict(e)) {
                 return e
             } else {
-                console.log(e)
                 return {statusCode: 500, message: 'Unknown serverside error'}
             } 
         } finally {
@@ -86,6 +85,36 @@ class User {
             if (!dataTypes.isDefined(response[0].userID)) {throw {statusCode: 400, message: "Couldnt gather userID"}}
 
             return {statusCode: 202, message: 'User authenticated', token: `Bearer ${JWT_AUTH.generateToken(response[0].userID)}`}
+
+        } catch (e) {
+            if (dataTypes.isDict(e)) {
+                return e
+            } else {
+                return {statusCode: 500, message: 'Unknown serverside error'}
+            } 
+        } finally {
+            await this.db.close()
+        }
+    }
+
+    async updateUserDetails(body, userID){
+        try{
+            if (!dataTypes.isID(userID) || Object.keys(body).length === 0) {throw {statusCode: 400, message: "Invalid parameters"}}
+            await this.db.connect()
+            let query = `UPDATE ${this.db.usersTable} SET `
+            const updates = [];
+            const valuesList = [];
+
+            for (let field in body) {
+                updates.push(`${field} = ?`)
+                valuesList.push(body[field])
+            }
+
+            query += updates.join(', ') + " WHERE userID = ?";
+            valuesList.push(userID);
+
+            await this.db.submitQuery(query, valuesList)
+            return {statusCode: 200, message: 'User updated'}
 
         } catch (e) {
             if (dataTypes.isDict(e)) {

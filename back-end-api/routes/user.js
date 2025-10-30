@@ -16,7 +16,6 @@ router.put("/", async (req, res) => {
 })
 
 router.delete("/", async (req, res) => {
-    // required body is [sessionToken]
     let testing = false
     if (req.body) {testing = dataTypes.isDefined(req.body.testing)}
     if(testing) {console.log("Running delete user in test mode")}
@@ -58,5 +57,29 @@ router.post("/", async (req, res) => {
     const result = await userObj.authenticateUser(req.body)
     res.status(result.statusCode).send(result)
 })
+
+
+router.patch("/", async (req, res) => {
+    // optional body components [email, username, passwordHash]
+    let testing = false
+    if (req.body) {testing = dataTypes.isDefined(req.body.testing)}
+    if(testing) {
+        console.log("Running post user (authenticate user)  in test mode")
+        delete req.body.testing
+    }
+
+    let userID = undefined
+    try {
+        userID = await JWT_AUTH.getUserIDFromToken(req)
+    } catch (err) {
+        res.status(400).send({statusCode:400, message:'No token attached'})
+    }
+
+    const userObj = new User(testing)
+    const result = await userObj.updateUserDetails(req.body, userID)
+    res.status(result.statusCode).send(result)
+
+})
+
 
 module.exports = router;
