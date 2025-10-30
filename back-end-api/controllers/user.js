@@ -18,16 +18,16 @@ class User {
             });
 
             await this.db.submitQuery(query, params)
-            await this.db.close()
             return {statusCode: 200, message: 'User created successfully'}
         } 
         catch (e) {
-            await this.db.close()
             if (dataTypes.isDict(e)){
                 return e
             } else {
                 return {statusCode: 500, message: 'Unknown serverside error'}
             }
+        } finally {
+            await this.db.close()
         }
     }
 
@@ -40,15 +40,38 @@ class User {
             const params = [userID]
 
             await this.db.submitQuery(query, params)
-            await this.db.close()
             return {statusCode: 200, message: `User successfully deleted with ID:${userID}`}
         } catch (e) {
-            await this.db.close()
             if (dataTypes.isDict(e)) {
                 return e
             } else {
                 return {statusCode: 500, message: 'Unknown serverside error'}
             }
+        } finally {
+            await this.db.close()
+        } 
+    }
+
+    async getUserDetails(userID) {
+        try{
+            if (!dataTypes.isID(userID)) {throw {statusCode: 400, message: "Invalid userID"}}
+            const query = `SELECT username, score FROM ${this.db.usersTable} WHERE userID = ? LIMIT 1`
+            const params = [userID]
+
+            await this.db.connect()
+            const response = await this.db.fetchQuery(query, params)
+            if (!dataTypes.isDefined(response[0].username) || !dataTypes.exists(response[0].score)) {throw {statusCode: 404, message: "User not found"}}
+
+            return {statusCode:200, message:"User data gathered", data: response[0]}
+        } catch (e) {
+            if (dataTypes.isDict(e)) {
+                return e
+            } else {
+                console.log(e)
+                return {statusCode: 500, message: 'Unknown serverside error'}
+            } 
+        } finally {
+            await this.db.close()
         }
     }
 
@@ -61,17 +84,17 @@ class User {
 
             const response = await this.db.fetchQuery(query, params)
             if (!dataTypes.isDefined(response[0].userID)) {throw {statusCode: 400, message: "Couldnt gather userID"}}
-            await this.db.close()
 
             return {statusCode: 202, message: 'User authenticated', token: `Bearer ${JWT_AUTH.generateToken(response[0].userID)}`}
 
         } catch (e) {
-            await this.db.close()
             if (dataTypes.isDict(e)) {
                 return e
             } else {
                 return {statusCode: 500, message: 'Unknown serverside error'}
             } 
+        } finally {
+            await this.db.close()
         }
     }
 }

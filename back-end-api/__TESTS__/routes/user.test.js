@@ -170,3 +170,54 @@ describe('POST /user', () => {
         expect(res.body.message).toBe('Invalid parameters')
     })
 })
+
+describe('GET /user', () => {
+    let d = null
+    let user = null
+
+    beforeAll(async () => {
+        d = new Database(true)
+        await d.connect()
+        await d.dropSafety();
+        const query = `TRUNCATE TABLE ${d.usersTable}`
+        await d.submitQuery(query, [], true)
+        await d.raiseSafety();
+        user = new User(true)
+        await user.userCreate({username: "someUsername", email: "someEmail", passwordHash: "somePasswordHash"})
+    })
+
+    afterAll(async () => {
+        await d.close()
+    })
+
+    it('should provide user details if JWT token is valid', async () =>{
+        const body = {testing:true}
+        const token = `Bearer ${JWT_AUTH.generateToken(1)}`
+        const res = await request(app).get('/user').send(body).set('Authorization', token).set('Accept', 'application/json');
+
+        expect(res.statusCode).toBe(200)
+        expect(res.body.statusCode).toBe(200)
+        expect(res.body.message).toBe('User data gathered')
+        expect(res.body.data.username).toBe('someUsername')
+        expect(res.body.data.score).toBeNull()
+    })  
+
+    it('should deny if JWT is invalid', async () => {
+        const body = {testing:true}
+        const token = `Bearer ${JWT_AUTH.generateToken(1)}2`
+        const res = await request(app).get('/user').send(body).set('Authorization', token).set('Accept', 'application/json');
+
+        expect(res.statusCode).toBe(400)
+        expect(res.body.statusCode).toBe(400)
+        expect(res.body.message).toBe('No token attached')
+    })
+
+    it('should deny if JWT is not present', async () => {
+        const body = {testing:true}
+        const res = await request(app).get('/user').send(body).set('Accept', 'application/json');
+
+        expect(res.statusCode).toBe(400)
+        expect(res.body.statusCode).toBe(400)
+        expect(res.body.message).toBe('No token attached')
+    })
+})

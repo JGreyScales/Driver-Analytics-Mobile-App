@@ -135,3 +135,30 @@ describe('validate isID assert accuracy', () => {
         expect(dataType.isID(value)).toBeFalsy()
     })
 })
+
+describe('validate exists assert accuracy', () => {
+    it('should return true for null', () => {
+        expect(dataType.exists(null)).toBeTruthy()
+    })
+
+    it('should return true for ints', () => {
+        expect(dataType.exists(1)).toBeTruthy()
+    })
+
+    it('should return true for strings', () => {
+        expect(dataType.exists("dfs")).toBeTruthy()
+    })
+
+    it('should return true for objects', () => {
+        expect(dataType.exists([])).toBeTruthy()
+    })
+
+    it('should return false for intentional undefined', () => {
+        expect(dataType.exists(undefined)).toBeFalsy()
+    })
+
+    it('should return false for unintentional undefined', () => {
+        let value
+        expect(dataType.exists(value)).toBeFalsy()
+    })
+})

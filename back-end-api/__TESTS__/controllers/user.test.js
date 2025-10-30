@@ -22,7 +22,7 @@ describe('user creation method', () => {
 
     afterEach(async () => {
         await d.dropSafety();
-        const query = `TRUNCATE  TABLE ${d.usersTable}`
+        const query = `TRUNCATE TABLE ${d.usersTable}`
         await d.submitQuery(query, [], true)
         await d.raiseSafety();
     })
@@ -36,6 +36,9 @@ describe('user creation method', () => {
         const input = {username: "someUsername", email: "someEmail", passwordHash: "somePasswordHash"}
         const result = await user.userCreate(input)
 
+        if (result.statusCode === 200){
+            console.log(result.body)
+        }
         expect(result.statusCode).toBe(200)
         expect(result.message).toBe('User created successfully')
     })
@@ -116,5 +119,55 @@ describe('user authentication', () => {
 
         expect(response.statusCode).toBe(400)
         expect(response.message).toBe('Invalid parameters')
+    })
+})
+
+describe('gathering user details', () => {
+    let d = null
+    let user = null
+
+    beforeAll(async () => {
+        d = new Database(true)
+        await d.connect()
+        await d.dropSafety();
+        const query = `TRUNCATE  TABLE ${d.usersTable}`
+        await d.submitQuery(query, [], true)
+        await d.raiseSafety();
+        user = new User(true)
+        await user.userCreate({username: "someUsername", email: "someEmail", passwordHash: "somePasswordHash"}) // closes the connection as users are only alive for 1 command
+
+    })
+
+    beforeEach(async () => {
+        user = new User(true)
+
+    })
+
+    afterAll(async () => {
+        await d.close()
+    })
+
+
+    it('should return username + score from valid ID', async () => {
+        const response = await user.getUserDetails(1)
+
+        expect(response.statusCode).toBe(200)
+        expect(response.message).toBe('User data gathered')
+        expect(response.data.username).toBe('someUsername')
+        expect(response.data.score).toBeNull()
+    })
+
+    it('should return error on a user that doesnt exist', async () => {
+        const response = await user.getUserDetails(-1)
+
+        expect(response.statusCode).toBe(400)
+        expect(response.message).toBe('Invalid userID')
+    })
+
+    it('should return error on malformed data', async () => {
+        const response = await user.getUserDetails("xxx")
+        
+        expect(response.statusCode).toBe(400)
+        expect(response.message).toBe('Invalid userID')
     })
 })
