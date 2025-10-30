@@ -19,7 +19,6 @@ class User {
             return {statusCode: 200, message: 'User created successfully'}
         } 
         catch (e) {
-            console.log(e)
             if (dataTypes.isDict(e)){
                 return e
             } else {
@@ -39,7 +38,6 @@ class User {
             const params = [userID]
 
             await this.db.submitQuery(query, params)
-            await this.db.close()
             return {statusCode: 200, message: `User successfully deleted with ID:${userID}`}
         } catch (e) {
             if (dataTypes.isDict(e)) {
