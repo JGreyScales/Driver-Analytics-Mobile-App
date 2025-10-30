@@ -32,5 +32,15 @@ router.delete("/", async (req, res) => {
     res.status(result.statusCode).send(result)
 })
 
+router.post("/", async (req, res) => {
+    // required body is [username, passwordHash]
+    let testing = false
+    if (req.body) {testing = dataTypes.isDefined(req.body.testing)}
+    if(testing) {console.log("Running post user (authenticate user)  in test mode")}
+
+    const userObj = new User(testing)
+    const result = await userObj.authenticateUser(req.body)
+    res.status(result.statusCode).send(result)
+})
 
 module.exports = router;

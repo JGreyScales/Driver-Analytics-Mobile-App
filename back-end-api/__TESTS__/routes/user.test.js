@@ -3,6 +3,7 @@ const express = require('express');
 const user = require("../../routes/user");
 const Database = require("../../models/db")
 const JWT_AUTH = require("../../middleware/auth")
+const User = require("../../controllers/user")
 
 const app = express();
 app.use(express.json());
@@ -110,5 +111,62 @@ describe('DELETE /user', () => {
         expect(res.statusCode).toBe(400);
         expect(res.body.statusCode).toBe(400);
         expect(res.body.message).toBe('No token attached');
+    })
+})
+
+describe('POST /user', () => {
+    let d = null
+    let user = null
+
+    beforeAll(async () => {
+        d = new Database(true)
+        await d.connect()
+        await d.dropSafety();
+        const query = `TRUNCATE TABLE ${d.usersTable}`
+        await d.submitQuery(query, [], true)
+        await d.raiseSafety();
+        user = new User(true)
+        await user.userCreate({username: "someUsername", email: "someEmail", passwordHash: "somePasswordHash"})
+    })
+
+    afterAll(async () => {
+        await d.close()
+    })
+
+    it('should provide a bearer token on success', async () =>{
+        const body = {username: "someUsername", passwordHash: "somePasswordHash", testing:true}
+        const res = await request(app).post('/user').send(body).set('Accept', 'application/json');
+
+        expect(res.statusCode).toBe(200)
+        expect(res.body.statusCode).toBe(200)
+        expect(res.body.message).toBe('User authenticated')
+        expect(res.body.token.startsWith('Bearer ey')).toBe(true)
+    })  
+
+    it('should throw error if passwordHash doesnt link to account', async () => {
+        const body = {username: "someUsername", passwordHash: "someOtherPasswordHash", testing:true}
+        const res = await request(app).post('/user').send(body).set('Accept', 'application/json');
+
+        expect(res.statusCode).toBe(404)
+        expect(res.body.statusCode).toBe(404)
+        expect(res.body.message).toBe('No objects found')
+    })
+
+    it('should throw error if username doesnt link to account', async () => {
+        const body = {username: "someOtherUsername", passwordHash: "somePasswordHash", testing:true}
+        const res = await request(app).post('/user').send(body).set('Accept', 'application/json');
+
+        expect(res.statusCode).toBe(404)
+        expect(res.body.statusCode).toBe(404)
+        expect(res.body.message).toBe('No objects found')
+    })
+
+    it('should throw error on malformed data', async () => {
+        const body = {passwordHash: "somePasswordHash", testing:true}
+        const res = await request(app).post('/user').send(body).set('Accept', 'application/json');
+
+        expect(res.statusCode).toBe(400)
+        expect(res.body.statusCode).toBe(400)
+        expect(res.body.message).toBe('Invalid parameters')
     })
 })
