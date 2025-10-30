@@ -32,6 +32,22 @@ router.delete("/", async (req, res) => {
     res.status(result.statusCode).send(result)
 })
 
+router.get("/", async (req, res) => {
+    let testing = false
+    if (req.body) {testing = dataTypes.isDefined(req.body.testing)}
+    if(testing) {console.log("Running delete user in test mode")}
+
+    let userID = undefined
+    try {
+        userID = await JWT_AUTH.getUserIDFromToken(req)
+    } catch (err) {
+        res.status(400).send({statusCode:400, message:'No token attached'})
+    }
+    const userObj = new User(testing)
+    const result = await userObj.getUserDetails(userID)
+    res.status(result.statusCode).send(result)
+})
+
 router.post("/", async (req, res) => {
     // required body is [username, passwordHash]
     let testing = false
