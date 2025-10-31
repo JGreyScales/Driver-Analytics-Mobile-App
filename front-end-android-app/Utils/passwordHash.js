@@ -1,5 +1,4 @@
-const bcrypt = require('bcrypt');//include bcrypt module
-
+const bcrypt = require('bcryptjs')
 
 class PasswordHash {
     static __saltRounds = 12; //dictates the computational cost of hashing and, consequently, the level of security 

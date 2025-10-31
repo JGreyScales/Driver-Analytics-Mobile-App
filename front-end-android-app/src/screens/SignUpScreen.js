@@ -56,9 +56,9 @@ const handleSignUp = async () => {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        username,
-        email,
-        passwordHash,
+        "username": username,
+        "email": email,
+        "passwordHash": passwordHash,
       }),
     });
 
