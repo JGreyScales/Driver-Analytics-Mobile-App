@@ -6,7 +6,7 @@ const router = express.Router();
 
 
 router.put("/", async (req, res) => {
-    // required body is [username, email, passwordHash]
+    // required body is [username, email, passwordHash] 
     let testing = false
     if (req.body) {testing = dataTypes.isDefined(req.body.testing)}
     if (testing) {console.log("Running put user in test mode")}

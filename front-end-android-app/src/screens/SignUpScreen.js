@@ -11,6 +11,7 @@ import {
   Alert,
 } from "react-native";
 import { GLOBAL_STYLES, COLORS } from "../styles/GlobalStyles";
+import Password_Hash from "../utils/Password_Hash";
 
 export default function SignUpScreen() {
   const [email, setEmail] = useState("");
@@ -45,36 +46,38 @@ export default function SignUpScreen() {
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSignUp = async () => {
-    if (!validate()) return;
+const handleSignUp = async () => {
+  if (!validate()) return;
 
-    try {
-      const response = await fetch("http://10.0.2.2:3000/status/users", {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          email,
-          username,
-          password,
-        }),
-      });
+  try {
+    const passwordHash = await Password_Hash.HashMethod(password);
 
-      const data = await response.json();
+    const response = await fetch("http://10.0.2.2:3000/user", {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        username,
+        email,
+        passwordHash,
+      }),
+    });
 
-      if (response.ok) {
-        Alert.alert("✅ Success", data.message || "Account created successfully!");
-        setEmail("");
-        setUsername("");
-        setPassword("");
-        setErrors({});
-      } else {
-        Alert.alert("⚠️ Error", data.message || "Failed to create account.");
-      }
-    } catch (error) {
-      console.error("Signup error:", error);
-      Alert.alert("❌ Network Error", "Could not connect to the server.");
+    const data = await response.json();
+
+    if (response.ok) {
+      Alert.alert("✅ Success", data.message || "Account created successfully!");
+      setEmail("");
+      setUsername("");
+      setPassword("");
+      setErrors({});
+    } else {
+      Alert.alert("⚠️ Error", data.message || "Failed to create account.");
     }
-  };
+  } catch (error) {
+    console.error("Signup error:", error);
+    Alert.alert("❌ Network Error", "Could not connect to the server.");
+  }
+};
 
   return (
     <KeyboardAvoidingView
