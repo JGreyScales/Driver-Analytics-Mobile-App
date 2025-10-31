@@ -11,7 +11,7 @@ import {
   Alert,
 } from "react-native";
 import { GLOBAL_STYLES, COLORS } from "../styles/GlobalStyles";
-import Password_Hash from "../utils/Password_Hash";
+import PasswordHash from "../utils/passwordHash"
 
 export default function SignUpScreen() {
   const [email, setEmail] = useState("");
@@ -50,9 +50,10 @@ const handleSignUp = async () => {
   if (!validate()) return;
 
   try {
-    const passwordHash = await Password_Hash.HashMethod(password);
-
-    const response = await fetch("http://10.0.2.2:3000/user", {
+    const passwordHash = PasswordHash.HashMethod(password);
+    console.log(passwordHash)
+    console.log(passwordHash.length)
+    const response = await fetch("http://10.0.2.2:3000/user/", {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -63,6 +64,7 @@ const handleSignUp = async () => {
     });
 
     const data = await response.json();
+    console.log(data)
 
     if (response.ok) {
       Alert.alert("✅ Success", data.message || "Account created successfully!");
