@@ -28,6 +28,7 @@ class Database {
       this.connection.connect((err) => {
         if (err) {
           this.connection = null;
+          console.log("error connecting")
           return reject(err);
         }
         resolve();
