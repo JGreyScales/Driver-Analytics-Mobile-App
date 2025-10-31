@@ -38,7 +38,7 @@
       "./jest.setup.js"
     ],
     "transformIgnorePatterns": [
-      "node_modules/(?!react-native|@react-native|expo)"
+      "node_modules/(?!expo|@expo|react-native|@react-native|react-native-gesture-handler)"
     ]
   }
 }
