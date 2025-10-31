@@ -1,21 +1,43 @@
-// jest.setup.js
-// Patch Expo 54's winter runtime for Jest
-globalThis.expo = {
-  EventEmitter: class {},
-  __ExpoImportMetaRegistry: {},
+// ✅ Required gesture-handler patch
+import "react-native-gesture-handler/jestSetup";
+
+// ✅ Mock Expo runtime to avoid winter runtime errors
+global.expo = {
+  EventEmitter: { addListener: jest.fn(), removeSubscription: jest.fn() },
 };
 
-// Prevent Expo async-require errors by mocking it manually
-jest.mock('expo/src/async-require/messageSocket', () => ({}));
+// ✅ Mock Animated helper (Expo SDK 54 / RN 0.81)
+jest.mock("react-native/Libraries/Animated/NativeAnimatedHelper", () => ({
+  __esModule: true,
+  default: {},
+}));
 
-// Load Testing Library matchers
-require('@testing-library/jest-native/extend-expect');
+// ✅ Mock timing to avoid "undefined is not a function" in RN.animate
+jest.mock("react-native/Libraries/Animated/animations/TimingAnimation", () => ({
+  __esModule: true,
+  default: jest.fn(),
+}));
 
-// Silence react-native-reanimated warnings
-try {
-  jest.mock('react-native-reanimated', () => require('react-native-reanimated/mock'));
-} catch (_) {}
+// ✅ Silence animation warning
+jest.mock("react-native/Libraries/Animated/NativeAnimated", () => ({
+  __esModule: true,
+  default: {
+    timing: jest.fn().mockReturnValue({
+      start: jest.fn(),
+    }),
+  },
+}));
 
-// Silence console warnings for unimplemented native modules (optional)
-jest.spyOn(global.console, 'warn').mockImplementation(() => {});
-jest.spyOn(global.console, 'error').mockImplementation(() => {});
+// ✅ Mock fetch globally
+global.fetch = jest.fn(() =>
+  Promise.resolve({
+    ok: true,
+    json: () => Promise.resolve({ message: "Account created" }),
+  })
+);
+
+// ✅ Mock alert
+global.alert = jest.fn();
+
+// ✅ Silence console.error for clean test logs
+jest.spyOn(global.console, "error").mockImplementation(() => {});
