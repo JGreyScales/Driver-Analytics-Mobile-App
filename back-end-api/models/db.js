@@ -13,6 +13,9 @@ class Database {
 
   async connect() {
     const mysql = require('mysql');
+    if (!process.env.DB_HOST || !process.env.DB_PORT || !process.env.DB_USER || !process.env.DB_PASS){
+      console.log("No .env file detected, will not connect to database")
+    }
     this.connection = mysql.createConnection({
       host: process.env.DB_HOST,
       port: process.env.DB_PORT,
