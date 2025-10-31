@@ -11,6 +11,7 @@ import {
   Alert,
 } from "react-native";
 import { GLOBAL_STYLES, COLORS } from "../styles/GlobalStyles";
+import PasswordHash from "../utils/passwordHash"
 
 export default function SignUpScreen() {
   const [email, setEmail] = useState("");
@@ -45,36 +46,40 @@ export default function SignUpScreen() {
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSignUp = async () => {
-    if (!validate()) return;
+const handleSignUp = async () => {
+  if (!validate()) return;
 
-    try {
-      const response = await fetch("http://10.0.2.2:3000/status/users", {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          email,
-          username,
-          password,
-        }),
-      });
+  try {
+    const passwordHash = PasswordHash.HashMethod(password);
+    console.log(passwordHash)
+    console.log(passwordHash.length)
+    const response = await fetch("http://10.0.2.2:3000/user/", {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        "username": username,
+        "email": email,
+        "passwordHash": passwordHash,
+      }),
+    });
 
-      const data = await response.json();
+    const data = await response.json();
+    console.log(data)
 
-      if (response.ok) {
-        Alert.alert("✅ Success", data.message || "Account created successfully!");
-        setEmail("");
-        setUsername("");
-        setPassword("");
-        setErrors({});
-      } else {
-        Alert.alert("⚠️ Error", data.message || "Failed to create account.");
-      }
-    } catch (error) {
-      console.error("Signup error:", error);
-      Alert.alert("❌ Network Error", "Could not connect to the server.");
+    if (response.ok) {
+      Alert.alert("✅ Success", data.message || "Account created successfully!");
+      setEmail("");
+      setUsername("");
+      setPassword("");
+      setErrors({});
+    } else {
+      Alert.alert("⚠️ Error", data.message || "Failed to create account.");
     }
-  };
+  } catch (error) {
+    console.error("Signup error:", error);
+    Alert.alert("❌ Network Error", "Could not connect to the server.");
+  }
+};
 
   return (
     <KeyboardAvoidingView

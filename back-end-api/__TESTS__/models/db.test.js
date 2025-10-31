@@ -168,7 +168,7 @@ describe('handling safety', () => {
     let d = null
 
     beforeEach(async () => {
-        d = new Database()
+        d = new Database(true)
         await d.connect()
     })
 

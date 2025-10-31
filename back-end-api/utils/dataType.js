@@ -10,11 +10,20 @@ class dataTypes{
     }
 
     static isDefined(value){
-        try {
-            return value != null
-        } catch {
-            return false
-        }
+        return value != null
+    }
+
+    // wrapper for this.isID
+    static isValidDrivingParam(value){
+        return this.isID(value)
+    }
+
+    static isID(value){
+        return (Number.isInteger(value) && value > 0)
+    }
+
+    static exists(value){
+        return value !== undefined
     }
 }
 

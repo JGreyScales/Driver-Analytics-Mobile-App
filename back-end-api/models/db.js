@@ -1,5 +1,4 @@
 let mysql = require('mysql');
-const { param } = require('../routes/assurance');
 require('dotenv').config({ quiet: true });
 
 class Database {
@@ -9,12 +8,14 @@ class Database {
     this.usersTable = "Users"
 
 
-
     this.defaultTable = this.usersTable
   }
 
   async connect() {
     const mysql = require('mysql');
+    if (!process.env.DB_HOST || !process.env.DB_PORT || !process.env.DB_USER || !process.env.DB_PASS){
+      console.log("No .env file detected, will not connect to database")
+    }
     this.connection = mysql.createConnection({
       host: process.env.DB_HOST,
       port: process.env.DB_PORT,
@@ -27,6 +28,7 @@ class Database {
       this.connection.connect((err) => {
         if (err) {
           this.connection = null;
+          console.log("error connecting")
           return reject(err);
         }
         resolve();
@@ -67,7 +69,7 @@ class Database {
 
   // used for write only
   async submitQuery(query, params, bypassNoResult = false){
-    console.log(`executing: ${mysql.format(query, params)}`)
+    console.log(`TESTING: ${this.testing} | executing: ${mysql.format(query, params)}`)
 
     return new Promise((resolve, reject) => {
       this.connection.query(query, params, (err, results) => {
@@ -82,7 +84,7 @@ class Database {
 
   // used for read only
   async fetchQuery(query, params){
-    console.log(`executing: ${mysql.format(query, params)}`)
+    console.log(`TESTING: ${this.testing} | executing: ${mysql.format(query, params)}`)
 
     return new Promise((resolve, reject) => {
       this.connection.query(query, params, (err, results) => {
