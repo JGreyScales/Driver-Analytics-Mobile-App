@@ -1,17 +1,24 @@
-// jest.setup.js
-// Patch Expo 54's winter runtime for Jest
-globalThis.expo = {
-  EventEmitter: class {},
-  __ExpoImportMetaRegistry: {},
-};
+import "react-native-gesture-handler/jestSetup";
 
-// Prevent Expo async-require errors by mocking it manually
-jest.mock('expo/src/async-require/messageSocket', () => ({}));
+// Mock Expo modules
+jest.mock("expo", () => ({}));
+jest.mock("expo-crypto", () => ({
+  digestStringAsync: jest.fn(() => "mockHash"),
+}));
 
-// Load Testing-Library matchers
-require('@testing-library/jest-native/extend-expect');
+jest.mock('react-native-reanimated', () => {
+  const Reanimated = require('react-native-reanimated/mock');
+  Reanimated.default.call = () => {};
+  return Reanimated;
+});
 
-// Optionally silence reanimated if installed
-try {
-  jest.mock('react-native-reanimated', () => require('react-native-reanimated/mock'));
-} catch (_) {}
+// Mock Alert
+global.alert = jest.fn();
+
+// Mock fetch
+global.fetch = jest.fn(() =>
+  Promise.resolve({
+    ok: true,
+    json: () => Promise.resolve({ message: "Account created successfully" }),
+  })
+);
