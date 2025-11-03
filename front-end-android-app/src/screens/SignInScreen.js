@@ -25,12 +25,19 @@ export default function SignInScreen() {
     }).start();
   }, []);
 
+  /*soft checks for user and pass to make sure user inputs make sense*/
   const validate = () => {
     let newErrors = {};
-    if (!username) newErrors.username = "Username is required.";
-    if (!password) newErrors.password = "Password is required.";
-    else if (password.length < 8)
+    if (!username) {
+      newErrors.username = "Username is required.";
+    }else if(username.length < 3) { 
+      newErrors.username = "Username must be atleast 3 characters long.";
+    }
+    if (!password){
+      newErrors.password = "Password is required.";
+    } else if (password.length < 8) {
       newErrors.password = "Password must be at least 8 characters.";
+    }
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -46,9 +53,9 @@ export default function SignInScreen() {
 
       //checks for success or failure based on response
       if(response.ok){
-        alert("Successful Login");
+        alert("Successful Login", data.message);
       }else{ 
-        alert("Failed Login"); 
+        alert("Failed Login", data.message); 
       }
     }catch(err) { 
       console.error(err); 
