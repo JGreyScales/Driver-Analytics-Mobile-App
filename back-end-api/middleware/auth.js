@@ -11,9 +11,9 @@ class JWT_AUTH {
             if (typeof (req) === 'string') { token = req?.split(' ')[1] }
             else {
                 try {
-                    token = req.header.Authorization?.split(' ')[1];
-                } catch {
                     token = req.header('Authorization')?.split(' ')[1];
+                } catch {
+                    token = req.header.Authorization?.split(' ')[1];
                 }
 
             }
