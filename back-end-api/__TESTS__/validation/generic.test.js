@@ -19,7 +19,7 @@ describe('genericValidation', () => {
         await expect(genericValidation(req)).rejects.toBeFalsy()
     })
 
-    it('should reject if a auth header is not present', async () => {
+    it('should reject if an auth header is not present', async () => {
         req = {}
         req.header = {}
         await expect(genericValidation(req)).rejects.toBeFalsy()
@@ -28,18 +28,34 @@ describe('genericValidation', () => {
 
 describe('validate fields', () => {
     it('should allow fields that are in the allowed list through', async () => {
+        ALLOWED_VALUES = ["userID", "password", "username", "tye"]
+        req = {}
+        req.body = {}
+        req.body.userID = 4234
+        req.body.password = "pass"
+        req.body.username = "user"
+        req.body.tye = 3242
 
+        await expect(validateFields(req, ALLOWED_VALUES)).resolves.toBeTruthy()
     })
 
     it('should deny invalid fields from the list', async () => {
+        ALLOWED_VALUES = ["userID", "password", "username"]
+        req = {}
+        req.body = {}
+        req.body.userID = 4234
+        req.body.password = "pass"
+        req.body.username = "user"
+        req.body.tye = 3242
 
+        await expect(validateFields(req, ALLOWED_VALUES)).rejects.toBe("tye")
     })
 
     it('should allow empty bodies', async () => {
+        ALLOWED_VALUES = []
+        req = {}
+        req.body = {}
 
-    })
-
-    it('should not check datatypes', async () => {
-        
+        await expect(validateFields(req, ALLOWED_VALUES)).resolves.toBeTruthy()
     })
 })
