@@ -60,7 +60,7 @@ const handleSignUp = async () => {
         "username": username,
         "email": email,
         "passwordHash": passwordHash,
-        "testing":true,
+        "testing":true, 
       }),
     });
 
@@ -142,11 +142,6 @@ const handleSignUp = async () => {
         <TouchableOpacity style={GLOBAL_STYLES.button} onPress={handleSignUp}>
           <Text style={GLOBAL_STYLES.buttonText}>Sign Up</Text>
         </TouchableOpacity>
-
-        {/* Footer */}
-        <Text style={[GLOBAL_STYLES.linkText, { marginTop: 12 }]}>
-          Already have an account? Login
-        </Text>
       </Animated.View>
     </KeyboardAvoidingView>
   );
