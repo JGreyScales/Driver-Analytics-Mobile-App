@@ -1,0 +1,189 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`SignUpScreen renders correctly 1`] = `
+<View
+  onLayout={[Function]}
+  style={
+    [
+      {
+        "backgroundColor": "#FFFFFF",
+        "flex": 1,
+        "justifyContent": "center",
+        "paddingHorizontal": 24,
+      },
+      {
+        "paddingBottom": 0,
+      },
+    ]
+  }
+>
+  <View
+    collapsable={false}
+    style={
+      {
+        "opacity": 0,
+      }
+    }
+  >
+    <View
+      style={
+        {
+          "alignItems": "center",
+          "marginBottom": 20,
+        }
+      }
+    >
+      <Text
+        style={
+          {
+            "color": "#2E7D32",
+            "fontSize": 28,
+            "fontWeight": "bold",
+            "marginBottom": 10,
+            "textAlign": "center",
+          }
+        }
+      >
+        Sign Up
+      </Text>
+      <Text
+        style={
+          {
+            "color": "#1B1B1B",
+            "fontSize": 20,
+            "fontWeight": "600",
+            "marginBottom": 20,
+            "textAlign": "center",
+          }
+        }
+      >
+        Welcome To Driver Motion
+      </Text>
+    </View>
+    <TextInput
+      autoCapitalize="none"
+      keyboardType="email-address"
+      onChangeText={[Function]}
+      placeholder="Email"
+      style={
+        [
+          {
+            "borderBottomWidth": 1,
+            "borderColor": "#777",
+            "fontSize": 16,
+            "marginBottom": 14,
+            "paddingVertical": 10,
+          },
+          undefined,
+        ]
+      }
+      value=""
+    />
+    <TextInput
+      autoCapitalize="none"
+      onChangeText={[Function]}
+      placeholder="Username"
+      style={
+        [
+          {
+            "borderBottomWidth": 1,
+            "borderColor": "#777",
+            "fontSize": 16,
+            "marginBottom": 14,
+            "paddingVertical": 10,
+          },
+          undefined,
+        ]
+      }
+      value=""
+    />
+    <TextInput
+      onChangeText={[Function]}
+      placeholder="Password"
+      secureTextEntry={true}
+      style={
+        [
+          {
+            "borderBottomWidth": 1,
+            "borderColor": "#777",
+            "fontSize": 16,
+            "marginBottom": 14,
+            "paddingVertical": 10,
+          },
+          undefined,
+        ]
+      }
+      value=""
+    />
+    <View
+      accessibilityState={
+        {
+          "busy": undefined,
+          "checked": undefined,
+          "disabled": undefined,
+          "expanded": undefined,
+          "selected": undefined,
+        }
+      }
+      accessibilityValue={
+        {
+          "max": undefined,
+          "min": undefined,
+          "now": undefined,
+          "text": undefined,
+        }
+      }
+      accessible={true}
+      collapsable={false}
+      focusable={true}
+      onClick={[Function]}
+      onResponderGrant={[Function]}
+      onResponderMove={[Function]}
+      onResponderRelease={[Function]}
+      onResponderTerminate={[Function]}
+      onResponderTerminationRequest={[Function]}
+      onStartShouldSetResponder={[Function]}
+      style={
+        {
+          "alignItems": "center",
+          "backgroundColor": "#2E7D32",
+          "borderRadius": 24,
+          "marginTop": 10,
+          "opacity": 1,
+          "paddingVertical": 12,
+        }
+      }
+    >
+      <Text
+        style={
+          {
+            "color": "#fff",
+            "fontSize": 16,
+            "fontWeight": "700",
+          }
+        }
+      >
+        Sign Up
+      </Text>
+    </View>
+    <Text
+      style={
+        [
+          {
+            "color": "#2E7D32",
+            "fontSize": 13,
+            "marginTop": 8,
+            "textAlign": "center",
+            "textDecorationLine": "underline",
+          },
+          {
+            "marginTop": 12,
+          },
+        ]
+      }
+    >
+      Already have an account? Login
+    </Text>
+  </View>
+</View>
+`;
