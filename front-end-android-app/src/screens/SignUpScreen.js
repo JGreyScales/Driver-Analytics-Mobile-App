@@ -13,7 +13,7 @@ import {
 import { GLOBAL_STYLES, COLORS } from "../styles/GlobalStyles";
 import PasswordHash from "../utils/passwordHash"
 
-export default function SignUpScreen() {
+export default function SignUpScreen({navigation}) {
   const [email, setEmail] = useState("");
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
@@ -51,8 +51,6 @@ const handleSignUp = async () => {
 
   try {
     const passwordHash = PasswordHash.HashMethod(password);
-    console.log(passwordHash)
-    console.log(passwordHash.length)
     const response = await fetch("http://10.0.2.2:3000/user/", {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
@@ -65,7 +63,6 @@ const handleSignUp = async () => {
     });
 
     const data = await response.json();
-    console.log(data)
 
     if (response.ok) {
       Alert.alert("✅ Success", data.message || "Account created successfully!");
@@ -80,6 +77,10 @@ const handleSignUp = async () => {
     console.error("Signup error:", error);
     Alert.alert("❌ Network Error", "Could not connect to the server.");
   }
+};
+
+const goToSignIn = () => {
+  if (navigation && navigation.navigate) navigation.navigate("SignIn");
 };
 
   return (
@@ -142,6 +143,11 @@ const handleSignUp = async () => {
         <TouchableOpacity style={GLOBAL_STYLES.button} onPress={handleSignUp}>
           <Text style={GLOBAL_STYLES.buttonText}>Sign Up</Text>
         </TouchableOpacity>
+
+        <TouchableOpacity onPress={goToSignIn}>
+          <Text style={[GLOBAL_STYLES.linkText, { marginTop: 12 }]}>Already have an account? Sign in</Text>
+        </TouchableOpacity>
+
       </Animated.View>
     </KeyboardAvoidingView>
   );
