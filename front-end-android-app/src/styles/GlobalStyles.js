@@ -53,7 +53,7 @@ export const GLOBAL_STYLES = StyleSheet.create({
     marginTop: 10,
   },
   buttonText: {
-    color: "#fff",
+    color: COLORS.background,
     fontSize: FONTS.text,
     fontWeight: "700",
   },

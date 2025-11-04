@@ -26,7 +26,7 @@ export default function SignInScreen() {
   }, []);
 
   /*soft checks for user and pass to make sure user inputs make sense*/
-  const validate = () => {
+  const validate = (username, password) => {
     let newErrors = {};
     if (!username) {
       newErrors.username = "Username is required.";
@@ -43,23 +43,27 @@ export default function SignInScreen() {
   };
 
   const handleLogin = async () => {
+    if (!validate(username, password)){
+    return; 
+  }
     try{///post request to backedn
       const response = await fetch("http://10.0.2.2:3000/user/", {
         method: 'POST', //authenticate
         headers: {'Content-Type': 'application/json'},
         body: JSON.stringify({username, password}), 
-      })
+      });
       const data = await response.json();//analyze resposne
+      console.log(data); 
 
       //checks for success or failure based on response
-      if(response.ok){
-        alert("Successful Login", data.message);
-      }else{ 
-        alert("Failed Login", data.message); 
+      if (response.ok) {
+        alert("Successful Login", data.message || "Welcome Back Driver");
+      } else { 
+        alert("Failed Login", data.message || "Invalid Username or Password"); 
       }
     }catch(err) { 
       console.error(err); 
-      alert("Could not connect, Error:", err); 
+      alert("Could not connect to server, Error:", err); 
     }
   };
 
@@ -105,8 +109,10 @@ export default function SignInScreen() {
         )}
 
         {/* Login Button */}
-        <TouchableOpacity style={GLOBAL_STYLES.button} onPress={handleLogin}>
-          <Text style={GLOBAL_STYLES.buttonText}>Login</Text>
+        <TouchableOpacity style={GLOBAL_STYLES.button} 
+        onPress={handleLogin}
+        testID="loginButton">
+          <Text style={GLOBAL_STYLES.buttonText}>LOGIN</Text>
         </TouchableOpacity>
 
         {/* Footer */}
@@ -116,3 +122,4 @@ export default function SignInScreen() {
     </KeyboardAvoidingView>
   );
 }
+ 
