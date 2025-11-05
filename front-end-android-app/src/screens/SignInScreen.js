@@ -12,7 +12,7 @@ import {
 } from "react-native";
 import { GLOBAL_STYLES, COLORS } from "../styles/GlobalStyles";
 import SessionManager  from "../utils/SessionManager";
-import MD5 from 'crypto-js/md5';
+import PasswordHash from "../utils/passwordHash";
 
 export default function SignInScreen({ navigation }) {
   const [username, setUsername] = useState("");
@@ -50,22 +50,27 @@ export default function SignInScreen({ navigation }) {
   }
 
     try{///post request to backedn
-      const passwordHash = MD5(password).toString();
+      const passwordHash = PasswordHash.HashMethod(password)
 
       const response = await fetch("http://10.0.2.2:3000/user/", {
         method: 'POST', //authenticate
         headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify({username: username.trim(), passwordHash}), 
+        body: JSON.stringify(
+          {username: username.trim(),
+          passwordHash: passwordHash}
+        ), 
       });
-      const data = await response.json().catch(() => ({}));//analyze resposne
+      const data = await response.json().catch(() => ({}));//analyze response
       console.log(data); 
 
       //checks for success or failure based on response
       if (response.ok && data.token) {
-        await SessionManager.setToken({ Authorization: data.token });
+        const session = new SessionManager('JWT_TOKEN')
+        await session.setToken(data.token);
         Alert.alert('Successful Login', data.message || 'Welcome Back Driver');
-        const token = await SessionManager.getToken();
+        const token = await session.getToken();
         console.log("Stored token:", token);
+        navigation.navigate('Home')
     } else {
         Alert.alert('Failed Login', data.message || 'Invalid Username or Password');
       }

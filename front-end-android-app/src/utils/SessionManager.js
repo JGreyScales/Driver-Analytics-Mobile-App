@@ -6,16 +6,16 @@ class SessionManager {
        this.key = key
     }
  
-    static async setToken(data) {
+    async setToken(data) {
       try {
-        await AsyncStorage.setItem(this.key, data.Authorization);
+        await AsyncStorage.setItem(this.key, data);
       } catch (error) {
         console.error('Error saving session token:', error);
       }
     }
    
  
-    static async getToken() {
+    async getToken() {
       try {
         const sessionToken = await AsyncStorage.getItem(this.key);
         return sessionToken;
@@ -26,7 +26,7 @@ class SessionManager {
     }
    
  
-    static async clearToken() {
+    async clearToken() {
       try {
         await AsyncStorage.removeItem(this.key);
         console.log('Session token cleared.');
