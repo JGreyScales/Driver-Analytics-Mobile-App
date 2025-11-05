@@ -1,14 +1,16 @@
 const {genericValidation, validateFields} = require("./generic")
 
-async function validateGetScore(req, res, next){
+async function validateGetScore(req, res, next) {
     try {
-        await genericValidation(req, res, (err) => {
-            const ALLOWED_FIELDS = []
-            
+        await genericValidation(req);
 
-            next()
-        })
-    } catch (error){
-        return error
+        const ALLOWED_FIELDS = [];
+        await validateFields(req, ALLOWED_FIELDS);
+
+        next();
+    } catch (err) {
+        res.status(err.statusCode).send(err.message);
     }
 }
+
+module.exports = { validateGetScore };
