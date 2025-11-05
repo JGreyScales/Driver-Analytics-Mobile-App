@@ -27,4 +27,5 @@ async function validateFields(req, ALLOWED_FIELDS) {
     })
 }
 
+
 module.exports = { genericValidation, validateFields }
