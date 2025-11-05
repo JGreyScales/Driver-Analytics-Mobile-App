@@ -1,22 +1,15 @@
 const jwt = require("jsonwebtoken")
 const dataType = require('../utils/dataType')
-require("dotenv").config({ quiet: true });
+require("dotenv").config({quiet: true});
 
 class JWT_AUTH {
-    constructor() { }
+    constructor(){}
 
-    static __extractToken(req) {
+    static __extractToken(req){
         let token = undefined;
-        try {
-            if (typeof (req) === 'string') { token = req?.split(' ')[1] }
-            else {
-                try {
-                    token = req.header('Authorization')?.split(' ')[1];
-                } catch {
-                    token = req.header.Authorization?.split(' ')[1];
-                }
-
-            }
+        try{
+            if (typeof(req) === 'string'){token = req?.split(' ')[1]}
+            else {token = req.header('Authorization')?.split(' ')[1];}
         } catch {
             token = ""
         } finally {
@@ -24,21 +17,21 @@ class JWT_AUTH {
         }
     }
 
-    static generateToken(userID) {
+    static generateToken(userID){
         // empty string on failure
 
         if (!dataType.isID(userID)) return ""
 
         return jwt.sign(
-            { 'userID': userID },
+            {'userID': userID},
             process.env.JWT_SECRET,
-            { 'expiresIn': '1h' }
+            {'expiresIn':'1h'}
         )
     }
 
-    static authenticateToken(req) {
+    static authenticateToken(req){
         return new Promise((resolve, reject) => {
-            const token = this.__extractToken(req);
+            const token = this.__extractToken(req);     
             jwt.verify(token, process.env.JWT_SECRET, (err, payload) => {
                 if (err) return reject(false);
                 if (!dataType.isDefined(payload.userID)) return reject(false)
@@ -47,7 +40,7 @@ class JWT_AUTH {
         })
     }
 
-    static getUserIDFromToken(req) {
+    static getUserIDFromToken(req){
         return new Promise((resolve, reject) => {
             const token = this.__extractToken(req);
             jwt.verify(token, process.env.JWT_SECRET, (err, payload) => {

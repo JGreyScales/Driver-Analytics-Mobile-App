@@ -166,6 +166,24 @@ exports[`SignUpScreen renders correctly 1`] = `
         Sign Up
       </Text>
     </View>
+    <Text
+      style={
+        [
+          {
+            "color": "#2E7D32",
+            "fontSize": 13,
+            "marginTop": 8,
+            "textAlign": "center",
+            "textDecorationLine": "underline",
+          },
+          {
+            "marginTop": 12,
+          },
+        ]
+      }
+    >
+      Already have an account? Login
+    </Text>
   </View>
 </View>
 `;

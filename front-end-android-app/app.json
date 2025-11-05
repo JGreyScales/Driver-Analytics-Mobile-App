@@ -2,9 +2,6 @@
   "expo": {
     "name": "front-end-android-app",
     "slug": "front-end-android-app",
-    "version": "1.0.0",
-    "android": {
-      "package": "com.anonymous.frontendandroidapp"
-    }
+    "version": "1.0.0"
   }
 }

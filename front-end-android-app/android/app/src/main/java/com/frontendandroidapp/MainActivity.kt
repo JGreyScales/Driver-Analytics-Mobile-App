@@ -1,4 +1,4 @@
-package com.anonymous.frontendandroidapp
+package com.frontendandroidapp
 
 import android.os.Build
 import android.os.Bundle
