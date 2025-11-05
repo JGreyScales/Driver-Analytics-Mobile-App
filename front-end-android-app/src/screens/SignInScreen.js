@@ -71,7 +71,7 @@ export default function SignInScreen({ navigation }) {
       }
   } catch (error) {
     console.error('Error during login:', error.message);
-    alert('Network error occurred');
+    Alert.alert('Network error occurred');
   }
 };
 
@@ -81,7 +81,6 @@ export default function SignInScreen({ navigation }) {
 
   return (
     <KeyboardAvoidingView
-      behavior={Platform.OS === "ios" ? "padding" : undefined}
       style={GLOBAL_STYLES.container}
     >
       <View style={{ alignItems: "center", marginBottom: 20 }}>

@@ -1,4 +1,5 @@
 import React from 'react';
+import { Alert } from 'react-native';
 jest.mock('@react-native-async-storage/async-storage', () => ({
   setItem: jest.fn(),
   getItem: jest.fn(),
@@ -14,6 +15,7 @@ describe("SignInScreen", () => {
         jest.clearAllMocks();
         global.fetch = jest.fn(); // reset fetch for each test
         global.alert = jest.fn(); // reset alert for each test
+        jest.spyOn(Alert, 'alert').mockImplementation(() => {}); // mock it safely
     });
 
     test('renders Sign Up text correctly', () => { 
@@ -37,6 +39,52 @@ describe("SignInScreen", () => {
         expect(screen.getByText("Password is required.")).toBeTruthy();
         });
     });
+    test('shows error when username is too short', async () => {
+        const { getByTestId, getByPlaceholderText } = render(<SignInScreen />);
+        fireEvent.changeText(getByPlaceholderText('Username'), 'ab'); // too short
+        fireEvent.changeText(getByPlaceholderText('Password'), 'password123');
+        fireEvent.press(getByTestId('loginButton'));
+
+        await waitFor(() => {
+        expect(screen.getByText("Username must be atleast 3 characters long.")).toBeTruthy();
+        });
+    });
+
+    test('shows error when password is too short', async () => {
+        const { getByTestId, getByPlaceholderText } = render(<SignInScreen />);
+        fireEvent.changeText(getByPlaceholderText('Username'), 'legend27');
+        fireEvent.changeText(getByPlaceholderText('Password'), 'short'); // < 8
+        fireEvent.press(getByTestId('loginButton'));
+
+        await waitFor(() => {
+            expect(screen.getByText("Password must be at least 8 characters.")).toBeTruthy();
+        });
+    });
+
+    test('navigates to SignUp when Sign Up link is pressed', () => {
+        const mockNavigate = jest.fn();
+        const navigation = { navigate: mockNavigate };
+
+        const { getByText } = render(<SignInScreen navigation={navigation} />);
+        fireEvent.press(getByText("Don't have an account? Sign Up"));
+
+        expect(mockNavigate).toHaveBeenCalledWith("SignUp");
+    });
+    test('shows alert when network error occurs', async () => {
+        jest.spyOn(global, 'fetch').mockRejectedValueOnce(new Error('Network down'));
+        const alertSpy = jest.spyOn(Alert, 'alert').mockImplementation(() => {});
+
+        const { getByTestId, getByPlaceholderText } = render(<SignInScreen />);
+        fireEvent.changeText(getByPlaceholderText('Username'), 'legend27');
+        fireEvent.changeText(getByPlaceholderText('Password'), 'password123');
+        fireEvent.press(getByTestId('loginButton'));
+
+        await waitFor(() => {
+            expect(alertSpy).toHaveBeenCalledWith('Network error occurred');
+        });
+    });
+
+
     test('shows Successful login alert after recieving response', async ()=> { 
         //simulate mock successful login
         global.fetch = jest.fn();
@@ -56,9 +104,7 @@ describe("SignInScreen", () => {
         fireEvent.press(loginButton); 
 
         await waitFor(()=>{
-            console.log('FETCH CALLS:', global.fetch.mock.calls);
-            console.log('ALERT CALLS:', global.alert.mock.calls);
-            expect(global.alert).toHaveBeenCalledWith('Successful Login', 'Welcome Back Driver'); 
+            expect(Alert.alert).toHaveBeenCalledWith('Successful Login', 'Welcome Back Driver'); 
         });
                 
     });
@@ -80,7 +126,35 @@ describe("SignInScreen", () => {
         fireEvent.press(loginButton); 
 
         await screen.findByText("LOGIN"); 
-        expect(global.alert).toHaveBeenCalledWith("Failed Login", "Invalid Username or Password"); 
+        expect(Alert.alert).toHaveBeenCalledWith("Failed Login", "Invalid Username or Password"); 
                 
     });
+    test('shows Successful login alert with server message is missing', async ()=> { 
+        //simulate mock successful login
+        global.fetch = jest.fn();
+        global.alert = jest.fn();
+        //const response = {}; 
+       global.fetch.mockResolvedValueOnce({
+            ok: true,
+            status: 200,
+            json: async () => ({token: 'fakeToken Bearer'}),//message is missing
+        });
+        const {getByTestId, getByPlaceholderText} = render(<SignInScreen />);
+
+        fireEvent.changeText(getByPlaceholderText('Username'), "legend27");
+        fireEvent.changeText(getByPlaceholderText('Password'), "pass1234");
+
+        const loginButton = getByTestId('loginButton'); 
+        fireEvent.press(loginButton); 
+
+        await waitFor(()=>{
+            expect(Alert.alert).toHaveBeenCalledWith('Successful Login', 'Welcome Back Driver'); 
+        });
+    });
+    test('does not crash when navigation is missing navigation function', () => {
+        const missingNavigation = {}; 
+        const {getByText} = render(<SignInScreen navigation={missingNavigation} />); 
+        fireEvent.press(getByText("Don't have an account? Sign Up"));
+        expect(getByText("Don't have an account? Sign Up")).toBeTruthy(); 
+    })
 });
