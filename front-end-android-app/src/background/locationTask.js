@@ -1,8 +1,9 @@
 import * as TaskManager from "expo-task-manager";
 
-export const LOCATION_TASK_NAME = "background-location-task";
+// Use a single exported task name constant and ensure the defineTask uses the same name
+export const LOCATION_TASK_NAME = "LOCATION_TASK";
 
-TaskManager.defineTask("LOCATION_TASK", async ({ data, error }) => {
+TaskManager.defineTask(LOCATION_TASK_NAME, async ({ data, error }) => {
   if (error) {
     console.log("🚨 Task Error:", error);
     return;
