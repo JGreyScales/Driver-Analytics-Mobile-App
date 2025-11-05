@@ -6,7 +6,7 @@ pluginManagement {
     }.standardOutput.asText.get().trim()
   ).getParentFile().absolutePath
   includeBuild(reactNativeGradlePlugin)
-  
+ 
   def expoPluginsPath = new File(
     providers.exec {
       workingDir(rootDir)
@@ -16,12 +16,12 @@ pluginManagement {
   ).absolutePath
   includeBuild(expoPluginsPath)
 }
-
+ 
 plugins {
   id("com.facebook.react.settings")
   id("expo-autolinking-settings")
 }
-
+ 
 extensions.configure(com.facebook.react.ReactSettingsExtension) { ex ->
   if (System.getenv('EXPO_USE_COMMUNITY_AUTOLINKING') == '1') {
     ex.autolinkLibrariesFromCommand()
@@ -30,10 +30,10 @@ extensions.configure(com.facebook.react.ReactSettingsExtension) { ex ->
   }
 }
 expoAutolinking.useExpoModules()
-
-rootProject.name = 'frontendandroidapp'
-
+ 
+rootProject.name = 'front-end-android-app'
+ 
 expoAutolinking.useExpoVersionCatalog()
-
+ 
 include ':app'
 includeBuild(expoAutolinking.reactNativeGradlePlugin)
