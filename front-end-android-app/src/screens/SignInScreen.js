@@ -8,6 +8,7 @@ import {
   KeyboardAvoidingView,
   Platform,
   Animated,
+  Alert
 } from "react-native";
 import { GLOBAL_STYLES, COLORS } from "../styles/GlobalStyles";
 import SessionManager  from "../utils/SessionManager";
@@ -61,13 +62,13 @@ export default function SignInScreen({ navigation }) {
 
       //checks for success or failure based on response
       if (response.ok && data.token) {
-        await SessionManager.setToken({Authorization: data.token});//offload session token 
-        alert('Successful Login', data.message || 'Welcome Back Driver');
+        await SessionManager.setToken({ Authorization: data.token });
+        Alert.alert('Successful Login', data.message || 'Welcome Back Driver');
         const token = await SessionManager.getToken();
-        console.log("Stored token:", token);//verify token stored
+        console.log("Stored token:", token);
     } else {
-        alert('Failed Login', data.message || 'Invalid Username or Password');
-    }
+        Alert.alert('Failed Login', data.message || 'Invalid Username or Password');
+      }
   } catch (error) {
     console.error('Error during login:', error.message);
     alert('Network error occurred');
