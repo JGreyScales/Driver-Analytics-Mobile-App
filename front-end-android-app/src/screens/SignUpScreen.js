@@ -58,7 +58,7 @@ const handleSignUp = async () => {
         "username": username,
         "email": email,
         "passwordHash": passwordHash,
-        "testing":true, 
+        // "testing":true, 
       }),
     });
 

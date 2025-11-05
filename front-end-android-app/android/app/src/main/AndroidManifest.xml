@@ -4,6 +4,14 @@
   <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW"/>
   <uses-permission android:name="android.permission.VIBRATE"/>
   <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+  <!-- Location permissions required for background location tracking -->
+  <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+  <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+  <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION" />
+  <!-- Needed for foreground service notifications on newer Android versions -->
+  <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+  <!-- For Android 34+ foreground service type declaration -->
+  <uses-permission android:name="android.permission.FOREGROUND_SERVICE_LOCATION" />
   <queries>
     <intent>
       <action android:name="android.intent.action.VIEW"/>
