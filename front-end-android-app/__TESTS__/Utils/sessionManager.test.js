@@ -8,41 +8,41 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import SessionManager from '../../src/utils/SessionManager';
 
 describe('SessionManager', () => {
+  let session
   beforeEach(() => {
     jest.clearAllMocks();
-    SessionManager.key = 'testKey'; // static property used by static methods
+    session = new SessionManager('testKey')
   });
 
   // ✅ Test constructor
   test('constructor sets key', () => {
-    const session = new SessionManager('myKey');
-    expect(session.key).toBe('myKey');
+    expect(session.key).toBe('testKey');
   });
 
   // ✅ Test setToken happy path
   test('setToken stores the token', async () => {
-    const data = { Authorization: 'Bearer abc123' };
-    await SessionManager.setToken(data);
+    const data = 'Bearer abc123' 
+    await session.setToken(data);
     expect(AsyncStorage.setItem).toHaveBeenCalledWith('testKey', 'Bearer abc123');
   });
 
   // ✅ Test getToken happy path
   test('getToken retrieves the token', async () => {
-    const token = await SessionManager.getToken();
+    const token = await session.getToken();
     expect(AsyncStorage.getItem).toHaveBeenCalledWith('testKey');
     expect(token).toBe('mockToken');
   });
 
   // ✅ Test clearToken happy path
   test('clearToken removes the token', async () => {
-    await SessionManager.clearToken();
+    await session.clearToken();
     expect(AsyncStorage.removeItem).toHaveBeenCalledWith('testKey');
   });
 
   // ❌ Error path: getToken fails
   test('getToken returns null if AsyncStorage.getItem throws', async () => {
     AsyncStorage.getItem.mockRejectedValueOnce(new Error('fail'));
-    const token = await SessionManager.getToken();
+    const token = await session.getToken();
     expect(token).toBeNull();
     expect(AsyncStorage.getItem).toHaveBeenCalledWith('testKey');
   });
@@ -51,7 +51,7 @@ describe('SessionManager', () => {
   test('setToken logs error if AsyncStorage.setItem throws', async () => {
     const spy = jest.spyOn(console, 'error').mockImplementation(() => {});
     AsyncStorage.setItem.mockRejectedValueOnce(new Error('fail'));
-    await SessionManager.setToken({ Authorization: 'Bearer abc123' });
+    await session.setToken({ Authorization: 'Bearer abc123' });
     expect(spy).toHaveBeenCalledWith(
       'Error saving session token:',
       expect.any(Error)
@@ -63,7 +63,7 @@ describe('SessionManager', () => {
   test('clearToken logs error if AsyncStorage.removeItem throws', async () => {
     const spy = jest.spyOn(console, 'error').mockImplementation(() => {});
     AsyncStorage.removeItem.mockRejectedValueOnce(new Error('fail'));
-    await SessionManager.clearToken();
+    await session.clearToken();
     expect(spy).toHaveBeenCalledWith(
       'Error clearing session token:',
       expect.any(Error)
