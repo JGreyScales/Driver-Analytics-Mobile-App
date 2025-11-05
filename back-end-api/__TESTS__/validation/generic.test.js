@@ -16,13 +16,13 @@ describe('genericValidation', () => {
         req = {}
         req.header = {}
         req.header.Authorization = JWT
-        await expect(genericValidation(req)).rejects.toBeFalsy()
+        await expect(genericValidation(req)).rejects.toStrictEqual({statusCode: 401, message:'No token attached'})
     })
 
     it('should reject if an auth header is not present', async () => {
         req = {}
         req.header = {}
-        await expect(genericValidation(req)).rejects.toBeFalsy()
+        await expect(genericValidation(req)).rejects.toStrictEqual({statusCode: 401, message:'No token attached'})
     })
 })
 
@@ -48,7 +48,7 @@ describe('validate fields', () => {
         req.body.username = "user"
         req.body.tye = 3242
 
-        await expect(validateFields(req, ALLOWED_VALUES)).rejects.toBe("tye")
+        await expect(validateFields(req, ALLOWED_VALUES)).rejects.toStrictEqual({statusCode: 400, message:`tye is not a valid field for this request`})
     })
 
     it('should allow empty bodies', async () => {

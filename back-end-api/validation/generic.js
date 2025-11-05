@@ -5,11 +5,11 @@ async function genericValidation(req) {
         try {
             const isAuthenticated = await JWT_AUTH.authenticateToken(req)
             if (!isAuthenticated) {
-                return reject(false)
+                return reject({statusCode: 401, message:'No token attached'})
             }
             return resolve(true)
         } catch (error) {
-            return reject(false)
+            return reject({statusCode: 401, message:'No token attached'})
         }
     })
 }
@@ -19,12 +19,13 @@ async function validateFields(req, ALLOWED_FIELDS) {
         if (req.body) {
             Object.keys(req.body).forEach((key) => {
                 if (!ALLOWED_FIELDS.includes(key)) {
-                    return reject(key)
+                    return reject({statusCode: 400, message:`${key} is not a valid field for this request`})
                 }
             })
         }
         return resolve(true)
     })
 }
+
 
 module.exports = { genericValidation, validateFields }
