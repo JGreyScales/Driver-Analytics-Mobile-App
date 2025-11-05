@@ -13,4 +13,17 @@ async function validateGetScore(req, res, next) {
     }
 }
 
-module.exports = { validateGetScore };
+async function validatePutScore(req, res, next) {
+    try{
+        await genericValidation(req);
+
+        const ALLOWED_FIELDS = ["tripDuration", "incidentCount", "averageSpeed", "maxSpeed"]
+        await validateFields(req, ALLOWED_FIELDS, true)
+
+        next()
+    } catch (err){
+        res.status(err.statusCode).send(err.message)
+    }
+}
+
+module.exports = { validateGetScore, validatePutScore };

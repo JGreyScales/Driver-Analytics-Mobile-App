@@ -58,4 +58,15 @@ describe('validate fields', () => {
 
         await expect(validateFields(req, ALLOWED_VALUES)).resolves.toBeTruthy()
     })
+
+    it('should deny if not all fields are met and required is true', async () => {
+        ALLOWED_VALUES = ["userID", "password", "username", "tye"]
+        req = {}
+        req.body = {}
+        req.body.userID = 4234
+        req.body.password = "pass"
+        req.body.tye = 3242
+
+        await expect(validateFields(req, ALLOWED_VALUES, true)).rejects.toStrictEqual({statusCode: 400, message:"Missing required fields: username"})
+    })
 })
