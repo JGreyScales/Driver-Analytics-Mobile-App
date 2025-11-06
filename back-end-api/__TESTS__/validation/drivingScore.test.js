@@ -140,11 +140,79 @@ describe("putDrivingScore", () => {
   
     // Assert the correct response
     expect(res.status).toHaveBeenCalledWith(401);
+    expect(res.send).toHaveBeenCalledWith('No token attached');
   })
 
   it('should deny no token', async () => {
-    
+      
+    const req = {
+      header: {
+      }
+    };
+  
+    const res = {
+      status: jest.fn().mockReturnThis(),
+      send: jest.fn()
+    };
+  
+    await validateGetScore(req, res);
+  
+    // Assert the correct response
+    expect(res.status).toHaveBeenCalledWith(401);
+    expect(res.send).toHaveBeenCalledWith('No token attached');
   })
 
-  // it('should deny not all body met')
+  it('should deny not all body met', async () => {
+    const JWT = `Bearer ${JWT_AUTH.generateToken(1)}`;
+      
+    const req = {
+      header: {
+        Authorization: JWT
+      },
+      body: {
+        tripDuration: 57,
+        incidentCount: 2,
+        averageSpeed: 83,
+      }
+    };
+  
+    const res = {
+      status: jest.fn().mockReturnThis(),
+      send: jest.fn()
+    };
+  
+    await validateGetScore(req, res);
+  
+    // Assert the correct response
+    expect(res.status).toHaveBeenCalledWith(400);
+    expect(res.send).toHaveBeenCalledWith('tripDuration is not a valid field for this request');
+  })
+
+  it('should deny if more then expected for body is present', async () => {
+    const JWT = `Bearer ${JWT_AUTH.generateToken(1)}`;
+      
+    const req = {
+      header: {
+        Authorization: JWT
+      },
+      body: {
+        tripDuration: 57,
+        incidentCount: 2,
+        averageSpeed: 83,
+        maxSpeed: 87,
+        someExtraField: 2
+      }
+    };
+  
+    const res = {
+      status: jest.fn().mockReturnThis(),
+      send: jest.fn()
+    };
+  
+    await validatePutScore(req, res);
+  
+    // Assert the correct response
+    expect(res.status).toHaveBeenCalledWith(400);
+    expect(res.send).toHaveBeenCalledWith('someExtraField is not a valid field for this request');
+  })
 })
