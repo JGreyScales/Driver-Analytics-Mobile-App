@@ -10,6 +10,10 @@ export default function HomeScreen() {
   const [tracking, setTracking] = useState(false);
   const [locationSubscription, setLocationSubscription] = useState(null);
 
+  //adding the next two lines
+  const [tripStartTime, setTripStartTime] = useState(null); // 🕒 start time
+  const [tripDuration, setTripDuration] = useState(null);   // ⏱️ total minutes
+
   const startTracking = async () => {
     console.log("🚀 Start Journey Pressed");
 
@@ -38,6 +42,7 @@ export default function HomeScreen() {
     );
 
     setLocationSubscription(subscription);
+        setTripStartTime(Date.now()); // 🕒 record start time - added this line
 
     // Attempt to request background permission and start background updates
     try {
@@ -78,6 +83,17 @@ export default function HomeScreen() {
       setLocationSubscription(null);
       console.log("🛑 Tracking Stopped");
     }
+
+    // Calculate trip duration - added this block
+    if (tripStartTime) {
+      const durationMs = Date.now() - tripStartTime;
+      const durationMin = Math.round(durationMs / 60000); // convert to minutes
+      setTripDuration(durationMin);
+      console.log(`⏱️ Trip Duration: ${durationMin} minutes`);
+      Alert.alert("Trip Ended", `Your trip lasted ${durationMin} minutes.`);
+      setTripStartTime(null); // reset start time
+    }
+
     // Stop background updates if running
     (async () => {
       try {
