@@ -1,5 +1,4 @@
 const JWT_AUTH = require("../middleware/auth")
-const { all } = require("../routes/drivingScore")
 
 async function genericValidation(req) {
     return new Promise(async (resolve, reject) => {

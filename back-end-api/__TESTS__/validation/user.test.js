@@ -45,7 +45,7 @@ describe('getUser', () => {
 
     // Assert the correct response
     expect(res.status).toHaveBeenCalledWith(401);
-    expect(res.send).toHaveBeenCalledWith('No token attached');
+    expect(res.send).toHaveBeenCalledWith({"message": "No token attached", "statusCode": 401});
   });
   it('should reject if an auth header is not present', async () => {
     const req = {
@@ -62,7 +62,7 @@ describe('getUser', () => {
 
     // Assert the correct response
     expect(res.status).toHaveBeenCalledWith(401);
-    expect(res.send).toHaveBeenCalledWith('No token attached');
+    expect(res.send).toHaveBeenCalledWith({"message": "No token attached", "statusCode": 401});
   })
 
   it('should reject if body is present', async () => {
@@ -86,7 +86,7 @@ describe('getUser', () => {
 
     // Assert the correct response
     expect(res.status).toHaveBeenCalledWith(400);
-    expect(res.send).toHaveBeenCalledWith('xx is not a valid field for this request');
+    expect(res.send).toHaveBeenCalledWith({"message": "xx is not a valid field for this request", "statusCode": 400});
   })
 })
 
@@ -137,7 +137,7 @@ describe('putUser', () => {
     await validatePutUser(req, res, next);
 
     expect(res.status).toHaveBeenCalledWith(400);
-    expect(res.send).toHaveBeenCalledWith('Missing required fields: email, passwordHash');
+    expect(res.send).toHaveBeenCalledWith({"message": "Missing required fields: email, passwordHash", "statusCode": 400});
   })
 
   it('should deny if body is missing', async () => {
@@ -160,7 +160,7 @@ describe('putUser', () => {
     await validatePutUser(req, res, next);
 
     expect(res.status).toHaveBeenCalledWith(400);
-    expect(res.send).toHaveBeenCalledWith('Missing required fields: username, email, passwordHash');
+    expect(res.send).toHaveBeenCalledWith({"message": "Missing required fields: username, email, passwordHash", "statusCode": 400});
   })
 })
 
@@ -211,7 +211,7 @@ describe('postUser', () => {
 
     // Assert the correct response
     expect(res.status).toHaveBeenCalledWith(401);
-    expect(res.send).toHaveBeenCalledWith('No token attached');
+    expect(res.send).toHaveBeenCalledWith({"message": "No token attached", "statusCode": 401});
   })
 
   it('it should deny if body is not valid', async () => {
@@ -235,7 +235,7 @@ describe('postUser', () => {
     await validatePostUser(req, res, next);
 
     expect(res.status).toHaveBeenCalledWith(400);
-    expect(res.send).toHaveBeenCalledWith('Missing required fields: passwordHash');
+    expect(res.send).toHaveBeenCalledWith({"message": "Missing required fields: passwordHash", "statusCode": 400});
   })
 
   it('should deny if unrequested body is present', async () => {
@@ -256,7 +256,7 @@ describe('postUser', () => {
     await validatePostUser(req, res, next);
 
     expect(res.status).toHaveBeenCalledWith(400);
-    expect(res.send).toHaveBeenCalledWith('Missing required fields: username, passwordHash');
+    expect(res.send).toHaveBeenCalledWith({"message": "Missing required fields: username, passwordHash", "statusCode": 400});
   })
 })
 
@@ -299,7 +299,7 @@ describe('deleteUser', () => {
     await validateDeleteUser(req, res, next);
 
     expect(res.status).toHaveBeenCalledWith(401);
-    expect(res.send).toHaveBeenCalledWith('No token attached');
+    expect(res.send).toHaveBeenCalledWith({"message": "No token attached", "statusCode": 401});
   })
 
   it('should deny if more than 1 body object is present', async () => {
@@ -323,7 +323,7 @@ describe('deleteUser', () => {
     await validateDeleteUser(req, res, next);
 
     expect(res.status).toHaveBeenCalledWith(400);
-    expect(res.send).toHaveBeenCalledWith('xx is not a valid field for this request');
+    expect(res.send).toHaveBeenCalledWith({"message": "xx is not a valid field for this request", "statusCode": 400});
   })
 })
 
@@ -376,7 +376,7 @@ describe('patchUser', () => {
     await validatePatchUser(req, res, next);
 
     expect(res.status).toHaveBeenCalledWith(401);
-    expect(res.send).toHaveBeenCalledWith('No token attached');
+    expect(res.send).toHaveBeenCalledWith({"message": "No token attached", "statusCode": 401});
   })
 
   it('should deny if more requested body object is present', async () => {
@@ -403,7 +403,7 @@ describe('patchUser', () => {
     await validatePatchUser(req, res, next);
 
     expect(res.status).toHaveBeenCalledWith(400);
-    expect(res.send).toHaveBeenCalledWith('xx is not a valid field for this request');
+    expect(res.send).toHaveBeenCalledWith({"message": "xx is not a valid field for this request", "statusCode": 400});
   })
 
   it('should allow incomplete bodies to pass', async () => {

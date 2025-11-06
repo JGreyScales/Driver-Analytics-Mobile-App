@@ -54,9 +54,9 @@ describe('PUT /user', () => {
     it('should deny malformed requests', async () => {
         const res = await request(app).put('/user').set('Accept', 'application/json')
 
-        expect(res.statusCode).toBe(500)
-        expect(res.body.statusCode).toBe(500)
-        expect(res.body.message).toBe('Unknown serverside error')
+        expect(res.statusCode).toBe(400)
+        expect(res.body.statusCode).toBe(400)
+        expect(res.body.message).toBe('Missing required fields: username, email, passwordHash')
     })
 });
 
@@ -105,8 +105,8 @@ describe('DELETE /user', () => {
     it('should deny malformed requests', async () => {
         const res = await request(app).delete('/user').send({testing:true}).set('Accept', 'application/json');
 
-        expect(res.statusCode).toBe(400);
-        expect(res.body.statusCode).toBe(400);
+        expect(res.statusCode).toBe(401);
+        expect(res.body.statusCode).toBe(401);
         expect(res.body.message).toBe('No token attached');
     })
 })
@@ -164,7 +164,7 @@ describe('POST /user', () => {
 
         expect(res.statusCode).toBe(400)
         expect(res.body.statusCode).toBe(400)
-        expect(res.body.message).toBe('Invalid parameters')
+        expect(res.body.message).toBe('Missing required fields: username')
     })
 })
 
@@ -204,8 +204,8 @@ describe('GET /user', () => {
         const token = `Bearer ${JWT_AUTH.generateToken(1)}2`
         const res = await request(app).get('/user').send(body).set('Authorization', token).set('Accept', 'application/json');
 
-        expect(res.statusCode).toBe(400)
-        expect(res.body.statusCode).toBe(400)
+        expect(res.statusCode).toBe(401)
+        expect(res.body.statusCode).toBe(401)
         expect(res.body.message).toBe('No token attached')
     })
 
@@ -213,8 +213,8 @@ describe('GET /user', () => {
         const body = {testing:true}
         const res = await request(app).get('/user').send(body).set('Accept', 'application/json');
 
-        expect(res.statusCode).toBe(400)
-        expect(res.body.statusCode).toBe(400)
+        expect(res.statusCode).toBe(401)
+        expect(res.body.statusCode).toBe(401)
         expect(res.body.message).toBe('No token attached')
     })
 })
@@ -314,7 +314,7 @@ describe('PATCH /user', () => {
 
         expect(res.statusCode).toBe(400)
         expect(res.body.statusCode).toBe(400)
-        expect(res.body.message).toBe("Database query error: Unknown column 'someField' in 'field list'")
+        expect(res.body.message).toBe("someField is not a valid field for this request")
     })
 
     it('should deny on malformed data', async () => {
@@ -329,8 +329,8 @@ describe('PATCH /user', () => {
         const body = {email: "someNewEmail", testing: true}
         const res = await request(app).patch("/user").send(body).set('Accept', 'application/json');
 
-        expect(res.statusCode).toBe(400)
-        expect(res.body.statusCode).toBe(400)
+        expect(res.statusCode).toBe(401)
+        expect(res.body.statusCode).toBe(401)
         expect(res.body.message).toBe('No token attached')
     })
 

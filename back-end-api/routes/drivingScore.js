@@ -3,8 +3,9 @@ const router = express.Router();
 const Driving_Score = require('../controllers/drivingScore')
 const dataTypes = require("../utils/dataType")
 const JWT_AUTH = require("../middleware/auth")
+const { validateGetScore, validatePutScore } = require("../validation/drivingScore")
 
-router.put("/score", async(req, res) => {
+router.put("/score", validatePutScore, async(req, res) => {
   // required body [tripDuration, incidentCount, averageSpeed, maxSpeed]
     let testing = false
     if (req.body) {testing = dataTypes.isDefined(req.body.testing)}
@@ -37,7 +38,7 @@ router.put("/score", async(req, res) => {
     res.status(result.statusCode).send(result)
 })
 
-router.get("/comparativeScore", async (req, res) => {
+router.get("/comparativeScore", validateGetScore, async (req, res) => {
   let testing = false
   if (req.body) {testing = dataTypes.isDefined(req.body.testing)}
   if(testing) {console.log("Running delete user in test mode")}

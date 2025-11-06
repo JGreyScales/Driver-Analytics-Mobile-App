@@ -45,7 +45,7 @@ describe('getDrivingScore', () => {
       
         // Assert the correct response
         expect(res.status).toHaveBeenCalledWith(401);
-        expect(res.send).toHaveBeenCalledWith('No token attached');
+        expect(res.send).toHaveBeenCalledWith({"message": "No token attached", "statusCode": 401});
       });
       
 
@@ -64,7 +64,7 @@ describe('getDrivingScore', () => {
       
         // Assert the correct response
         expect(res.status).toHaveBeenCalledWith(401);
-        expect(res.send).toHaveBeenCalledWith('No token attached');
+        expect(res.send).toHaveBeenCalledWith({"message": "No token attached", "statusCode": 401});
     })
 
     it('should reject if body is present', async () => {
@@ -88,7 +88,7 @@ describe('getDrivingScore', () => {
       
         // Assert the correct response
         expect(res.status).toHaveBeenCalledWith(400);
-        expect(res.send).toHaveBeenCalledWith('xx is not a valid field for this request');
+        expect(res.send).toHaveBeenCalledWith({"message": "xx is not a valid field for this request", "statusCode": 400});
     })
 })
 
@@ -140,7 +140,7 @@ describe("putDrivingScore", () => {
   
     // Assert the correct response
     expect(res.status).toHaveBeenCalledWith(401);
-    expect(res.send).toHaveBeenCalledWith('No token attached');
+    expect(res.send).toHaveBeenCalledWith({"message": "No token attached", "statusCode": 401})
   })
 
   it('should deny no token', async () => {
@@ -159,7 +159,7 @@ describe("putDrivingScore", () => {
   
     // Assert the correct response
     expect(res.status).toHaveBeenCalledWith(401);
-    expect(res.send).toHaveBeenCalledWith('No token attached');
+    expect(res.send).toHaveBeenCalledWith({"message": "No token attached", "statusCode": 401});
   })
 
   it('should deny not all body met', async () => {
@@ -185,7 +185,7 @@ describe("putDrivingScore", () => {
   
     // Assert the correct response
     expect(res.status).toHaveBeenCalledWith(400);
-    expect(res.send).toHaveBeenCalledWith('tripDuration is not a valid field for this request');
+    expect(res.send).toHaveBeenCalledWith({"message": "tripDuration is not a valid field for this request", "statusCode": 400});
   })
 
   it('should deny if more then expected for body is present', async () => {
@@ -213,6 +213,6 @@ describe("putDrivingScore", () => {
   
     // Assert the correct response
     expect(res.status).toHaveBeenCalledWith(400);
-    expect(res.send).toHaveBeenCalledWith('someExtraField is not a valid field for this request');
+    expect(res.send).toHaveBeenCalledWith({"message": "someExtraField is not a valid field for this request", "statusCode": 400});
   })
 })
