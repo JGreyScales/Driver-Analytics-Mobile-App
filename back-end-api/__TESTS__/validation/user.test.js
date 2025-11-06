@@ -1,4 +1,4 @@
-const { validateGetUser, validatePutUser, validatePostUser } = require('../../validation/user')
+const { validateGetUser, validatePutUser, validatePostUser, validateDeleteUser } = require('../../validation/user')
 const JWT_AUTH = require("../../middleware/auth")
 
 describe('getUser', () => {
@@ -257,5 +257,72 @@ describe('postUser', () => {
 
     expect(res.status).toHaveBeenCalledWith(400);
     expect(res.send).toHaveBeenCalledWith('Missing required fields: username, passwordHash');
+  })
+})
+
+describe('deleteUser', () => {
+  it('should allow a valid request', async () => {
+    JWT = `Bearer ${JWT_AUTH.generateToken(1)}`
+    const req = {
+      header: {
+        Authorization: JWT
+      }
+    };
+
+    const res = {
+      status: jest.fn().mockReturnThis(),
+      send: jest.fn()
+    };
+
+    const next = jest.fn();
+
+    await validateDeleteUser(req, res, next);
+
+    expect(next).toHaveBeenCalled();
+    expect(res.status).not.toHaveBeenCalled();
+    expect(res.send).not.toHaveBeenCalled();
+  })
+
+  it('should deny a request without a token', async () => {
+    const req = {
+      header: {
+      }
+    };
+
+    const res = {
+      status: jest.fn().mockReturnThis(),
+      send: jest.fn()
+    };
+
+    const next = jest.fn();
+
+    await validateDeleteUser(req, res, next);
+
+    expect(res.status).toHaveBeenCalledWith(401);
+    expect(res.send).toHaveBeenCalledWith('No token attached');
+  })
+
+  it('should deny if more than 1 body object is present', async () => {
+    JWT = `Bearer ${JWT_AUTH.generateToken(1)}`
+    const req = {
+      header: {
+        Authorization: JWT
+      },
+      body: {
+        xx: 'xx'
+      }
+    };
+
+    const res = {
+      status: jest.fn().mockReturnThis(),
+      send: jest.fn()
+    };
+
+    const next = jest.fn();
+
+    await validateDeleteUser(req, res, next);
+
+    expect(res.status).toHaveBeenCalledWith(400);
+    expect(res.send).toHaveBeenCalledWith('xx is not a valid field for this request');
   })
 })
