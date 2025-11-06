@@ -1,112 +1,21 @@
-// src/screens/HomeScreen.js
-import React, { useState } from "react";
-import { View, Text, TouchableOpacity, Alert } from "react-native";
-import * as Location from "expo-location";
+import React, { useState, useContext } from "react";
+import { View, Text, TouchableOpacity } from "react-native";
 import { GLOBAL_STYLES } from "../styles/GlobalStyles";
-import * as TaskManager from 'expo-task-manager';
-import { LOCATION_TASK_NAME } from "../background/locationTask";
+import { LocationContext } from "../utils/LocationContext";
 
 export default function HomeScreen() {
   const [tracking, setTracking] = useState(false);
-  const [locationSubscription, setLocationSubscription] = useState(null);
-
-  //adding the next two lines
-  const [tripStartTime, setTripStartTime] = useState(null); // 🕒 start time
-  const [tripDuration, setTripDuration] = useState(null);   // ⏱️ total minutes
+  const locationSubscription = useContext(LocationContext); // <- global instance
 
   const startTracking = async () => {
     console.log("🚀 Start Journey Pressed");
-
-    let { status } = await Location.requestForegroundPermissionsAsync();
-    console.log("Foreground Status:", status);
-
-    if (status !== "granted") {
-      Alert.alert("Permission required", "Enable location access to start tracking.");
-      return;
-    }
-
-    console.log("✅ Foreground Permission Granted");
-    // Start foreground watcher for immediate UI updates
-    const subscription = await Location.watchPositionAsync(
-      {
-        accuracy: Location.Accuracy.Highest,
-        timeInterval: 3000, // every 3 seconds
-        distanceInterval: 1, // or every 1 meter
-      },
-      (loc) => {
-        const { latitude, longitude, speed } = loc.coords;
-        console.log(
-          `📍 LAT: ${latitude}, LNG: ${longitude}, SPEED: ${speed}`
-        );
-      }
-    );
-
-    setLocationSubscription(subscription);
-        setTripStartTime(Date.now()); // 🕒 record start time - added this line
-
-    // Attempt to request background permission and start background updates
-    try {
-      const bgPermission = await Location.requestBackgroundPermissionsAsync();
-      console.log('Background permission:', bgPermission.status);
-
-      if (bgPermission.status === 'granted') {
-        const isRegistered = await TaskManager.isTaskRegisteredAsync(LOCATION_TASK_NAME);
-        if (!isRegistered) {
-          await Location.startLocationUpdatesAsync(LOCATION_TASK_NAME, {
-            accuracy: Location.Accuracy.Highest,
-            timeInterval: 5000,
-            distanceInterval: 1,
-            // Android foreground service notification (required on Android to keep running)
-            foregroundService: {
-              notificationTitle: 'Driver Motion',
-              notificationBody: 'Background location tracking is active',
-            },
-          });
-          console.log('Background location updates started');
-        } else {
-          console.log('Background task already registered');
-        }
-      } else {
-        console.log('Background permission not granted; background tracking will not run');
-      }
-    } catch (err) {
-      console.error('Error starting background updates:', err);
-    }
-
+    await locationSubscription.startSubscription();
     setTracking(true);
   };
 
-  const stopTracking = () => {
+  const stopTracking = async () => {
     console.log("🛑 Stop Pressed");
-    if (locationSubscription) {
-      locationSubscription.remove();
-      setLocationSubscription(null);
-      console.log("🛑 Tracking Stopped");
-    }
-
-    // Calculate trip duration - added this block
-    if (tripStartTime) {
-      const durationMs = Date.now() - tripStartTime;
-      const durationMin = Math.round(durationMs / 60000); // convert to minutes
-      setTripDuration(durationMin);
-      console.log(`⏱️ Trip Duration: ${durationMin} minutes`);
-      Alert.alert("Trip Ended", `Your trip lasted ${durationMin} minutes.`);
-      setTripStartTime(null); // reset start time
-    }
-
-    // Stop background updates if running
-    (async () => {
-      try {
-        const isRegistered = await TaskManager.isTaskRegisteredAsync(LOCATION_TASK_NAME);
-        if (isRegistered) {
-          await Location.stopLocationUpdatesAsync(LOCATION_TASK_NAME);
-          console.log('Background location updates stopped');
-        }
-      } catch (err) {
-        console.error('Error stopping background updates:', err);
-      }
-    })();
-
+    await locationSubscription.stopSubscription();
     setTracking(false);
   };
 
