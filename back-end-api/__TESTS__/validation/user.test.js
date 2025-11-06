@@ -1,4 +1,4 @@
-const { validateGetUser, validatePutUser, validatePostUser, validateDeleteUser } = require('../../validation/user')
+const { validateGetUser, validatePutUser, validatePostUser, validateDeleteUser, validatePatchUser } = require('../../validation/user')
 const JWT_AUTH = require("../../middleware/auth")
 
 describe('getUser', () => {
@@ -324,5 +324,111 @@ describe('deleteUser', () => {
 
     expect(res.status).toHaveBeenCalledWith(400);
     expect(res.send).toHaveBeenCalledWith('xx is not a valid field for this request');
+  })
+})
+
+describe('patchUser', () => {
+  it('should allow a valid request', async () => {
+    JWT = `Bearer ${JWT_AUTH.generateToken(1)}`
+    const req = {
+      header: {
+        Authorization: JWT
+      }, 
+      body: {
+        email: 'xxx',
+        username: 'yyy',
+        passwordHash: 'ttt',
+      }
+    };
+
+    const res = {
+      status: jest.fn().mockReturnThis(),
+      send: jest.fn()
+    };
+
+    const next = jest.fn();
+
+    await validatePatchUser(req, res, next);
+
+    expect(next).toHaveBeenCalled();
+    expect(res.status).not.toHaveBeenCalled();
+    expect(res.send).not.toHaveBeenCalled();
+  })
+
+  it('should deny a request without a token', async () => {
+    const req = {
+      header: {
+      }, 
+      body: {
+        email: 'xxx',
+        username: 'yyy',
+        passwordHash: 'ttt',
+      }
+    };
+
+    const res = {
+      status: jest.fn().mockReturnThis(),
+      send: jest.fn()
+    };
+
+    const next = jest.fn();
+
+    await validatePatchUser(req, res, next);
+
+    expect(res.status).toHaveBeenCalledWith(401);
+    expect(res.send).toHaveBeenCalledWith('No token attached');
+  })
+
+  it('should deny if more requested body object is present', async () => {
+    JWT = `Bearer ${JWT_AUTH.generateToken(1)}`
+    const req = {
+      header: {
+        Authorization: JWT
+      }, 
+      body: {
+        email: 'xxx',
+        username: 'yyy',
+        passwordHash: 'ttt',
+        xx: 'xx'
+      }
+    };
+
+    const res = {
+      status: jest.fn().mockReturnThis(),
+      send: jest.fn()
+    };
+
+    const next = jest.fn();
+
+    await validatePatchUser(req, res, next);
+
+    expect(res.status).toHaveBeenCalledWith(400);
+    expect(res.send).toHaveBeenCalledWith('xx is not a valid field for this request');
+  })
+
+  it('should allow incomplete bodies to pass', async () => {
+    JWT = `Bearer ${JWT_AUTH.generateToken(1)}`
+    const req = {
+      header: {
+        Authorization: JWT
+      }, 
+      body: {
+        email: 'xxx',
+        username: 'yyy',
+      }
+    };
+
+    const res = {
+      status: jest.fn().mockReturnThis(),
+      send: jest.fn()
+    };
+
+    const next = jest.fn();
+
+    await validatePatchUser(req, res, next);
+
+    expect(next).toHaveBeenCalled();
+    expect(res.status).not.toHaveBeenCalled();
+    expect(res.send).not.toHaveBeenCalled();
   })
 })
