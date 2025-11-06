@@ -9,7 +9,7 @@ async function validateGetScore(req, res, next) {
 
         next();
     } catch (err) {
-        res.status(err.statusCode).send(err.message);
+        res.status(err.statusCode).send(err);
     }
 }
 
@@ -22,7 +22,7 @@ async function validatePutScore(req, res, next) {
 
         next()
     } catch (err){
-        res.status(err.statusCode).send(err.message)
+        res.status(err.statusCode).send(err)
     }
 }
 

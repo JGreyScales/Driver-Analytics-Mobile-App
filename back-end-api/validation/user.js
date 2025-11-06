@@ -9,7 +9,7 @@ async function validateGetUser(req, res, next) {
 
         next();
     } catch (err) {
-        res.status(err.statusCode).send(err.message);
+        res.status(err.statusCode).send(err);
     }
 }
 
@@ -20,20 +20,18 @@ async function validatePutUser(req, res, next) {
 
         next()
     } catch (err) {
-        res.status(err.statusCode).send(err.message)    
+        res.status(err.statusCode).send(err)    
     }
 }
 
 async function validatePostUser(req, res, next) {
-    try {
-        await genericValidation(req)
-        
+    try {       
         const ALLOWED_FIELDS = ['username', 'passwordHash']
         await validateFields(req, ALLOWED_FIELDS, true)
 
         next()
     } catch (err) {
-        res.status(err.statusCode).send(err.message)
+        res.status(err.statusCode).send(err)
     }
 }
 
@@ -46,7 +44,7 @@ async function validateDeleteUser(req, res, next) {
 
         next()
     } catch (err) {
-        res.status(err.statusCode).send(err.message)
+        res.status(err.statusCode).send(err)
     }
 }
 
@@ -59,7 +57,7 @@ async function validatePatchUser(req, res, next) {
 
         next()
     } catch (err) {
-        res.status(err.statusCode).send(err.message)
+        res.status(err.statusCode).send(err)
     }
 }
 
