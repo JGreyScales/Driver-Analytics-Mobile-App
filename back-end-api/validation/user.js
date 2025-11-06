@@ -13,4 +13,17 @@ async function validateGetUser(req, res, next) {
     }
 }
 
-module.exports = { validateGetUser };
+async function validatePutUser(req, res, next) {
+    try {
+        await genericValidation(req);
+
+        const ALLOWED_FIELDS = ["username", "email", "passwordHash"] ;
+        await validateFields(req, ALLOWED_FIELDS, true);
+
+        next()
+    } catch (err) {
+        res.status(err.statusCode).send(err.message)    
+    }
+}
+
+module.exports = { validateGetUser, validatePutUser };

@@ -15,7 +15,8 @@ async function genericValidation(req) {
     })
 }
 
-async function validateFields(req, ALLOWED_FIELDS, allRequired = false) {
+async function validateFields(req, FIELDS, allRequired = false) {
+    const ALLOWED_FIELDS = [...FIELDS, 'testing'] // always allow a testing paramater to pass through
     const body = req.body || {};
   
     // Check for disallowed fields
@@ -27,7 +28,7 @@ async function validateFields(req, ALLOWED_FIELDS, allRequired = false) {
   
     // If all fields are required, check presence of each allowed field
     if (allRequired) {
-      const missing = ALLOWED_FIELDS.filter(field => !(field in body));
+      const missing = FIELDS.filter(field => !(field in body));
       if (missing.length > 0) {
         throw { statusCode: 400, message: `Missing required fields: ${missing.join(', ')}` };
       }
