@@ -34,7 +34,7 @@ router.delete("/", async (req, res) => {
 router.get("/", async (req, res) => {
     let testing = false
     if (req.body) {testing = dataTypes.isDefined(req.body.testing)}
-    if(testing) {console.log("Running delete user in test mode")}
+    if(testing) {console.log("Running get user in test mode")}
 
     let userID = undefined
     try {

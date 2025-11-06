@@ -49,4 +49,18 @@ async function validateDeleteUser(req, res, next) {
         res.status(err.statusCode).send(err.message)
     }
 }
-module.exports = { validateGetUser, validatePutUser, validatePostUser, validateDeleteUser};
+
+async function validatePatchUser(req, res, next) {
+    try {
+        await genericValidation(req)
+
+        const ALLOWED_FIELDS = ["email", "username", "passwordHash"]
+        await validateFields(req, ALLOWED_FIELDS)
+
+        next()
+    } catch (err) {
+        res.status(err.statusCode).send(err.message)
+    }
+}
+
+module.exports = { validateGetUser, validatePutUser, validatePostUser, validateDeleteUser, validatePatchUser};
