@@ -46,6 +46,13 @@ function HomeScreen({ navigation }) {
     setDisplaySettings(true)
   }
 
+  const signoutUser = () => {
+    const manager = new SessionManager("JWT_TOKEN")
+    manager.clearToken()
+    setDisplaySettings(false)
+    navigation.navigate("SignIn")
+  }
+
 
   return (
     <View
@@ -98,7 +105,7 @@ function HomeScreen({ navigation }) {
           >
             {/* Sign Out Button */}
             <TouchableOpacity
-              onPress={() => {}}
+              onPress={() => signoutUser()}
               style={[
                 GLOBAL_STYLES.button,
                 { backgroundColor: COLORS.primary || "#5CC76D", width: "100%", marginBottom: 20 },
