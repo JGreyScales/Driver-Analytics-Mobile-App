@@ -4,6 +4,7 @@ import { View, ActivityIndicator, Text, Alert } from "react-native";
 import SessionManager from "../utils/SessionManager";
 import { GLOBAL_STYLES, COLORS } from "../styles/GlobalStyles";
 
+
 export class LoadingAuthManager {
   constructor(navigation) {
     this.navigation = navigation;
