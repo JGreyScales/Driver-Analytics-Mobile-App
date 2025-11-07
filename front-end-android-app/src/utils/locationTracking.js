@@ -12,7 +12,7 @@ class LocationTracking {
         this.maxSpeed = null
         this.avgSpeed = null
     }
-
+    
     __tripStartTime(){
         this.tripStart = Date.now()
     }
@@ -35,9 +35,12 @@ class LocationTracking {
             console.log("📍 Background Update Triggered");
           
             const { locations } = data;
-            const { latitude, longitude } = locations[0].coords;
+            const { latitude, longitude, speed } = locations[0].coords;
           
             console.log("📌 Location:", latitude, longitude);
+            console.log(`current speed: ${speed}`)
+
+
           });
         return true
     }
@@ -92,6 +95,7 @@ class LocationTracking {
           if (hasStarted) {
             // Stop the background task
             await Location.stopLocationUpdatesAsync(this.taskName);
+            this.__tripTime()
             console.log("🛑 Background location tracking stopped");
           } else {
             console.log("ℹ️ No active background location tracking task");
