@@ -1,38 +1,103 @@
-import React, { useState, useContext } from "react";
-import { View, Text, TouchableOpacity } from "react-native";
-import { GLOBAL_STYLES } from "../styles/GlobalStyles";
-import { LocationContext } from "../utils/LocationContext";
+// src/screens/HomeScreen.js
+import React, { useState, useEffect } from "react";
+import { View, Text, TouchableOpacity, Alert } from "react-native";
+import AsyncStorage from "@react-native-async-storage/async-storage"; 
+import { GLOBAL_STYLES, COLORS, FONTS } from "../styles/GlobalStyles";
+import { withAuthLoading } from "../utils/LoadingClass";
 
-export default function HomeScreen() {
-  const [tracking, setTracking] = useState(false);
-  const locationSubscription = useContext(LocationContext); // <- global instance
 
-  const startTracking = async () => {
-    console.log("🚀 Start Journey Pressed");
-    await locationSubscription.startSubscription();
-    setTracking(true);
-  };
 
-  const stopTracking = async () => {
-    console.log("🛑 Stop Pressed");
-    await locationSubscription.stopSubscription();
-    setTracking(false);
+function HomeScreen({navigation}) {
+  const [username, setUsername] = useState(""); 
+  
+
+  // fetch stored username from AsyncStorage
+  useEffect(() => {
+    const loadUsername = async () => {
+      try {
+        const storedUsername = await AsyncStorage.getItem("username");
+        if (storedUsername) {
+          setUsername(storedUsername);
+          console.log("Loaded username:", storedUsername);
+        }
+      } catch (error) {
+        console.error("Error loading username:", error);
+      }
+    };
+
+    loadUsername();
+  }, []);
+
+   const goToTrackJourney = () => {
+      navigation.navigate("Journey");
   };
 
   return (
-    <View style={GLOBAL_STYLES.container}>
-      <Text style={GLOBAL_STYLES.title}>Driver Motion</Text>
-      <Text style={GLOBAL_STYLES.subtitle}>Welcome Driver</Text>
+    <View
+      style={[
+        GLOBAL_STYLES.container,
+        {
+          justifyContent: "flex-start",
+          alignItems: "center",
+          paddingTop: 30,
+        },
+      ]}
+    >
+      {/* Title */}
+      <Text
+        style={[
+          GLOBAL_STYLES.title,
+          { fontSize: 50, fontWeight: "700", marginBottom: 5 },
+        ]}>Welcome</Text>
 
-      {!tracking ? (
-        <TouchableOpacity style={GLOBAL_STYLES.button} onPress={startTracking}>
-          <Text style={GLOBAL_STYLES.buttonText}>Start Journey</Text>
-        </TouchableOpacity>
-      ) : (
-        <TouchableOpacity style={GLOBAL_STYLES.button} onPress={stopTracking}>
-          <Text style={GLOBAL_STYLES.buttonText}>Stop Journey</Text>
-        </TouchableOpacity>
-      )}
+      {/* Username */}
+      <Text
+        style={[
+          GLOBAL_STYLES.subtitle,
+          { fontSize: 25, color: "#030403ff", marginBottom: 150 },
+        ]}>{username || "Username"}</Text>
+
+      {/* Buttons */}
+      <TouchableOpacity 
+        onPress={goToTrackJourney}
+        style={[
+          GLOBAL_STYLES.button,
+          { backgroundColor: COLORS.primary || "#5CC76D", width: "100%", marginBottom: 90 },
+        ]}
+      ><Text style={[
+        GLOBAL_STYLES.buttonText,
+        { fontSize: 20, fontWeight: "600", color: "#fff" },
+      ]}
+      >Track a Journey</Text>
+      </TouchableOpacity>
+
+      <TouchableOpacity
+        style={[
+          GLOBAL_STYLES.button,
+          { backgroundColor: COLORS.primary || "#5CC76D", width: "100%", marginBottom: 100 },
+        ]}
+      >
+        <Text style={[
+        GLOBAL_STYLES.buttonText,
+        { fontSize: 20, fontWeight: "600", color: "#fff" },
+      ]}
+        >Journey Score</Text>
+      </TouchableOpacity>
+
+      <TouchableOpacity
+        style={[
+          GLOBAL_STYLES.button,
+          { backgroundColor: COLORS.primary || "#5CC76D", width: "100%"},
+        ]}
+      >
+        <Text style={[
+        GLOBAL_STYLES.buttonText,
+        { fontSize: 20, fontWeight: "600", color: "#fff" },
+      ]}
+        >Global Score</Text>
+      </TouchableOpacity>
     </View>
   );
 }
+export { HomeScreen }; 
+export default withAuthLoading(HomeScreen);
