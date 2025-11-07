@@ -1,35 +1,45 @@
 // src/screens/HomeScreen.js
 import React, { useState, useEffect } from "react";
 import { View, Text, TouchableOpacity, Alert } from "react-native";
-import AsyncStorage from "@react-native-async-storage/async-storage"; 
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { GLOBAL_STYLES, COLORS, FONTS } from "../styles/GlobalStyles";
 import { withAuthLoading } from "../utils/LoadingClass";
+import SessionManager from "../utils/SessionManager";
 
 
 
-function HomeScreen({navigation}) {
-  const [username, setUsername] = useState(""); 
-  
+function HomeScreen({ navigation }) {
+  const [username, setUsername] = useState("");
 
-  // fetch stored username from AsyncStorage
-  useEffect(() => {
-    const loadUsername = async () => {
-      try {
-        const storedUsername = await AsyncStorage.getItem("username");
-        if (storedUsername) {
-          setUsername(storedUsername);
-          console.log("Loaded username:", storedUsername);
+
+useEffect(() => {
+  async function fetchUsername() {
+    if (username === "") {
+      const manager = new SessionManager('JWT_TOKEN');
+      const token = await manager.getToken();
+      
+      const response = await fetch("http://10.0.2.2:3000/user/", {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': token
         }
-      } catch (error) {
-        console.error("Error loading username:", error);
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        setUsername(data.data.username);
+      } else {
+        Alert.alert("Error", "Failed to fetch username");
       }
-    };
+    }
+  }
+  fetchUsername();
+}, []);  // Empty dependency array so it runs only once when the component mounts
 
-    loadUsername();
-  }, []);
 
-   const goToTrackJourney = () => {
-      navigation.navigate("Journey");
+  const goToTrackJourney = () => {
+    navigation.navigate("Journey");
   };
 
   return (
@@ -58,7 +68,7 @@ function HomeScreen({navigation}) {
         ]}>{username || "Username"}</Text>
 
       {/* Buttons */}
-      <TouchableOpacity 
+      <TouchableOpacity
         onPress={goToTrackJourney}
         style={[
           GLOBAL_STYLES.button,
@@ -78,26 +88,26 @@ function HomeScreen({navigation}) {
         ]}
       >
         <Text style={[
-        GLOBAL_STYLES.buttonText,
-        { fontSize: 20, fontWeight: "600", color: "#fff" },
-      ]}
+          GLOBAL_STYLES.buttonText,
+          { fontSize: 20, fontWeight: "600", color: "#fff" },
+        ]}
         >Journey Score</Text>
       </TouchableOpacity>
 
       <TouchableOpacity
         style={[
           GLOBAL_STYLES.button,
-          { backgroundColor: COLORS.primary || "#5CC76D", width: "100%"},
+          { backgroundColor: COLORS.primary || "#5CC76D", width: "100%" },
         ]}
       >
         <Text style={[
-        GLOBAL_STYLES.buttonText,
-        { fontSize: 20, fontWeight: "600", color: "#fff" },
-      ]}
+          GLOBAL_STYLES.buttonText,
+          { fontSize: 20, fontWeight: "600", color: "#fff" },
+        ]}
         >Global Score</Text>
       </TouchableOpacity>
     </View>
   );
 }
-export { HomeScreen }; 
+export { HomeScreen };
 export default withAuthLoading(HomeScreen);
