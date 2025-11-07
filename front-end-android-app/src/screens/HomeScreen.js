@@ -11,31 +11,34 @@ function HomeScreen({ navigation }) {
   const [username, setUsername] = useState("");
   const [displaySettings, setDisplaySettings] = useState(false)
 
+function HomeScreen({ navigation }) {
+  const [username, setUsername] = useState("");
 
-  useEffect(() => {
-    async function fetchUsername() {
-      if (username === "") {
-        const manager = new SessionManager('JWT_TOKEN');
-        const token = await manager.getToken();
 
-        const response = await fetch("http://10.0.2.2:3000/user/", {
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': token
-          }
-        });
-
-        if (response.ok) {
-          const data = await response.json();
-          setUsername(data.data.username);
-        } else {
-          Alert.alert("Error", "Failed to fetch username");
+useEffect(() => {
+  async function fetchUsername() {
+    if (username === "") {
+      const manager = new SessionManager('JWT_TOKEN');
+      const token = await manager.getToken();
+      
+      const response = await fetch("http://10.0.2.2:3000/user/", {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': token
         }
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        setUsername(data.data.username);
+      } else {
+        Alert.alert("Error", "Failed to fetch username");
       }
     }
-    fetchUsername();
-  }, []);  // Empty dependency array so it runs only once when the component mounts
+  }
+  fetchUsername();
+}, []);  // Empty dependency array so it runs only once when the component mounts
 
 
   const goToTrackJourney = () => {
