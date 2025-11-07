@@ -13,7 +13,7 @@ import {
 import { GLOBAL_STYLES, COLORS } from "../styles/GlobalStyles";
 import PasswordHash from "../utils/passwordHash"
 
-export default function SignUpScreen({navigation}) {
+export default function SignUpScreen({ navigation }) {
   const [email, setEmail] = useState("");
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
