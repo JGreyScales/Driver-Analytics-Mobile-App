@@ -7,6 +7,7 @@ import { GLOBAL_STYLES, COLORS, FONTS } from "../styles/GlobalStyles";
 import * as TaskManager from "expo-task-manager";
 import { LOCATION_TASK_NAME } from "../background/locationTask";
 import { LoadingAuthManager, withAuthLoading } from "../utils/LoadingClass";
+import HomeScreen from "./HomeScreen";
 
 function JourneyTrackScreen({navigation}) {
   const [tracking, setTracking] = useState(false);
@@ -92,6 +93,9 @@ function JourneyTrackScreen({navigation}) {
     setTracking(false);
   };
 
+  const goToHome = () => {
+      navigation.navigate("Home");
+  };
   return (
     <View
       style={[
@@ -117,7 +121,7 @@ function JourneyTrackScreen({navigation}) {
         style={[
           GLOBAL_STYLES.button,
           { backgroundColor: tracking ? "#960800ff" : ( COLORS.primary ||"#5CC76D"),
-             width: "80%" },
+             width: "80%", marginBottom: 280},
         ]}
       >
         <Text style={[
@@ -125,6 +129,20 @@ function JourneyTrackScreen({navigation}) {
         { fontSize: 40, fontWeight: "700", color: "#fff" },
       ]}
         >{tracking ? "End Journey" : "Start Journey"}</Text>
+      </TouchableOpacity>
+
+      <TouchableOpacity
+        onPress={goToHome}
+        style={[
+          GLOBAL_STYLES.button,
+          { backgroundColor: "#114f1bff", width: "40%" },
+          ]}
+      >
+        <Text style={[
+        GLOBAL_STYLES.buttonText,
+        { fontSize: 20, fontWeight: "700", color: "#fff" },
+      ]}
+        >Back</Text>
       </TouchableOpacity>
     </View>
   )

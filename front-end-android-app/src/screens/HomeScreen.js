@@ -6,6 +6,7 @@ import { GLOBAL_STYLES, COLORS, FONTS } from "../styles/GlobalStyles";
 import { withAuthLoading } from "../utils/LoadingClass";
 
 
+
 function HomeScreen({navigation}) {
   const [username, setUsername] = useState(""); 
   
@@ -98,4 +99,5 @@ function HomeScreen({navigation}) {
     </View>
   );
 }
+export { HomeScreen }; 
 export default withAuthLoading(HomeScreen);
