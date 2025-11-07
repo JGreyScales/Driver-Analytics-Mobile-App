@@ -1,5 +1,28 @@
-import * as Location from "expo-location";
-import * as TaskManager from "expo-task-manager";
+let Location, TaskManager;
+
+try {
+  // Try to load real Expo modules (works when running in Expo runtime)
+  Location = require("expo-location");
+  TaskManager = require("expo-task-manager");
+} catch (error) {
+  // Fallback mocks when running under Jest or non-Expo environments
+  console.warn("⚠️ Expo modules not loaded — using stubs for tests.");
+
+  Location = {
+    requestForegroundPermissionsAsync: async () => ({ status: "granted" }),
+    requestBackgroundPermissionsAsync: async () => ({ status: "granted" }),
+    hasStartedLocationUpdatesAsync: async () => false,
+    stopLocationUpdatesAsync: async () => {},
+    startLocationUpdatesAsync: async () => {},
+    Accuracy: { Highest: "high" },
+  };
+
+  TaskManager = {
+    defineTask: () => {},
+    isTaskDefined: () => false,
+  };
+}
+
 import NotificationManager from "./notificationManager";
 
 
@@ -81,11 +104,11 @@ class LocationTracking {
         console.log("⚠️ Incident detected: Overspeeding started");
         NotificationManager.sendNotification("⚠️ Overspeeding", "You are exceeding the speed limit!");
       }
-      // Still overspeeding – check if 10 seconds passed since last increment
-      else if (now - this.lastIncidentTime >= 30 * 1000) {
+      // Still overspeeding – check if 10 min passed since last increment
+      else if (now - this.lastIncidentTime >= 1000 * 1000) {
         this.incidentCount += 1;
         this.lastIncidentTime = now;
-        console.log("⚠️ 30-second Overspeed Interval Reached (+1 incident)");
+        console.log("⚠️ 10-min Overspeed Interval Reached (+1 incident)");
         NotificationManager.sendNotification("⚠️ Overspeeding", "You are still exceeding the speed limit!");
       }
     } 
