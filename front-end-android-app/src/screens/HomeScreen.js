@@ -3,9 +3,10 @@ import React, { useState, useEffect } from "react";
 import { View, Text, TouchableOpacity, Alert } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage"; 
 import { GLOBAL_STYLES, COLORS, FONTS } from "../styles/GlobalStyles";
+import { withAuthLoading } from "../utils/LoadingClass";
 
 
-export default function HomeScreen({navigation}) {
+function HomeScreen({navigation}) {
   const [username, setUsername] = useState(""); 
   
 
@@ -97,3 +98,4 @@ export default function HomeScreen({navigation}) {
     </View>
   );
 }
+export default withAuthLoading(HomeScreen);
