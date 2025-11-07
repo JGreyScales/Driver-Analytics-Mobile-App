@@ -1,5 +1,6 @@
 import * as Location from "expo-location";
 import * as TaskManager from "expo-task-manager";
+import NotificationManager from "./notificationManager";
 
 
 class LocationTracking {
@@ -57,12 +58,14 @@ class LocationTracking {
     // Harsh braking (negative acceleration)
     if (acceleration < -3) { // threshold: -3 m/s²
       console.log("🛑 Incident detected: Harsh braking");
+      NotificationManager.sendNotification("🛑 Harsh Braking", "Sudden stop detected!");
       this.incidentCount++;
     }
 
     // Rapid acceleration
     if (acceleration > 3) { // threshold: +3 m/s²
       console.log("🚀 Incident detected: Rapid acceleration");
+      NotificationManager.sendNotification("🚀 Incident detected: Rapid acceleration");
       this.incidentCount++;
     }
 
@@ -76,18 +79,21 @@ class LocationTracking {
         this.lastIncidentTime = now;
         this.incidentCount += 1;
         console.log("⚠️ Incident detected: Overspeeding started");
+        NotificationManager.sendNotification("⚠️ Overspeeding", "You are exceeding the speed limit!");
       }
       // Still overspeeding – check if 10 seconds passed since last increment
       else if (now - this.lastIncidentTime >= 30 * 1000) {
         this.incidentCount += 1;
         this.lastIncidentTime = now;
         console.log("⚠️ 30-second Overspeed Interval Reached (+1 incident)");
+        NotificationManager.sendNotification("⚠️ Overspeeding", "You are still exceeding the speed limit!");
       }
     } 
     else {
     // back to normal speed → reset timer
       if (this.overSpeedStartTime) {
       console.log("✅ Overspeeding stopped");
+      NotificationManager.sendNotification("✅ Speed Normalized", "You are back within the speed limit.");
     }
     this.overSpeedStartTime = null;
     this.lastIncidentTime = null;
