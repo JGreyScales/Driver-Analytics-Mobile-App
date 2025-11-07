@@ -39,7 +39,7 @@ class LocationTracking {
         this.currentSpeed = 0
         this.prevSpeed = 0;
         this.prevTimestamp = null;
-        this.maxAllowedSpeed = 100; // km/h
+        this.maxAllowedSpeed = 110; // km/h
     }
     
     __tripStartTime(){
