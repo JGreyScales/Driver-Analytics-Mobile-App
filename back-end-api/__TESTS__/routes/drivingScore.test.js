@@ -58,14 +58,14 @@ describe('PUT /driving', () => {
     const res = await request(app).put("/driving/score").set('Authorization', token).set('Accept', 'application/json')
     expect(res.statusCode).toBe(400)
     expect(res.body.statusCode).toBe(400)
-    expect(res.body.message).toBe('No body attached')
+    expect(res.body.message).toBe('Missing required fields: tripDuration, incidentCount, averageSpeed, maxSpeed')
   })
 
   it('should deny on no token', async () => {
     const body = { tripDuration: 90, incidentCount: 2, averageSpeed: 70, maxSpeed: 90, testing: true }
     const res = await request(app).put("/driving/score").send(body).set('Accept', 'application/json')
-    expect(res.statusCode).toBe(400)
-    expect(res.body.statusCode).toBe(400)
+    expect(res.statusCode).toBe(401)
+    expect(res.body.statusCode).toBe(401)
     expect(res.body.message).toBe('No token attached')
   })
 
@@ -88,9 +88,10 @@ describe('PUT /driving', () => {
   it('should deny on invalid averageSpeed', async () => {
     const body = { tripDuration: 90, incidentCount: 2, maxSpeed: 90, testing: true }
     const res = await request(app).put("/driving/score").send(body).set('Authorization', token).set('Accept', 'application/json')
+    console.log(res.body)
     expect(res.statusCode).toBe(400)
     expect(res.body.statusCode).toBe(400)
-    expect(res.body.message).toBe('Invalid body')
+    expect(res.body.message).toBe('Missing required fields: averageSpeed')
   })
 
   it('should deny if max speed is less than average speed', async () => {
@@ -160,8 +161,8 @@ describe('GET /comparativeScore', () => {
   it('should deny if no token', async () => {
     const body = {testing:true}
     const res = await request(app).get("/driving/comparativeScore").send(body).set('Accept', 'application/json')
-    expect(res.statusCode).toBe(400)
-    expect(res.body.statusCode).toBe(400)
+    expect(res.statusCode).toBe(401)
+    expect(res.body.statusCode).toBe(401)
     expect(res.body.message).toBe('No token attached')
   })
 })

@@ -3,9 +3,9 @@ const User = require("../controllers/user");
 const dataTypes = require("../utils/dataType");
 const JWT_AUTH = require("../middleware/auth");
 const router = express.Router();
+const { validateGetUser, validatePutUser, validatePostUser, validateDeleteUser, validatePatchUser} = require("../validation/user")
 
-
-router.put("/", async (req, res) => {
+router.put("/", validatePutUser, async (req, res) => {
     // required body is [username, email, passwordHash] 
     let testing = false
     if (req.body) {testing = dataTypes.isDefined(req.body.testing)}
@@ -15,7 +15,7 @@ router.put("/", async (req, res) => {
     res.status(result.statusCode).send(result)
 })
 
-router.delete("/", async (req, res) => {
+router.delete("/", validateDeleteUser, async (req, res) => {
     let testing = false
     if (req.body) {testing = dataTypes.isDefined(req.body.testing)}
     if(testing) {console.log("Running delete user in test mode")}
@@ -31,10 +31,10 @@ router.delete("/", async (req, res) => {
     res.status(result.statusCode).send(result)
 })
 
-router.get("/", async (req, res) => {
+router.get("/", validateGetUser, async (req, res) => {
     let testing = false
     if (req.body) {testing = dataTypes.isDefined(req.body.testing)}
-    if(testing) {console.log("Running delete user in test mode")}
+    if(testing) {console.log("Running get user in test mode")}
 
     let userID = undefined
     try {
@@ -47,7 +47,7 @@ router.get("/", async (req, res) => {
     res.status(result.statusCode).send(result)
 })
 
-router.post("/", async (req, res) => {
+router.post("/", validatePostUser, async (req, res) => {
     // required body is [username, passwordHash]
     let testing = false
     if (req.body) {testing = dataTypes.isDefined(req.body.testing)}
@@ -59,7 +59,7 @@ router.post("/", async (req, res) => {
 })
 
 
-router.patch("/", async (req, res) => {
+router.patch("/", validatePatchUser, async (req, res) => {
     // optional body components [email, username, passwordHash]
     let testing = false
     if (req.body) {testing = dataTypes.isDefined(req.body.testing)}
