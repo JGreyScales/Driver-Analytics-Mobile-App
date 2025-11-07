@@ -8,9 +8,10 @@ class LocationTracking {
         this.taskName = "LOCATION_TRACKING_TASK"
         this.tripStart = null
         this.tripTime = null
-        this.incidentCount = null
-        this.maxSpeed = null
-        this.avgSpeed = null
+        this.incidentCount = 0
+        this.maxSpeed = 0
+        this.avgSpeed = 0
+        this.dataCount = 0
     }
     
     __tripStartTime(){
@@ -18,7 +19,18 @@ class LocationTracking {
     }
 
     __tripTime(){
-        this.tripTime = Date.now() - this.tripStart
+        this.tripTime = Date.now() - this.tripStart;
+        this.tripTime = (this.tripTime / 60000).toFixed(0);
+    }
+
+    __maxSpeed(speed_km){
+        if (this.maxSpeed == null || speed_km > this.maxSpeed){
+            this.maxSpeed = speed_km
+        }
+    }
+
+    __avgSpeed(currentSpeed){
+      this.avgSpeed = ((this.avgSpeed * (this.dataCount - 1)) + Number(currentSpeed)) / this.dataCount;
     }
 
     async __locationTask(){
@@ -31,16 +43,15 @@ class LocationTracking {
               console.log("🚨 Task Error:", error);
               return false;
             }
-          
-            console.log("📍 Background Update Triggered");
-          
+                    
             const { locations } = data;
             const { latitude, longitude, speed } = locations[0].coords;
+            const speed_km = Math.round(speed * 3.6); // convert m/s to km/h
           
-            console.log("📌 Location:", latitude, longitude);
-            console.log(`current speed: ${speed}`)
-
-
+            console.log(`current speed_km: ${speed_km}`);
+            this.__maxSpeed(speed_km);
+            this.dataCount += 1;
+            this.__avgSpeed(speed_km);
           });
         return true
     }
@@ -96,7 +107,10 @@ class LocationTracking {
             // Stop the background task
             await Location.stopLocationUpdatesAsync(this.taskName);
             this.__tripTime()
-            console.log("🛑 Background location tracking stopped");
+            console.log(`🕒 Total trip time: ${this.tripTime} minutes`);
+            console.log(`🚀 Max speed_km: ${this.maxSpeed} km/hr`);
+            this.avgSpeed = Math.round(this.avgSpeed); 
+            console.log(`📊 Avg speed_km: ${this.avgSpeed} km/hr`);
           } else {
             console.log("ℹ️ No active background location tracking task");
           }
