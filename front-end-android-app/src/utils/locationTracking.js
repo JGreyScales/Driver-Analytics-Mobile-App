@@ -41,6 +41,12 @@ class LocationTracking {
         this.prevTimestamp = null;
         this.maxAllowedSpeed = 110; // km/h
         this.isTracking = false
+
+        // 🕓 Auto-stop tracking variables
+        this.lastMovementTime = null; // last time movement was detected
+        this.idleStartTime = null;    // when idle started
+        this.idleTimeout = 10 * 1000; // 10 minutes in ms (adjust for testing)
+        this.autoStopTriggered = false; // prevent multiple stops
     }
     
     __tripStartTime(){
@@ -127,6 +133,35 @@ class LocationTracking {
     this.prevSpeed = speed_km;
     this.prevTimestamp = now;
   }
+
+    async checkAutoStop(currentSpeed, stopCallback) {
+        const now = Date.now();
+
+        // 1️⃣ Vehicle is moving → reset idle timer
+        if (currentSpeed > 2) { // moving threshold (2 km/h to ignore small GPS noise)
+          this.lastMovementTime = now;
+          this.idleStartTime = null;
+          this.autoStopTriggered = false;
+          return;
+        }
+
+        // 2️⃣ Vehicle has stopped → record idle start time
+        if (!this.idleStartTime) {
+          this.idleStartTime = now;
+          console.log("🕒 Idle started at:", new Date(this.idleStartTime).toLocaleTimeString());
+        }
+
+        // 3️⃣ Check if idle duration exceeded threshold
+        const idleDuration = now - this.idleStartTime;
+
+        if (!this.autoStopTriggered && idleDuration >= this.idleTimeout) {
+          console.log(`🛑 Auto-Stop triggered after ${(idleDuration / 60000).toFixed(1)} minutes idle`);
+          this.autoStopTriggered = true;
+          if (typeof stopCallback === "function") {
+            await stopCallback(); 
+          }
+        }
+    }
 
     async __locationTask(){
         if (TaskManager.isTaskDefined(this.taskName)) {
