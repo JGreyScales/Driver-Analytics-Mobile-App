@@ -1,5 +1,5 @@
 // src/screens/JourneyTrackScreen.js
-import React, { useState, useContext } from "react";
+import React, { useState, useContext, useEffect, useRef } from "react";
 import { View, Text, TouchableOpacity, Alert } from "react-native";
 import { GLOBAL_STYLES, COLORS, FONTS } from "../styles/GlobalStyles";
 import { LoadingAuthManager, withAuthLoading } from "../utils/LoadingClass";
@@ -7,8 +7,20 @@ import { LocationContext } from "../utils/LocationContext";
 
 function JourneyTrackScreen({navigation}) {
   const locationSubscription = useContext(LocationContext); // <- global instance
+  const isTrackingRef = useRef(locationSubscription.isTracking); // required to detect changes to the variable from the background process
   const [isTracking, setIsTracking] = useState(locationSubscription.isTracking);
+
   const auth = new LoadingAuthManager(navigation);
+
+
+  // update the isTracking react state whenever the dependancy arrays value changes
+  useEffect(() => {
+    if (locationSubscription.isTracking !== isTrackingRef.current) {
+      setIsTracking(locationSubscription.isTracking); // Update the state if it has changed
+      isTrackingRef.current = locationSubscription.isTracking; // Update the ref to the new value
+    }
+  }, [locationSubscription.isTracking]);
+
 
   const startTracking = async () => {
     console.log("🚀 Start Journey Pressed");
@@ -25,6 +37,7 @@ function JourneyTrackScreen({navigation}) {
   const goToHome = () => {
       navigation.navigate("Home");
   };
+
   return (
     <View
       style={[
