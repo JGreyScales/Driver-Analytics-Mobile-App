@@ -40,6 +40,7 @@ class LocationTracking {
         this.prevSpeed = 0;
         this.prevTimestamp = null;
         this.maxAllowedSpeed = 110; // km/h
+        this.isTracking = false
     }
     
     __tripStartTime(){
@@ -180,7 +181,7 @@ class LocationTracking {
         }
 
         this.__tripStartTime()
-
+        this.isTracking = true
         // start feeding info to the task
         await Location.startLocationUpdatesAsync(this.taskName, {
             accuracy: Location.Accuracy.Highest,
@@ -201,6 +202,7 @@ class LocationTracking {
           if (hasStarted) {
             // Stop the background task
             await Location.stopLocationUpdatesAsync(this.taskName);
+            this.isTracking = false
             this.__tripTime()
             console.log(`🕒 Total trip time: ${this.tripTime} minutes`);
             console.log(`🚀 Max speed_km: ${this.maxSpeed} km/hr`);

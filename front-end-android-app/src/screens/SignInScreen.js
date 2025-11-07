@@ -61,7 +61,6 @@ export default function SignInScreen({ navigation }) {
         ), 
       });
       const data = await response.json().catch(() => ({}));//analyze response
-      console.log(data); 
 
       //checks for success or failure based on response
       if (response.ok && data.token) {
@@ -69,7 +68,6 @@ export default function SignInScreen({ navigation }) {
         await session.setToken(data.token);
         Alert.alert('Successful Login', data.message || 'Welcome Back Driver');
         const token = await session.getToken();
-        console.log("Stored token:", token);
         navigation.navigate('Home')
     } else {
         Alert.alert('Failed Login', data.message || 'Invalid Username or Password');

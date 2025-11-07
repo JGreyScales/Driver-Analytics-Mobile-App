@@ -6,20 +6,20 @@ import { LoadingAuthManager, withAuthLoading } from "../utils/LoadingClass";
 import { LocationContext } from "../utils/LocationContext";
 
 function JourneyTrackScreen({navigation}) {
-  const [tracking, setTracking] = useState(false);
   const locationSubscription = useContext(LocationContext); // <- global instance
+  const [isTracking, setIsTracking] = useState(locationSubscription.isTracking);
   const auth = new LoadingAuthManager(navigation);
 
   const startTracking = async () => {
     console.log("🚀 Start Journey Pressed");
     await locationSubscription.startSubscription();
-    setTracking(true);
+    setIsTracking(true)
   };
 
   const stopTracking = async () => {
     console.log("🛑 Stop Pressed");
     await locationSubscription.stopSubscription();
-    setTracking(false);
+    setIsTracking(false)
   };
 
   const goToHome = () => {
@@ -46,10 +46,10 @@ function JourneyTrackScreen({navigation}) {
 
       {/* Button */}
       <TouchableOpacity
-        onPress={tracking ? stopTracking : startTracking}
+        onPress={isTracking ? stopTracking : startTracking}
         style={[
           GLOBAL_STYLES.button,
-          { backgroundColor: tracking ? "#960800ff" : ( COLORS.primary ||"#5CC76D"),
+          { backgroundColor: isTracking  ? "#960800ff" : ( COLORS.primary ||"#5CC76D"),
              width: "80%", marginBottom: 280},
         ]}
       >
@@ -57,7 +57,7 @@ function JourneyTrackScreen({navigation}) {
         GLOBAL_STYLES.buttonText,
         { fontSize: 40, fontWeight: "700", color: "#fff" },
       ]}
-        >{tracking ? "End Journey" : "Start Journey"}</Text>
+        >{isTracking  ? "End Journey" : "Start Journey"}</Text>
       </TouchableOpacity>
 
       <TouchableOpacity
