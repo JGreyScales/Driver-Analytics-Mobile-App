@@ -11,7 +11,7 @@ import {
   Alert
 } from "react-native";
 import { GLOBAL_STYLES, COLORS } from "../styles/GlobalStyles";
-import SessionManager  from "../utils/SessionManager";
+import SessionManager from "../utils/SessionManager";
 import PasswordHash from "../utils/passwordHash";
 
 export default function SignInScreen({ navigation }) {
@@ -27,15 +27,15 @@ export default function SignInScreen({ navigation }) {
     }).start();
   }, []);
 
- /*soft checks for user and pass to make sure user inputs make sense*/
+  /*soft checks for user and pass to make sure user inputs make sense*/
   const validate = (username, password) => {
     let newErrors = {};
     if (!username) {
       newErrors.username = "Username is required.";
-    }else if(username.length < 3) { 
+    } else if (username.length < 3) {
       newErrors.username = "Username must be atleast 3 characters long.";
     }
-    if (!password){
+    if (!password) {
       newErrors.password = "Password is required.";
     } else if (password.length < 8) {
       newErrors.password = "Password must be at least 8 characters.";
@@ -45,20 +45,22 @@ export default function SignInScreen({ navigation }) {
   };
 
   const handleLogin = async () => {
-    if (!validate(username, password)){
-    return; 
-  }
+    if (!validate(username, password)) {
+      return;
+    }
 
-    try{///post request to backedn
+    try {///post request to backedn
       const passwordHash = PasswordHash.HashMethod(password)
 
       const response = await fetch("http://10.0.2.2:3000/user/", {
         method: 'POST', //authenticate
-        headers: {'Content-Type': 'application/json'},
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(
-          {username: username.trim(),
-          passwordHash: passwordHash}
-        ), 
+          {
+            username: username.trim(),
+            passwordHash: passwordHash
+          }
+        ),
       });
       const data = await response.json().catch(() => ({}));//analyze response
 
@@ -69,14 +71,14 @@ export default function SignInScreen({ navigation }) {
         Alert.alert('Successful Login', data.message || 'Welcome Back Driver');
         const token = await session.getToken();
         navigation.navigate('Home')
-    } else {
+      } else {
         Alert.alert('Failed Login', data.message || 'Invalid Username or Password');
       }
-  } catch (error) {
-    console.error('Error during login:', error.message);
-    Alert.alert('Network error occurred');
-  }
-};
+    } catch (error) {
+      console.error('Error during login:', error.message);
+      Alert.alert('Network error occurred');
+    }
+  };
 
   const goToSignUp = () => {
     if (navigation && navigation.navigate) navigation.navigate("SignUp");
@@ -95,14 +97,14 @@ export default function SignInScreen({ navigation }) {
         placeholder="Username"
         value={username}
         onChangeText={setUsername}
-        style={[GLOBAL_STYLES.input, 
-          errors.username && { borderColor: COLORS.error },
+        style={[GLOBAL_STYLES.input,
+        errors.username && { borderColor: COLORS.error },
         ]}
         autoCapitalize="none"
       />
-       {errors.username && (
-          <Text style={GLOBAL_STYLES.errorText}>{errors.username}</Text>
-        )}
+      {errors.username && (
+        <Text style={GLOBAL_STYLES.errorText}>{errors.username}</Text>
+      )}
 
       <TextInput
         placeholder="Password"
@@ -112,8 +114,8 @@ export default function SignInScreen({ navigation }) {
         secureTextEntry
       />
       {errors.password && (
-          <Text style={GLOBAL_STYLES.errorText}>{errors.password}</Text>
-        )}
+        <Text style={GLOBAL_STYLES.errorText}>{errors.password}</Text>
+      )}
       <TouchableOpacity style={GLOBAL_STYLES.button} onPress={handleLogin} testID="loginButton">
         <Text style={GLOBAL_STYLES.buttonText}>LOGIN</Text>
       </TouchableOpacity>

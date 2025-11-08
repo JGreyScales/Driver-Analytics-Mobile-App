@@ -1,15 +1,28 @@
 // src/screens/JourneyTrackScreen.js
-import React, { useState, useContext } from "react";
+import React, { useState, useContext, useEffect, useRef } from "react";
 import { View, Text, TouchableOpacity, Alert } from "react-native";
 import { GLOBAL_STYLES, COLORS, FONTS } from "../styles/GlobalStyles";
 import { LoadingAuthManager, withAuthLoading } from "../utils/LoadingClass";
 import { LocationContext } from "../utils/LocationContext";
 import { uploadDriverScore } from "../utils/JourneyDataUploader";
 
+
 function JourneyTrackScreen({navigation}) {
   const locationSubscription = useContext(LocationContext); 
   const [isTracking, setIsTracking] = useState(locationSubscription.isTracking);
+  const isTrackingRef = useRef(isTracking); 
+
   const auth = new LoadingAuthManager(navigation);
+
+
+  // update the isTracking react state whenever the dependancy arrays value changes
+  useEffect(() => {
+    if (locationSubscription.isTracking !== isTrackingRef.current) {
+      setIsTracking(locationSubscription.isTracking); // Update the state if it has changed
+      isTrackingRef.current = locationSubscription.isTracking; // Update the ref to the new value
+    }
+  }, [locationSubscription.isTracking]);
+
 
   const startTracking = async () => {
     console.log("🚀 Start Journey Pressed");
@@ -48,8 +61,9 @@ function JourneyTrackScreen({navigation}) {
   };
 
   const goToHome = () => {
-      navigation.navigate("Home");
+    navigation.navigate("Home");
   };
+
   return (
     <View
       style={[
@@ -65,24 +79,26 @@ function JourneyTrackScreen({navigation}) {
       {/* Title */}
       <Text
         style={[
-            GLOBAL_STYLES.title,
-            { fontSize: 40, fontWeight: "800", marginBottom: 330 },
-            ]}>Track Your Journey</Text>
+          GLOBAL_STYLES.title,
+          { fontSize: 40, fontWeight: "800", marginBottom: 330 },
+        ]}>Track Your Journey</Text>
 
       {/* Button */}
       <TouchableOpacity
         onPress={isTracking ? stopTracking : startTracking}
         style={[
           GLOBAL_STYLES.button,
-          { backgroundColor: isTracking  ? "#960800ff" : ( COLORS.primary ||"#5CC76D"),
-             width: "80%", marginBottom: 280},
+          {
+            backgroundColor: isTracking ? "#960800ff" : (COLORS.primary || "#5CC76D"),
+            width: "80%", marginBottom: 280
+          },
         ]}
       >
         <Text style={[
-        GLOBAL_STYLES.buttonText,
-        { fontSize: 40, fontWeight: "700", color: "#fff" },
-      ]}
-        >{isTracking  ? "End Journey" : "Start Journey"}</Text>
+          GLOBAL_STYLES.buttonText,
+          { fontSize: 40, fontWeight: "700", color: "#fff" },
+        ]}
+        >{isTracking ? "End Journey" : "Start Journey"}</Text>
       </TouchableOpacity>
 
       <TouchableOpacity
@@ -90,12 +106,12 @@ function JourneyTrackScreen({navigation}) {
         style={[
           GLOBAL_STYLES.button,
           { backgroundColor: "#114f1bff", width: "40%" },
-          ]}
+        ]}
       >
         <Text style={[
-        GLOBAL_STYLES.buttonText,
-        { fontSize: 20, fontWeight: "700", color: "#fff" },
-      ]}
+          GLOBAL_STYLES.buttonText,
+          { fontSize: 20, fontWeight: "700", color: "#fff" },
+        ]}
         >Back</Text>
       </TouchableOpacity>
     </View>

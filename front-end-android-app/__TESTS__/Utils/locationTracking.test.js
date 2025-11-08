@@ -193,3 +193,52 @@ describe("__detectIncident", () => {
     );
   });
 });
+
+describe("__checkAutoStop", () => {
+  test("auto-stops tracking after inactivity", async () => {
+    const tracker = setupTracker();
+    const stopCallback = jest.fn().mockResolvedValue();
+
+    // Simulate 2 minutes of no movement
+    tracker.lastMovementTime = Date.now() - 2 * 60 * 1000; // 2 mins ago
+    await tracker.checkAutoStop(0, stopCallback);
+
+    expect(stopCallback).toHaveBeenCalled();
+    expect(tracker.autoStopTriggered).toBe(true);
+  });
+
+  test("does not auto-stop if vehicle is moving", async () => {
+    const tracker = setupTracker();
+    const stopCallback = jest.fn().mockResolvedValue();
+
+    await tracker.checkAutoStop(20, stopCallback); // moving (> 2 km/h)
+
+    expect(stopCallback).not.toHaveBeenCalled();
+    expect(tracker.autoStopTriggered).toBe(false);
+  });
+
+  test("does not auto-stop if idle time not exceeded", async () => {
+    const tracker = setupTracker();
+    const stopCallback = jest.fn().mockResolvedValue();
+
+    // Only idle for 30 seconds
+    tracker.lastMovementTime = Date.now() - 30 * 1000;
+    await tracker.checkAutoStop(0, stopCallback);
+
+    expect(stopCallback).not.toHaveBeenCalled();
+  });
+
+  test("prevents multiple stop triggers", async () => {
+    const tracker = setupTracker();
+    const stopCallback = jest.fn().mockResolvedValue();
+
+    // First call triggers stop
+    tracker.lastMovementTime = Date.now() - 2 * 60 * 1000;
+    await tracker.checkAutoStop(0, stopCallback);
+
+    // Second call should not trigger again
+    await tracker.checkAutoStop(0, stopCallback);
+
+    expect(stopCallback).toHaveBeenCalledTimes(1);
+  });
+});

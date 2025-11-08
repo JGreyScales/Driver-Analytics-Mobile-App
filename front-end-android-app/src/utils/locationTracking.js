@@ -41,6 +41,12 @@ class LocationTracking {
         this.prevTimestamp = null;
         this.maxAllowedSpeed = 110; // km/h
         this.isTracking = false
+
+        // 🕓 Auto-stop tracking variables
+        this.lastMovementTime = null; // last time movement was detected
+        //this.idleStartTime = null;    // when idle started
+        this.idleTimeout = 15 * 60 * 1000; // 15 minutes in ms (adjust for testing)
+        this.autoStopTriggered = false; // prevent multiple stops
     }
     
     __tripStartTime(){
@@ -128,6 +134,29 @@ class LocationTracking {
     this.prevTimestamp = now;
   }
 
+    async checkAutoStop(currentSpeed, stopCallback) {
+        const now = Date.now();
+
+        // 1️⃣ Vehicle is moving → reset idle timer
+        if (currentSpeed > 2) { // speed threshold to consider "moving"
+            this.lastMovementTime = now;
+            this.autoStopTriggered = false;
+            return;
+        }
+
+        // 2️⃣ Vehicle is idle → check idle duration
+        if (this.lastMovementTime) {
+            const idleDuration = now - this.lastMovementTime;
+            if (idleDuration >= this.idleTimeout && !this.autoStopTriggered) {
+                this.autoStopTriggered = true;
+                console.log("⏸️ Auto-stopping location tracking due to inactivity.");
+                await stopCallback();
+            }
+        }
+
+        return
+    }
+
     async __locationTask(){
         if (TaskManager.isTaskDefined(this.taskName)) {
             return true; // already defined
@@ -142,12 +171,18 @@ class LocationTracking {
             const { locations } = data;
             const { latitude, longitude, speed } = locations[0].coords;
             const speed_km = Math.round(speed * 3.6); // convert m/s to km/h
-          
             console.log(`current speed_km: ${speed_km}`);
+
+            // Check for auto-stop condition
+            await this.checkAutoStop(speed_km, this.stopSubscription.bind(this));
+            if (speed_km !== 0){
             this.__maxSpeed(speed_km);
             this.dataCount += 1;
             this.__avgSpeed(speed_km);
+            }
             this.__detectIncident(speed_km);
+
+
           });
         return true
     }
@@ -209,6 +244,10 @@ class LocationTracking {
             this.avgSpeed = Math.round(this.avgSpeed); 
             console.log(`📊 Avg speed_km: ${this.avgSpeed} km/hr`);
             console.log(`⚠️ Total incidents detected: ${this.incidentCount}`);
+            NotificationManager.sendNotification(
+                    "⏸️ Tracking Paused",
+                    "Location tracking has been auto-stopped due to inactivity."
+                );
           } else {
             console.log("ℹ️ No active background location tracking task");
           }
