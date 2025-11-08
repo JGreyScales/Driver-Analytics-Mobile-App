@@ -195,71 +195,71 @@ describe("JourneyTrackScreen", () => {
   //       Location.stopLocationUpdatesAsync.mockRejectedValueOnce(new Error("Stop fail"));
   //       fireEvent.press(getByText("End Journey"));
         
-  //       await waitFor(() =>
-  //           expect(console.error).toHaveBeenCalledWith(
-  //           "Error stopping background updates:",
-  //           expect.any(Error)
-  //           )
-  //       );
-  //       });
-  //   test("stops tracking when locationSubscription exists", async () => {
-  //       jest.clearAllMocks();
+//   //       await waitFor(() =>
+//   //           expect(console.error).toHaveBeenCalledWith(
+//   //           "Error stopping background updates:",
+//   //           expect.any(Error)
+//   //           )
+//   //       );
+//   //       });
+//   //   test("stops tracking when locationSubscription exists", async () => {
+//   //       jest.clearAllMocks();
 
-  //       const removeMock = jest.fn();
-  //       Location.requestForegroundPermissionsAsync.mockResolvedValueOnce({ status: "granted" });
-  //       Location.watchPositionAsync.mockResolvedValueOnce({ remove: removeMock });
+//   //       const removeMock = jest.fn();
+//   //       Location.requestForegroundPermissionsAsync.mockResolvedValueOnce({ status: "granted" });
+//   //       Location.watchPositionAsync.mockResolvedValueOnce({ remove: removeMock });
 
-  //       Location.requestBackgroundPermissionsAsync.mockResolvedValueOnce({ status: "granted" });
-  //       TaskManager.isTaskRegisteredAsync.mockResolvedValueOnce(false);
-  //       Location.startLocationUpdatesAsync.mockResolvedValueOnce();
+//   //       Location.requestBackgroundPermissionsAsync.mockResolvedValueOnce({ status: "granted" });
+//   //       TaskManager.isTaskRegisteredAsync.mockResolvedValueOnce(false);
+//   //       Location.startLocationUpdatesAsync.mockResolvedValueOnce();
 
-  //       const { getByText } = render(<JourneyTrackScreen navigation={{ navigate: jest.fn() }} />);
+//   //       const { getByText } = render(<JourneyTrackScreen navigation={{ navigate: jest.fn() }} />);
 
-  //       fireEvent.press(getByText("Start Journey"));
-  //       await waitFor(() => expect(getByText("End Journey")).toBeTruthy());
+//   //       fireEvent.press(getByText("Start Journey"));
+//   //       await waitFor(() => expect(getByText("End Journey")).toBeTruthy());
 
-  //       TaskManager.isTaskRegisteredAsync.mockResolvedValueOnce(true);
-  //       Location.stopLocationUpdatesAsync.mockResolvedValueOnce();
+//   //       TaskManager.isTaskRegisteredAsync.mockResolvedValueOnce(true);
+//   //       Location.stopLocationUpdatesAsync.mockResolvedValueOnce();
 
-  //       fireEvent.press(getByText("End Journey"));
+//   //       fireEvent.press(getByText("End Journey"));
 
-  //       await waitFor(() => {
-  //           expect(removeMock).toHaveBeenCalled(); 
-  //           expect(console.log).toHaveBeenCalledWith("🛑 Tracking Stopped");
-  //       });
+//   //       await waitFor(() => {
+//   //           expect(removeMock).toHaveBeenCalled(); 
+//   //           expect(console.log).toHaveBeenCalledWith("🛑 Tracking Stopped");
+//   //       });
 
-  //       expect(TaskManager.isTaskRegisteredAsync).toHaveBeenCalled();
-  //   });
+//   //       expect(TaskManager.isTaskRegisteredAsync).toHaveBeenCalled();
+//   //   });
 
-  //  test("renders correct button color based on tracking state", async () => {
-  //       jest.clearAllMocks();
+//   //  test("renders correct button color based on tracking state", async () => {
+//   //       jest.clearAllMocks();
 
-  //       Location.requestForegroundPermissionsAsync.mockResolvedValueOnce({ status: "granted" });
-  //       Location.watchPositionAsync.mockResolvedValueOnce({ remove: jest.fn() });
-  //       Location.requestBackgroundPermissionsAsync.mockResolvedValueOnce({ status: "granted" });
-  //       TaskManager.isTaskRegisteredAsync.mockResolvedValueOnce(false);
-  //       Location.startLocationUpdatesAsync.mockResolvedValueOnce();
+//   //       Location.requestForegroundPermissionsAsync.mockResolvedValueOnce({ status: "granted" });
+//   //       Location.watchPositionAsync.mockResolvedValueOnce({ remove: jest.fn() });
+//   //       Location.requestBackgroundPermissionsAsync.mockResolvedValueOnce({ status: "granted" });
+//   //       TaskManager.isTaskRegisteredAsync.mockResolvedValueOnce(false);
+//   //       Location.startLocationUpdatesAsync.mockResolvedValueOnce();
 
-  //       const { getByText } = render(<JourneyTrackScreen navigation={{ navigate: jest.fn() }} />);
+//   //       const { getByText } = render(<JourneyTrackScreen navigation={{ navigate: jest.fn() }} />);
 
-  //       const startButtonText = getByText("Start Journey");
-  //       const startButton = startButtonText.parent?.parent ?? startButtonText.parent;
+//   //       const startButtonText = getByText("Start Journey");
+//   //       const startButton = startButtonText.parent?.parent ?? startButtonText.parent;
 
-  //       const startButtonStyle = Array.isArray(startButton.props.style)
-  //           ? Object.assign({}, ...startButton.props.style)
-  //           : startButton.props.style;
+//   //       const startButtonStyle = Array.isArray(startButton.props.style)
+//   //           ? Object.assign({}, ...startButton.props.style)
+//   //           : startButton.props.style;
 
-  //       expect(startButtonStyle.backgroundColor).toBe("#2E7D32");
+//   //       expect(startButtonStyle.backgroundColor).toBe("#2E7D32");
 
-  //       fireEvent.press(startButtonText);
-  //       await waitFor(() => expect(getByText("End Journey")).toBeTruthy());
+//   //       fireEvent.press(startButtonText);
+//   //       await waitFor(() => expect(getByText("End Journey")).toBeTruthy());
 
-  //       const endButtonText = getByText("End Journey");
-  //       const endButton = endButtonText.parent?.parent ?? endButtonText.parent;
-  //       const endButtonStyle = Array.isArray(endButton.props.style)
-  //           ? Object.assign({}, ...endButton.props.style)
-  //           : endButton.props.style;
+//   //       const endButtonText = getByText("End Journey");
+//   //       const endButton = endButtonText.parent?.parent ?? endButtonText.parent;
+//   //       const endButtonStyle = Array.isArray(endButton.props.style)
+//   //           ? Object.assign({}, ...endButton.props.style)
+//   //           : endButton.props.style;
 
-  //       expect(endButtonStyle.backgroundColor).toBe("#960800ff");
-  //       });
-});
+//   //       expect(endButtonStyle.backgroundColor).toBe("#960800ff");
+//   //       });
+// });
