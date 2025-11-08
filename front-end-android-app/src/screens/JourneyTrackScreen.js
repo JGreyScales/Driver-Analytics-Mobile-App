@@ -4,9 +4,10 @@ import { View, Text, TouchableOpacity, Alert } from "react-native";
 import { GLOBAL_STYLES, COLORS, FONTS } from "../styles/GlobalStyles";
 import { LoadingAuthManager, withAuthLoading } from "../utils/LoadingClass";
 import { LocationContext } from "../utils/LocationContext";
+import { uploadDriverScore } from "../utils/JourneyDataUploader";
 
 function JourneyTrackScreen({navigation}) {
-  const locationSubscription = useContext(LocationContext); // <- global instance
+  const locationSubscription = useContext(LocationContext); 
   const [isTracking, setIsTracking] = useState(locationSubscription.isTracking);
   const auth = new LoadingAuthManager(navigation);
 
@@ -16,10 +17,34 @@ function JourneyTrackScreen({navigation}) {
     setIsTracking(true)
   };
 
+  async function handleEndJourney() {
+    console.log("Ending Journey and uploading data...");
+
+  // Gather data from the location context
+  const journeyData = {
+    tripDuration: Math.floor(locationSubscription.tripTime || 30), 
+    incidentCount: locationSubscription.incidentCount || 0,
+    averageSpeed: Math.floor(locationSubscription.avgSpeed || 55),
+    maxSpeed: Math.floor(locationSubscription.maxSpeed || 60),
+  };
+
+  console.log("Journey data to upload:", journeyData);
+
+  const success = await uploadDriverScore(journeyData);
+  if (success) {
+    console.log("Journey data uploaded successfully");
+  } else {
+    console.log("Failed to upload journey data");
+  }
+}
+
+
   const stopTracking = async () => {
     console.log("🛑 Stop Pressed");
     await locationSubscription.stopSubscription();
-    setIsTracking(false)
+    setIsTracking(false);
+
+    await handleEndJourney();
   };
 
   const goToHome = () => {
