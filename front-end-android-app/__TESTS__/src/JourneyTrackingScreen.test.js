@@ -1,9 +1,6 @@
 import React from "react";
 import { render, fireEvent, waitFor } from "@testing-library/react-native";
 import JourneyTrackScreen from "../../src/screens/JourneyTrackScreen";
-import { LocationProvider }  from "../../src/utils/LocationContext"
-import * as Location from "expo-location";
-import * as TaskManager from "expo-task-manager";
 import { Alert } from "react-native";
 
 // Mocks

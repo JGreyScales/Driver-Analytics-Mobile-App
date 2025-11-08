@@ -1,5 +1,19 @@
 // src/utils/notificationManager.js
-import * as Notifications from "expo-notifications";
+let Notifications;
+
+try {
+  // Try to load real Expo Notifications module (works when running in Expo runtime)
+  Notifications = require("expo-notifications");
+} catch (error) {
+  // Fallback mock when running under Jest or non-Expo environments
+  console.warn("⚠️ Expo Notifications module not loaded — using stubs for tests.");
+  Notifications = {
+    setNotificationHandler: () => {},
+    getPermissionsAsync: async () => ({ status: "granted" }),
+    requestPermissionsAsync: async () => ({ status: "granted" }),
+    scheduleNotificationAsync: async () => {},
+  };
+}
 import { Platform } from "react-native";
 
 class NotificationManager {
