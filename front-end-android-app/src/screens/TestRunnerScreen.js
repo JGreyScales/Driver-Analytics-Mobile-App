@@ -25,8 +25,8 @@ export default function TestRunnerScreen() {
               r.status === "PASSED"
                 ? "green"
                 : r.status === "FAILED"
-                ? "red"
-                : "blue",
+                  ? "red"
+                  : "blue",
           }}
         >
           {r.status} — {r.name}

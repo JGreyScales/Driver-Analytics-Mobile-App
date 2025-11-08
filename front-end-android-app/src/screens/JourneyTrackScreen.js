@@ -5,7 +5,7 @@ import { GLOBAL_STYLES, COLORS, FONTS } from "../styles/GlobalStyles";
 import { LoadingAuthManager, withAuthLoading } from "../utils/LoadingClass";
 import { LocationContext } from "../utils/LocationContext";
 
-function JourneyTrackScreen({navigation}) {
+function JourneyTrackScreen({ navigation }) {
   const locationSubscription = useContext(LocationContext); // <- global instance
   const isTrackingRef = useRef(locationSubscription.isTracking); // required to detect changes to the variable from the background process
   const [isTracking, setIsTracking] = useState(locationSubscription.isTracking);
@@ -35,7 +35,7 @@ function JourneyTrackScreen({navigation}) {
   };
 
   const goToHome = () => {
-      navigation.navigate("Home");
+    navigation.navigate("Home");
   };
 
   return (
@@ -53,24 +53,26 @@ function JourneyTrackScreen({navigation}) {
       {/* Title */}
       <Text
         style={[
-            GLOBAL_STYLES.title,
-            { fontSize: 40, fontWeight: "800", marginBottom: 330 },
-            ]}>Track Your Journey</Text>
+          GLOBAL_STYLES.title,
+          { fontSize: 40, fontWeight: "800", marginBottom: 330 },
+        ]}>Track Your Journey</Text>
 
       {/* Button */}
       <TouchableOpacity
         onPress={isTracking ? stopTracking : startTracking}
         style={[
           GLOBAL_STYLES.button,
-          { backgroundColor: isTracking  ? "#960800ff" : ( COLORS.primary ||"#5CC76D"),
-             width: "80%", marginBottom: 280},
+          {
+            backgroundColor: isTracking ? "#960800ff" : (COLORS.primary || "#5CC76D"),
+            width: "80%", marginBottom: 280
+          },
         ]}
       >
         <Text style={[
-        GLOBAL_STYLES.buttonText,
-        { fontSize: 40, fontWeight: "700", color: "#fff" },
-      ]}
-        >{isTracking  ? "End Journey" : "Start Journey"}</Text>
+          GLOBAL_STYLES.buttonText,
+          { fontSize: 40, fontWeight: "700", color: "#fff" },
+        ]}
+        >{isTracking ? "End Journey" : "Start Journey"}</Text>
       </TouchableOpacity>
 
       <TouchableOpacity
@@ -78,12 +80,12 @@ function JourneyTrackScreen({navigation}) {
         style={[
           GLOBAL_STYLES.button,
           { backgroundColor: "#114f1bff", width: "40%" },
-          ]}
+        ]}
       >
         <Text style={[
-        GLOBAL_STYLES.buttonText,
-        { fontSize: 20, fontWeight: "700", color: "#fff" },
-      ]}
+          GLOBAL_STYLES.buttonText,
+          { fontSize: 20, fontWeight: "700", color: "#fff" },
+        ]}
         >Back</Text>
       </TouchableOpacity>
     </View>

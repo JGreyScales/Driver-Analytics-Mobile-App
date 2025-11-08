@@ -19,7 +19,7 @@ app.use(express.json()); // use json for incoming payloads
 app.use("/status", assurance);
 app.use("/user", user);
 app.use("/auth", authCheck);
-app.use("/driving", authCheck)
+app.use("/driving", drivingScore)
 
 const PORT = process.env.PORT || 3000;
 // listen on all network intefaces

@@ -46,42 +46,42 @@ export default function SignUpScreen({ navigation }) {
     return Object.keys(newErrors).length === 0;
   };
 
-const handleSignUp = async () => {
-  if (!validate()) return;
+  const handleSignUp = async () => {
+    if (!validate()) return;
 
-  try {
-    const passwordHash = PasswordHash.HashMethod(password);
-    const response = await fetch("http://10.0.2.2:3000/user/", {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        "username": username,
-        "email": email,
-        "passwordHash": passwordHash,
-        // "testing":true, 
-      }),
-    });
+    try {
+      const passwordHash = PasswordHash.HashMethod(password);
+      const response = await fetch("http://10.0.2.2:3000/user/", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          "username": username,
+          "email": email,
+          "passwordHash": passwordHash,
+          // "testing":true, 
+        }),
+      });
 
-    const data = await response.json();
+      const data = await response.json();
 
-    if (response.ok) {
-      Alert.alert("✅ Success", data.message || "Account created successfully!");
-      setEmail("");
-      setUsername("");
-      setPassword("");
-      setErrors({});
-    } else {
-      Alert.alert("⚠️ Error", data.message || "Failed to create account.");
+      if (response.ok) {
+        Alert.alert("✅ Success", data.message || "Account created successfully!");
+        setEmail("");
+        setUsername("");
+        setPassword("");
+        setErrors({});
+      } else {
+        Alert.alert("⚠️ Error", data.message || "Failed to create account.");
+      }
+    } catch (error) {
+      console.error("Signup error:", error);
+      Alert.alert("❌ Network Error", "Could not connect to the server.");
     }
-  } catch (error) {
-    console.error("Signup error:", error);
-    Alert.alert("❌ Network Error", "Could not connect to the server.");
-  }
-};
+  };
 
-const goToSignIn = () => {
-  if (navigation && navigation.navigate) navigation.navigate("SignIn");
-};
+  const goToSignIn = () => {
+    if (navigation && navigation.navigate) navigation.navigate("SignIn");
+  };
 
   return (
     <KeyboardAvoidingView
