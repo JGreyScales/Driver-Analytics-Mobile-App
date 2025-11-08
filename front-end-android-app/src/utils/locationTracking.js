@@ -48,17 +48,7 @@ class LocationTracking {
         this.idleTimeout = 15 * 60 * 1000; // 15 minutes in ms (adjust for testing)
         this.autoStopTriggered = false; // prevent multiple stops
     }
-    
-    __tripStartTime(){
-        this.tripStart = Date.now()
-    }
 
-    // 🕓 Auto-stop tracking variables
-    this.lastMovementTime = null; // last time movement was detected
-    //this.idleStartTime = null;    // when idle started
-    this.idleTimeout = 15 * 60 * 1000; // 15 minutes in ms (adjust for testing)
-    this.autoStopTriggered = false; // prevent multiple stops
-  }
 
   __tripStartTime() {
     this.tripStart = Date.now()
