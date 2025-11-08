@@ -6,9 +6,11 @@ import { LoadingAuthManager, withAuthLoading } from "../utils/LoadingClass";
 import { LocationContext } from "../utils/LocationContext";
 import { uploadDriverScore } from "../utils/JourneyDataUploader";
 
+
 function JourneyTrackScreen({navigation}) {
   const locationSubscription = useContext(LocationContext); 
   const [isTracking, setIsTracking] = useState(locationSubscription.isTracking);
+  const isTrackingRef = useRef(isTracking); 
 
   const auth = new LoadingAuthManager(navigation);
 
