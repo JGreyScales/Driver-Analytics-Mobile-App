@@ -7,10 +7,10 @@ import { LocationContext } from "../utils/LocationContext";
 import { uploadDriverScore } from "../utils/JourneyDataUploader";
 
 
-function JourneyTrackScreen({navigation}) {
-  const locationSubscription = useContext(LocationContext); 
+function JourneyTrackScreen({ navigation }) {
+  const locationSubscription = useContext(LocationContext); // <- global instance
+  const isTrackingRef = useRef(locationSubscription.isTracking); // required to detect changes to the variable from the background process
   const [isTracking, setIsTracking] = useState(locationSubscription.isTracking);
-  const isTrackingRef = useRef(isTracking); 
 
   const auth = new LoadingAuthManager(navigation);
 

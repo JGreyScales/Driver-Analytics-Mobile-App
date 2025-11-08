@@ -4,7 +4,6 @@ import { Modal, View, Text, TouchableOpacity, Alert } from "react-native";
 import { GLOBAL_STYLES, COLORS, FONTS } from "../styles/GlobalStyles";
 import { withAuthLoading } from "../utils/LoadingClass";
 import SessionManager from "../utils/SessionManager";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import Ionicons from 'react-native-vector-icons/Ionicons';
 
 
