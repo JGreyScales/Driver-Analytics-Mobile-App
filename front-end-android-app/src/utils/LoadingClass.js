@@ -2,6 +2,7 @@
 import React, { useEffect, useState } from "react";
 import { View, ActivityIndicator, Text, Alert } from "react-native";
 import SessionManager from "../utils/SessionManager";
+import UserSignout from "./userSignout";
 import { GLOBAL_STYLES, COLORS } from "../styles/GlobalStyles";
 
 
@@ -16,7 +17,7 @@ export class LoadingAuthManager {
 
       if (!token) {
         console.log("No token found — redirecting to SignIn");
-        this.navigation.replace("SignIn");
+        await UserSignout.signoutUser(this.navigation)
         return false;
       }
 
@@ -33,14 +34,13 @@ export class LoadingAuthManager {
         return true;
       } else {
         console.log("Invalid or expired token");
-        await manager.clearToken();
-        this.navigation.replace("SignIn");
+        await UserSignout.signoutUser(this.navigation)
         return false;
       }
     } catch (err) {
       console.error("Error verifying token:", err);
       Alert.alert("Error", "Network or token error occurred");
-      this.navigation.replace("SignIn");
+      await UserSignout.signoutUser(this.navigation)
       return false;
     }
   }

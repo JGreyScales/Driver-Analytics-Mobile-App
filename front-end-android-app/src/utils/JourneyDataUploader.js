@@ -1,6 +1,5 @@
 // src/utils/JourneyDataUploader.js
 import SessionManager from "./SessionManager";
-import AsyncStorage from '@react-native-async-storage/async-storage';
 
 
 export async function uploadDriverScore(journeyData) {
@@ -44,7 +43,7 @@ export async function uploadDriverScore(journeyData) {
     }
 
     if (response.ok) {
-      console.log("Journey data uploaded successfully:", json);
+      console.log("Journey data uploaded successfully:", json || '(cant parse json)');
       return true;
     } else {
       console.error("Upload failed:", json || resText);

@@ -6,9 +6,9 @@ import {
   TextInput,
   TouchableOpacity,
   KeyboardAvoidingView,
-  Platform,
   Animated,
-  Alert
+  Alert,
+  ActivityIndicator
 } from "react-native";
 import { GLOBAL_STYLES, COLORS } from "../styles/GlobalStyles";
 import SessionManager from "../utils/SessionManager";
@@ -19,6 +19,8 @@ export default function SignInScreen({ navigation }) {
   const [password, setPassword] = useState("");
   const [errors, setErrors] = useState({});
   const [fadeAnim] = useState(new Animated.Value(0));
+  const [signingIn, setSigningIn] = useState(false)
+
   useEffect(() => {
     Animated.timing(fadeAnim, {
       toValue: 1,
@@ -49,7 +51,9 @@ export default function SignInScreen({ navigation }) {
       return;
     }
 
-    try {///post request to backedn
+    setSigningIn(true)
+
+    try {///post request to backend
       const passwordHash = PasswordHash.HashMethod(password)
 
       const response = await fetch("http://10.0.2.2:3000/user/", {
@@ -69,7 +73,6 @@ export default function SignInScreen({ navigation }) {
         const session = new SessionManager('JWT_TOKEN')
         await session.setToken(data.token);
         Alert.alert('Successful Login', data.message || 'Welcome Back Driver');
-        const token = await session.getToken();
         navigation.navigate('Home')
       } else {
         Alert.alert('Failed Login', data.message || 'Invalid Username or Password');
@@ -77,6 +80,8 @@ export default function SignInScreen({ navigation }) {
     } catch (error) {
       console.error('Error during login:', error.message);
       Alert.alert('Network error occurred');
+    } finally {
+      setSigningIn(false)
     }
   };
 
@@ -101,6 +106,7 @@ export default function SignInScreen({ navigation }) {
         errors.username && { borderColor: COLORS.error },
         ]}
         autoCapitalize="none"
+        maxLength={20}
       />
       {errors.username && (
         <Text style={GLOBAL_STYLES.errorText}>{errors.username}</Text>
@@ -112,10 +118,26 @@ export default function SignInScreen({ navigation }) {
         onChangeText={setPassword}
         style={GLOBAL_STYLES.input}
         secureTextEntry
+        maxLength={32}
       />
       {errors.password && (
         <Text style={GLOBAL_STYLES.errorText}>{errors.password}</Text>
       )}
+
+      <TouchableOpacity
+        style={GLOBAL_STYLES.button}
+        onPress={handleLogin}
+        testID="loginButton"
+        disabled={signingIn}
+      >
+        {signingIn ? (
+          <ActivityIndicator size="small" color={COLORS.white} />
+        ) : (
+          <Text style={GLOBAL_STYLES.buttonText}>LOGIN</Text>
+        )}
+      </TouchableOpacity>
+
+
       <TouchableOpacity style={GLOBAL_STYLES.button} onPress={handleLogin} testID="loginButton">
         <Text style={GLOBAL_STYLES.buttonText}>LOGIN</Text>
       </TouchableOpacity>

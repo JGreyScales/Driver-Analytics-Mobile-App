@@ -24,11 +24,13 @@ router.put("/score", validatePutScore, async(req, res) => {
     let averageSpeed = req.body.averageSpeed
     let maxSpeed = req.body.maxSpeed
 
-    if (!dataTypes.isValidDrivingParam(tripDuration) ||
+    if ((!Number.isInteger(tripDuration) && tripDuration >= 0) ||
     !Number.isInteger(incidentCount) ||
      !dataTypes.isValidDrivingParam(averageSpeed) ||
       !dataTypes.isValidDrivingParam(maxSpeed) ||
         maxSpeed < averageSpeed){
+          console.log(tripDuration, incidentCount, averageSpeed, maxSpeed)
+          console.log(typeof tripDuration, typeof incidentCount, typeof averageSpeed, typeof maxSpeed)
         res.status(400).send({statusCode:400, message:"Invalid body"})
       }
 

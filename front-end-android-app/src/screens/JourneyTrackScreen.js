@@ -35,10 +35,10 @@ function JourneyTrackScreen({ navigation }) {
 
   // Gather data from the location context
   const journeyData = {
-    tripDuration: Math.floor(locationSubscription.tripTime || 30), 
-    incidentCount: locationSubscription.incidentCount || 0,
-    averageSpeed: Math.floor(locationSubscription.avgSpeed || 55),
-    maxSpeed: Math.floor(locationSubscription.maxSpeed || 60),
+    tripDuration: Math.floor(locationSubscription.tripTime), 
+    incidentCount: locationSubscription.incidentCount,
+    averageSpeed: Math.floor(locationSubscription.avgSpeed),
+    maxSpeed: Math.floor(locationSubscription.maxSpeed),
   };
 
   console.log("Journey data to upload:", journeyData);
