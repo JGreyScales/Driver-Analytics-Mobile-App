@@ -106,6 +106,7 @@ export default function SignUpScreen({ navigation }) {
           ]}
           autoCapitalize="none"
           keyboardType="email-address"
+          maxLength={254}
         />
         {errors.email && (
           <Text style={GLOBAL_STYLES.errorText}>{errors.email}</Text>
@@ -120,6 +121,7 @@ export default function SignUpScreen({ navigation }) {
             errors.username && { borderColor: COLORS.error },
           ]}
           autoCapitalize="none"
+          maxLength={20}
         />
         {errors.username && (
           <Text style={GLOBAL_STYLES.errorText}>{errors.username}</Text>
@@ -134,6 +136,7 @@ export default function SignUpScreen({ navigation }) {
             errors.password && { borderColor: COLORS.error },
           ]}
           secureTextEntry
+          maxLength={32}
         />
         {errors.password && (
           <Text style={GLOBAL_STYLES.errorText}>{errors.password}</Text>

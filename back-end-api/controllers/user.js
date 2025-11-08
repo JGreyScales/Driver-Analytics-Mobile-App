@@ -78,11 +78,16 @@ class User {
         try{
             if (!dataTypes.isDefined(body.username) || !dataTypes.isDefined(body.passwordHash)) {throw {statusCode: 400, message: "Invalid parameters"}}
             await this.db.connect()
-            const query = `SELECT userID FROM ${this.db.usersTable} WHERE username = ? AND passwordHash = ? LIMIT 1`
-            const params = [body.username, body.passwordHash]
+            const query = `SELECT userID, passwordHash FROM ${this.db.usersTable} WHERE username = ? LIMIT 1`
+            const params = [body.username]
 
             const response = await this.db.fetchQuery(query, params)
             if (!dataTypes.isDefined(response[0].userID)) {throw {statusCode: 400, message: "Couldnt gather userID"}}
+            if (!dataTypes.isDefined(response[0].passwordHash)) {throw {statusCode: 400, message: "Couldnt gather passwordHash"}}
+            // passwords dont match
+            if (response[0].passwordHash !== body.passwordHash){
+                return {statusCode: 401, message: 'User is not authenticated'}
+            }
 
             return {statusCode: 202, message: 'User authenticated', token: `Bearer ${JWT_AUTH.generateToken(response[0].userID)}`}
 

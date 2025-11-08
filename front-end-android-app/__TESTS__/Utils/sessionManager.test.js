@@ -53,7 +53,7 @@ describe('SessionManager', () => {
     AsyncStorage.setItem.mockRejectedValueOnce(new Error('fail'));
     await session.setToken({ Authorization: 'Bearer abc123' });
     expect(spy).toHaveBeenCalledWith(
-      'Error saving session token:',
+      'Error saving testKey:',
       expect.any(Error)
     );
     spy.mockRestore();
@@ -65,7 +65,7 @@ describe('SessionManager', () => {
     AsyncStorage.removeItem.mockRejectedValueOnce(new Error('fail'));
     await session.clearToken();
     expect(spy).toHaveBeenCalledWith(
-      'Error clearing session token:',
+      'Error clearing testKey token:',
       expect.any(Error)
     );
     spy.mockRestore();

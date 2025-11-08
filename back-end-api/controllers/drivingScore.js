@@ -12,7 +12,7 @@ class Driving_Score {
     async uploadNewDrivingScore(tripDuration, incidentCount, averageSpeed, maxSpeed, userID){
         try{
             // defination checking the parameters
-            if (!dataTypes.isValidDrivingParam(tripDuration) ||
+            if ((!Number.isInteger(tripDuration) && tripDuration >= 0) ||
              !Number.isInteger(incidentCount) ||
               !dataTypes.isValidDrivingParam(averageSpeed) ||
                !dataTypes.isValidDrivingParam(maxSpeed) ||

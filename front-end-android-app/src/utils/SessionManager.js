@@ -10,7 +10,7 @@ class SessionManager {
       try {
         await AsyncStorage.setItem(this.key, data);
       } catch (error) {
-        console.error('Error saving session token:', error);
+        console.error(`Error saving ${this.key}`, error);
       }
     }
    
@@ -20,7 +20,7 @@ class SessionManager {
         const sessionToken = await AsyncStorage.getItem(this.key);
         return sessionToken;
       } catch (error) {
-        console.error('Error retrieving session token:', error);
+        console.error(`Error retrieving ${this.key}`, error);
         return null;
       }
     }
@@ -29,9 +29,9 @@ class SessionManager {
     async clearToken() {
       try {
         await AsyncStorage.removeItem(this.key);
-        console.log('Session token cleared.');
+        console.log(`${this.key} token cleared.`);
       } catch (error) {
-        console.error('Error clearing session token:', error);
+        return
       }
     }
   }

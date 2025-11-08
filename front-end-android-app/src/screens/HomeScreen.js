@@ -5,6 +5,7 @@ import { GLOBAL_STYLES, COLORS, FONTS } from "../styles/GlobalStyles";
 import { withAuthLoading } from "../utils/LoadingClass";
 import SessionManager from "../utils/SessionManager";
 import Ionicons from 'react-native-vector-icons/Ionicons';
+import UserSignout from '../utils/userSignout'
 
 
 function HomeScreen({ navigation }) {
@@ -14,22 +15,31 @@ function HomeScreen({ navigation }) {
   useEffect(() => {
     async function fetchUsername() {
       if (username === "") {
-        const manager = new SessionManager('JWT_TOKEN');
-        const token = await manager.getToken();
-
-        const response = await fetch("http://10.0.2.2:3000/user/", {
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': token
-          }
-        });
-
-        if (response.ok) {
-          const data = await response.json();
-          setUsername(data.data.username);
+        const usernameManager = new SessionManager('Username')
+        // try to fetch the username from cache
+        const username = await usernameManager.getToken()
+        if (username !== null) {
+          setUsername(username)
         } else {
-          Alert.alert("Error", "Failed to fetch username");
+          // otherwise fetch the username from the api
+          const manager = new SessionManager('JWT_TOKEN');
+          const token = await manager.getToken();
+
+          const response = await fetch("http://10.0.2.2:3000/user/", {
+            method: 'GET',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': token
+            }
+          });
+
+          if (response.ok) {
+            const data = await response.json();
+            usernameManager.setToken(data.data.username)
+            setUsername(data.data.username);
+          } else {
+            Alert.alert("Error", "Failed to fetch username");
+          }
         }
       }
     }
@@ -45,11 +55,8 @@ function HomeScreen({ navigation }) {
     setDisplaySettings(true)
   }
 
-  const signoutUser = () => {
-    const manager = new SessionManager("JWT_TOKEN")
-    manager.clearToken()
-    setDisplaySettings(false)
-    navigation.navigate("SignIn")
+  const signoutUser = async () => {
+    await UserSignout.signoutUser(navigation)
   }
 
 
