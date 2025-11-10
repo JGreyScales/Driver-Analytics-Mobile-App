@@ -1,5 +1,6 @@
 import React, { useState, useContext, useEffect, useRef } from "react";
 import { View, Text, TouchableOpacity } from "react-native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { GLOBAL_STYLES, COLORS } from "../styles/GlobalStyles";
 import { LoadingAuthManager, withAuthLoading } from "../utils/LoadingClass";
 import { LocationContext } from "../utils/LocationContext";
@@ -22,7 +23,7 @@ function JourneyTrackScreen({ navigation }) {
 
   const auth = new LoadingAuthManager(navigation);
 
-  // Sync tracking state
+  // 🔁 Sync tracking state
   useEffect(() => {
     if (locationSubscription.isTracking !== isTrackingRef.current) {
       setIsTracking(locationSubscription.isTracking);
@@ -30,7 +31,7 @@ function JourneyTrackScreen({ navigation }) {
     }
   }, [locationSubscription.isTracking]);
 
-  // Live updates for stats every 1 second
+  // 📈 Update live stats every second
   useEffect(() => {
     const interval = setInterval(() => {
       setMaxSpeed(Math.floor(locationSubscription.maxSpeed || 0));
@@ -42,6 +43,7 @@ function JourneyTrackScreen({ navigation }) {
 
   // 🕒 Timer control
   const startTimer = () => {
+    if (timerRef.current) return; // prevent duplicates
     timerRef.current = setInterval(() => {
       setElapsedTime((prev) => prev + 1);
     }, 1000);
@@ -65,6 +67,10 @@ function JourneyTrackScreen({ navigation }) {
     console.log("🚀 Start Journey Pressed");
     await locationSubscription.startSubscription();
     setIsTracking(true);
+
+    const startTime = Date.now();
+    await AsyncStorage.setItem("tripStartTime", startTime.toString());
+
     setElapsedTime(0);
     startTimer();
   };
@@ -76,6 +82,7 @@ function JourneyTrackScreen({ navigation }) {
     setIsTracking(false);
     stopTimer();
 
+    await AsyncStorage.removeItem("tripStartTime");
     await handleEndJourney();
   };
 
@@ -93,8 +100,29 @@ function JourneyTrackScreen({ navigation }) {
     console.log("Journey data to upload:", journeyData);
 
     const success = await uploadDriverScore(journeyData);
-    console.log(success ? "Journey data uploaded successfully" : "Failed to upload journey data");
+    console.log(
+      success
+        ? "Journey data uploaded successfully"
+        : "Failed to upload journey data"
+    );
   }
+
+  // 🧭 Restore timer if journey is still running
+  useEffect(() => {
+    const restoreTimer = async () => {
+      const startTime = await AsyncStorage.getItem("tripStartTime");
+      if (startTime) {
+        const diffSeconds = Math.floor(
+          (Date.now() - parseInt(startTime)) / 1000
+        );
+        setElapsedTime(diffSeconds);
+        setIsTracking(true);
+        startTimer();
+      }
+    };
+    restoreTimer();
+    return () => stopTimer();
+  }, []);
 
   const goToHome = () => {
     navigation.navigate("Home");
@@ -131,22 +159,18 @@ function JourneyTrackScreen({ navigation }) {
           elevation: 2,
         }}
       >
-        <Text style={{ fontSize: 18, fontWeight: "700", color: COLORS.primary }}>
+        <Text
+          style={{ fontSize: 18, fontWeight: "700", color: COLORS.primary }}
+        >
           📊 Live Statistics
         </Text>
 
         <Text style={{ fontSize: 16, marginTop: 10 }}>
           🕒 Duration: {formatTime(elapsedTime)}
         </Text>
-        <Text style={{ fontSize: 16 }}>
-          🚀 Max Speed: {maxSpeed} km/h
-        </Text>
-        <Text style={{ fontSize: 16 }}>
-          📈 Avg Speed: {avgSpeed} km/h
-        </Text>
-        <Text style={{ fontSize: 16 }}>
-          ⚠️ Incidents: {incidents}
-        </Text>
+        <Text style={{ fontSize: 16 }}>🚀 Max Speed: {maxSpeed} km/h</Text>
+        <Text style={{ fontSize: 16 }}>📈 Avg Speed: {avgSpeed} km/h</Text>
+        <Text style={{ fontSize: 16 }}>⚠️ Incidents: {incidents}</Text>
       </View>
 
       {/* Start/Stop Button */}
