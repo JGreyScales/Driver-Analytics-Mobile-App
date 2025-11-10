@@ -2,6 +2,13 @@ import SessionManager from "../utils/SessionManager";
 
 export default class FetchHelper {
 
+    static clearCache(){
+        const downloadUsageManager = new SessionManager("networkDownloadUsage");
+        const uploadUsageManager = new SessionManager("networkUploadUsage");
+        downloadUsageManager.clearToken()
+        uploadUsageManager.clearToken()
+    }
+
     static async fetchDownloadUsage(){
         const downloadUsageManager = new SessionManager("networkDownloadUsage");
         return await downloadUsageManager.getToken()

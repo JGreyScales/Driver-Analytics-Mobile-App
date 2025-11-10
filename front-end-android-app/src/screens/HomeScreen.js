@@ -71,6 +71,12 @@ function HomeScreen({ navigation }) {
     await UserSignout.signoutUser(navigation)
   }
 
+  const clearCache = () => {
+    FetchHelper.clearCache()
+    setDownloadUsage(0)
+    setUploadUsage(0)
+  }
+
 
   return (
     <View
@@ -133,7 +139,18 @@ function HomeScreen({ navigation }) {
                 Sign Out
               </Text>
             </TouchableOpacity>
-
+            {/* clear cache button */}
+            <TouchableOpacity
+              onPress={() => clearCache()}
+              style={[
+                GLOBAL_STYLES.button,
+                { backgroundColor: COLORS.primary || "#5CC76D", width: "100%", marginBottom: 20 },
+              ]}
+            >
+              <Text style={[GLOBAL_STYLES.buttonText, { fontSize: 20, fontWeight: "600", color: "#fff" }]}>
+                Clear Usage Cache
+              </Text>
+            </TouchableOpacity>
             {/* Close Button */}
             <TouchableOpacity
               onPress={() => setDisplaySettings(false)}
