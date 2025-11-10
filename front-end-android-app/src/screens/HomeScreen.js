@@ -12,9 +12,13 @@ import FetchHelper from "../utils/fetchHelper";
 function HomeScreen({ navigation }) {
   const [username, setUsername] = useState("");
   const [displaySettings, setDisplaySettings] = useState(false)
+  const [downloadUsage, setDownloadUsage] = useState(0)
+  const [uploadUsage, setUploadUsage] = useState(0)
 
   useEffect(() => {
+
     async function fetchUsername() {
+
       if (username === "") {
         const usernameManager = new SessionManager('Username')
         // try to fetch the username from cache
@@ -55,6 +59,11 @@ function HomeScreen({ navigation }) {
   };
 
   const openSettingsModal = () => {
+    async function getUsageStats() {
+      setDownloadUsage(await FetchHelper.fetchDownloadUsage())
+      setUploadUsage(await FetchHelper.fetchUploadUsage())
+    }
+    getUsageStats()
     setDisplaySettings(true)
   }
 
@@ -137,6 +146,8 @@ function HomeScreen({ navigation }) {
                 Close
               </Text>
             </TouchableOpacity>
+            <Text>Download Usage: {(Number(downloadUsage / (1024 * 1024))).toFixed(2)}MB</Text>
+            <Text>Upload Usage: {(Number(uploadUsage / (1024 * 1024)).toFixed(2))}MB</Text>
           </View>
         </View>
       </Modal>

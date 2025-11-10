@@ -1,6 +1,17 @@
 import SessionManager from "../utils/SessionManager";
 
 export default class FetchHelper {
+
+    static async fetchDownloadUsage(){
+        const downloadUsageManager = new SessionManager("networkDownloadUsage");
+        return await downloadUsageManager.getToken()
+    }
+
+    static async fetchUploadUsage(){
+        const uploadUsageManager = new SessionManager("networkUploadUsage");
+        return await uploadUsageManager.getToken()
+    }   
+
     static async makeRequest(path, method, headers = {}, body = null) {
         try{
             // Only include body for methods that allow it
@@ -35,7 +46,7 @@ export default class FetchHelper {
             const downloadUsageManager = new SessionManager("networkDownloadUsage");
             const downloadSizeHistory = Number(await downloadUsageManager.getToken());
             await downloadUsageManager.setToken(String(downloadSizeHistory + responseSize));
-            
+
             return response; // original response is still readable by caller
         }
         catch (error) {
