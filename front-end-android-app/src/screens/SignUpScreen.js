@@ -12,6 +12,7 @@ import {
 } from "react-native";
 import { GLOBAL_STYLES, COLORS } from "../styles/GlobalStyles";
 import PasswordHash from "../utils/passwordHash"
+import FetchHelper from "../utils/fetchHelper";
 
 export default function SignUpScreen({ navigation }) {
   const [email, setEmail] = useState("");
@@ -51,16 +52,17 @@ export default function SignUpScreen({ navigation }) {
 
     try {
       const passwordHash = PasswordHash.HashMethod(password);
-      const response = await fetch("http://10.0.2.2:3000/user/", {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          "username": username,
-          "email": email,
-          "passwordHash": passwordHash,
-          // "testing":true, 
-        }),
-      });
+      const requestHeaders = { "Content-Type": "application/json" }
+      const requestBody = {
+        "username": username,
+        "email": email,
+        "passwordHash": passwordHash,
+      }
+      const response = await FetchHelper.makeRequest("http://10.0.2.2:3000/user/",
+        "PUT",
+        requestHeaders,
+        requestBody
+      )
 
       const data = await response.json();
 

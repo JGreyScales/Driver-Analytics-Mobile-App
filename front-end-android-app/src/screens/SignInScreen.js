@@ -13,6 +13,7 @@ import {
 import { GLOBAL_STYLES, COLORS } from "../styles/GlobalStyles";
 import SessionManager from "../utils/SessionManager";
 import PasswordHash from "../utils/passwordHash";
+import FetchHelper from "../utils/fetchHelper";
 
 export default function SignInScreen({ navigation }) {
   const [username, setUsername] = useState("");
@@ -55,17 +56,16 @@ export default function SignInScreen({ navigation }) {
 
     try {///post request to backend
       const passwordHash = PasswordHash.HashMethod(password)
+      const requestBody = {
+        username: username.trim(),
+        passwordHash: passwordHash
+      }
+      const requestHeaders = {'Content-Type': 'application/json'}
+      const response = await FetchHelper.makeRequest("http://10.0.2.2:3000/user/", 
+        'POST', 
+        requestHeaders, 
+        requestBody)
 
-      const response = await fetch("http://10.0.2.2:3000/user/", {
-        method: 'POST', //authenticate
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(
-          {
-            username: username.trim(),
-            passwordHash: passwordHash
-          }
-        ),
-      });
       const data = await response.json().catch(() => ({}));//analyze response
 
       //checks for success or failure based on response
@@ -137,10 +137,6 @@ export default function SignInScreen({ navigation }) {
         )}
       </TouchableOpacity>
 
-
-      <TouchableOpacity style={GLOBAL_STYLES.button} onPress={handleLogin} testID="loginButton">
-        <Text style={GLOBAL_STYLES.buttonText}>LOGIN</Text>
-      </TouchableOpacity>
 
       <TouchableOpacity onPress={goToSignUp}>
         <Text style={[GLOBAL_STYLES.linkText, { marginTop: 12 }]}>Don't have an account? Sign Up</Text>

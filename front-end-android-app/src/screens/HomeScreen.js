@@ -6,14 +6,19 @@ import { withAuthLoading } from "../utils/LoadingClass";
 import SessionManager from "../utils/SessionManager";
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import UserSignout from '../utils/userSignout'
+import FetchHelper from "../utils/fetchHelper";
 
 
 function HomeScreen({ navigation }) {
   const [username, setUsername] = useState("");
   const [displaySettings, setDisplaySettings] = useState(false)
+  const [downloadUsage, setDownloadUsage] = useState(0)
+  const [uploadUsage, setUploadUsage] = useState(0)
 
   useEffect(() => {
+
     async function fetchUsername() {
+
       if (username === "") {
         const usernameManager = new SessionManager('Username')
         // try to fetch the username from cache
@@ -25,13 +30,15 @@ function HomeScreen({ navigation }) {
           const manager = new SessionManager('JWT_TOKEN');
           const token = await manager.getToken();
 
-          const response = await fetch("http://10.0.2.2:3000/user/", {
-            method: 'GET',
-            headers: {
-              'Content-Type': 'application/json',
-              'Authorization': token
-            }
-          });
+          const requestHeaders = {
+            'Content-Type': 'application/json',
+            'Authorization': token
+          }
+
+          const response = await FetchHelper.makeRequest("http://10.0.2.2:3000/user/",
+            "GET",
+            requestHeaders
+          )
 
           if (response.ok) {
             const data = await response.json();
@@ -52,11 +59,22 @@ function HomeScreen({ navigation }) {
   };
 
   const openSettingsModal = () => {
+    async function getUsageStats() {
+      setDownloadUsage(await FetchHelper.fetchDownloadUsage())
+      setUploadUsage(await FetchHelper.fetchUploadUsage())
+    }
+    getUsageStats()
     setDisplaySettings(true)
   }
 
   const signoutUser = async () => {
     await UserSignout.signoutUser(navigation)
+  }
+
+  const clearCache = () => {
+    FetchHelper.clearCache()
+    setDownloadUsage(0)
+    setUploadUsage(0)
   }
 
 
@@ -121,7 +139,18 @@ function HomeScreen({ navigation }) {
                 Sign Out
               </Text>
             </TouchableOpacity>
-
+            {/* clear cache button */}
+            <TouchableOpacity
+              onPress={() => clearCache()}
+              style={[
+                GLOBAL_STYLES.button,
+                { backgroundColor: COLORS.primary || "#5CC76D", width: "100%", marginBottom: 20 },
+              ]}
+            >
+              <Text style={[GLOBAL_STYLES.buttonText, { fontSize: 20, fontWeight: "600", color: "#fff" }]}>
+                Clear Usage Cache
+              </Text>
+            </TouchableOpacity>
             {/* Close Button */}
             <TouchableOpacity
               onPress={() => setDisplaySettings(false)}
@@ -134,6 +163,8 @@ function HomeScreen({ navigation }) {
                 Close
               </Text>
             </TouchableOpacity>
+            <Text>Download Usage: {(Number(downloadUsage / (1024 * 1024))).toFixed(2)}MB</Text>
+            <Text>Upload Usage: {(Number(uploadUsage / (1024 * 1024)).toFixed(2))}MB</Text>
           </View>
         </View>
       </Modal>
