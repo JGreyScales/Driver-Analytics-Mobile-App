@@ -138,10 +138,6 @@ export default function SignInScreen({ navigation }) {
       </TouchableOpacity>
 
 
-      <TouchableOpacity style={GLOBAL_STYLES.button} onPress={handleLogin} testID="loginButton">
-        <Text style={GLOBAL_STYLES.buttonText}>LOGIN</Text>
-      </TouchableOpacity>
-
       <TouchableOpacity onPress={goToSignUp}>
         <Text style={[GLOBAL_STYLES.linkText, { marginTop: 12 }]}>Don't have an account? Sign Up</Text>
       </TouchableOpacity>
