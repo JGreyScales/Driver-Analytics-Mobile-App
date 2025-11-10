@@ -6,6 +6,7 @@ import { withAuthLoading } from "../utils/LoadingClass";
 import SessionManager from "../utils/SessionManager";
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import UserSignout from '../utils/userSignout'
+import FetchHelper from "../utils/fetchHelper";
 
 
 function HomeScreen({ navigation }) {
@@ -25,13 +26,15 @@ function HomeScreen({ navigation }) {
           const manager = new SessionManager('JWT_TOKEN');
           const token = await manager.getToken();
 
-          const response = await fetch("http://10.0.2.2:3000/user/", {
-            method: 'GET',
-            headers: {
-              'Content-Type': 'application/json',
-              'Authorization': token
-            }
-          });
+          const requestHeaders = {
+            'Content-Type': 'application/json',
+            'Authorization': token
+          }
+
+          const response = await FetchHelper.makeRequest("http://10.0.2.2:3000/user/",
+            "GET",
+            requestHeaders
+          )
 
           if (response.ok) {
             const data = await response.json();

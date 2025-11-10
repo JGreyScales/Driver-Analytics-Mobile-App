@@ -1,6 +1,6 @@
 // src/utils/JourneyDataUploader.js
 import SessionManager from "./SessionManager";
-
+import FetchHelper from "./fetchHelper";
 
 export async function uploadDriverScore(journeyData) {
   try {
@@ -19,18 +19,20 @@ export async function uploadDriverScore(journeyData) {
       averageSpeed: journeyData.averageSpeed,
       maxSpeed: journeyData.maxSpeed,
     };
+    const requestHeaders = {
+      "Content-Type": "application/json",
+      Authorization: token,
+    }
 
     console.log("Uploading journey data:", requestBody);
 
     // Send PUT request to backend
-    const response = await fetch("http://10.0.2.2:3000/driving/score", {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: token,
-      },
-      body: JSON.stringify(requestBody),
-    });
+    const response = await FetchHelper.makeRequest("http://10.0.2.2:3000/driving/score",
+      "PUT",
+      requestHeaders,
+      requestBody
+    )
+
 
     const resText = await response.text();
     console.log("🧾 Raw backend response:", resText);
