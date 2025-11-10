@@ -3,6 +3,7 @@ import React, { useEffect, useState } from "react";
 import { View, ActivityIndicator, Text, Alert } from "react-native";
 import SessionManager from "../utils/SessionManager";
 import UserSignout from "./userSignout";
+import FetchHelper from "./fetchHelper";
 import { GLOBAL_STYLES, COLORS } from "../styles/GlobalStyles";
 
 
@@ -20,14 +21,14 @@ export class LoadingAuthManager {
         await UserSignout.signoutUser(this.navigation)
         return false;
       }
-
-      const response = await fetch("http://10.0.2.2:3000/auth/", {//validate token with api
-        method: "GET",
-        headers: {
-          Authorization: token,//send token in headers
-          "Content-Type": "application/json",
-        },
-      });
+      const requestHeaders = {
+        Authorization: token,//send token in headers
+        "Content-Type": "application/json",
+      }
+      const response = await FetchHelper.makeRequest("http://10.0.2.2:3000/auth/",
+        "GET",
+        requestHeaders
+      ) 
 
       if (response.ok) {
         console.log("Token verified");

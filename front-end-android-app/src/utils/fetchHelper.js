@@ -35,9 +35,7 @@ export default class FetchHelper {
             const downloadUsageManager = new SessionManager("networkDownloadUsage");
             const downloadSizeHistory = Number(await downloadUsageManager.getToken());
             await downloadUsageManager.setToken(String(downloadSizeHistory + responseSize));
-
-            console.log(`Total upload usage: ${uploadSizeHistory + requestSize}`)
-            console.log(`Total download usage: ${downloadSizeHistory + responseSize}`)
+            
             return response; // original response is still readable by caller
         }
         catch (error) {
