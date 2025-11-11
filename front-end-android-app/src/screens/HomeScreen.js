@@ -1,7 +1,7 @@
 // src/screens/HomeScreen.js
 import React, { useState, useEffect } from "react";
 import { Modal, View, Text, TouchableOpacity, Alert } from "react-native";
-import { GLOBAL_STYLES, COLORS, FONTS } from "../styles/GlobalStyles";
+import { GLOBAL_STYLES, COLORS } from "../styles/GlobalStyles";
 import { withAuthLoading } from "../utils/LoadingClass";
 import SessionManager from "../utils/SessionManager";
 import Ionicons from 'react-native-vector-icons/Ionicons';
@@ -56,6 +56,9 @@ function HomeScreen({ navigation }) {
 
   const goToTrackJourney = () => {
     navigation.navigate("Journey");
+  };
+    const goToGlobalScore = () => {
+    navigation.navigate("Global");
   };
 
   const openSettingsModal = () => {
@@ -214,6 +217,7 @@ function HomeScreen({ navigation }) {
       </TouchableOpacity>
 
       <TouchableOpacity
+        onPress={goToGlobalScore}
         style={[
           GLOBAL_STYLES.button,
           { backgroundColor: COLORS.primary || "#5CC76D", width: "100%" },

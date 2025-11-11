@@ -9,6 +9,7 @@ import SignInScreen from "./src/screens/SignInScreen";
 import SignUpScreen from "./src/screens/SignUpScreen";
 import HomeScreen from "./src/screens/HomeScreen";
 import JourneyTrackScreen from "./src/screens/JourneyTrackScreen";
+import globalScoreScreen from "./src/screens/GlobalScoreScreen";
 
 // 🔔 Notification Manager
 import NotificationManager from "./src/utils/notificationManager";
@@ -32,6 +33,7 @@ export default function App() {
           <Stack.Screen name="SignUp" component={SignUpScreen} options={{ title: 'Sign Up' }} />
           <Stack.Screen name="Home" component={HomeScreen} options={{ title: 'Home' }} />
           <Stack.Screen name="Journey" component={JourneyTrackScreen} options={{ title: 'Journey' }} />
+          <Stack.Screen name="Global" component={globalScoreScreen} options={{ title: 'Global' }} />
         </Stack.Navigator>
       </NavigationContainer>
     </LocationProvider>
