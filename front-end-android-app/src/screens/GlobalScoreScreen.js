@@ -2,43 +2,48 @@ import React, { useState, useEffect } from "react";
 import { View, Text, TouchableOpacity, Alert, ActivityIndicator } from "react-native";
 import { GLOBAL_STYLES } from "../styles/GlobalStyles";
 import FetchHelper from "../utils/fetchHelper";
-import SessionManager from "../utils/SessionManager";
 import { withAuthLoading } from "../utils/LoadingClass";
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import SessionManager from "../utils/SessionManager.js";
 
 function globalScoreScreen({navigation}) { 
-    const [globalScore, setGlobalScore] = useState(null); 
-    const [comparativeScore, setComparativeScore] = useState(null); 
     const [loading, setLoading] = useState(true); 
+    const [scoreData, setScoreData] = useState(null); 
+    const [error, setError] = useState(null);
+    const [comparativeScore, setComparativeScore] = useState(null); 
 
     useEffect(() => { 
         const fetchScores = async() => { 
             try { 
                 const manager = new SessionManager('JWT_TOKEN'); 
                 const token = await manager.getToken();
-                const requestHeaders = { Authorization: `Bearer ${token}` };
+                console.log("Token Retrieved:", token); 
 
-                const response = await FetchHelper.makeRequest("http://10.0.2.2:3000/user/", 
+                const response = await FetchHelper.makeRequest("http://10.0.2.2:3000/user", 
                     "GET", 
-                    requestHeaders
+                    {
+                      "Content-Type": "application/json", 
+                      "Authorization": token.startsWith("Bearer") ? token: `Bearer ${token}`, 
+                    }
                 );
-                console.log("from api:", response);
-                if(response.ok && response.data){ 
-                    setGlobalScore(response.data.globalScore); 
-                    setComparativeScore(response.data.comparativeScore); 
-                }else { 
-                    console.log("response not ok:", response); 
-                    Alert.alert("Error", "Unable to fetch user scores."); 
+                const data = await response.json(); 
+                if(response.ok && data.statusCode === 200){
+                  setScoreData(data.data);
+                  setComparativeScore(data.data); 
+                }else{
+                  console.log("response not ok: ", data); 
+                  Alert.alert("Failed to fetch user data", data.message); 
                 }
-            }catch(err){
-                console.error("Error. Fetching Score: ", err); 
-                Alert.alert("Network error"); 
-            }finally{
-                setLoading(false); 
+              }catch(err){
+                console.error("Error fetching score:", err);
+                setError("Error fetching scores"); 
+              }finally{ 
+                setLoading(false);
+              }
             }
-        };
-        fetchScores(); 
-    }, []); 
+
+            fetchScores(); 
+          },
+          []);
 
     
     const goToHome = () => {
@@ -60,12 +65,12 @@ function globalScoreScreen({navigation}) {
 
       <View style={GLOBAL_STYLES.scoreContainer}>
         <Text style={GLOBAL_STYLES.label}>Global Score:</Text>
-        <Text style={GLOBAL_STYLES.score}>{globalScore ?? "N/A"}</Text>
+        <Text style={GLOBAL_STYLES.score}>{scoreData.score ?? "N/A"}</Text>
       </View>
 
       <View style={GLOBAL_STYLES.scoreContainer}>
         <Text style={GLOBAL_STYLES.label}>Comparative Score:</Text>
-        <Text style={GLOBAL_STYLES.score}>{comparativeScore ?? "N/A"}</Text>
+        <Text style={GLOBAL_STYLES.score}>{comparativeScore.score ?? "N/A"}</Text>
       </View>
     {/* Back Button */}
         <TouchableOpacity
