@@ -7,7 +7,7 @@ import SessionManager from "../utils/SessionManager";
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import UserSignout from '../utils/userSignout'
 import FetchHelper from "../utils/fetchHelper";
-
+import UserDelete from "../utils/userDelete";
 
 function HomeScreen({ navigation }) {
   const [username, setUsername] = useState("");
@@ -127,6 +127,23 @@ function HomeScreen({ navigation }) {
               justifyContent: 'center',
             }}
           >
+{/* delete account */}
+<TouchableOpacity
+ onPress={() => UserDelete.deleteAccount(navigation)}
+style={[ GLOBAL_STYLES.button,
+    { backgroundColor: "#e63946", width: "100%", marginBottom: 20 },
+  ]}
+>
+<Text
+    style={[
+      GLOBAL_STYLES.buttonText,
+      { fontSize: 20, fontWeight: "600", color: "#fff" },
+    ]}
+>
+    Delete Account
+</Text>
+</TouchableOpacity>
+
             {/* Sign Out Button */}
             <TouchableOpacity
               onPress={() => signoutUser()}
