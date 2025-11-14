@@ -76,156 +76,197 @@ function HomeScreen({ navigation }) {
     setDownloadUsage(0)
     setUploadUsage(0)
   }
-
-
-  return (
-    <View
-      style={[
-        GLOBAL_STYLES.container,
+  const showPopup = async () => {
+    Alert.alert(
+      "Confirm Action",
+      "Are you sure you want to continue?",
+      [
         {
-          justifyContent: "flex-start",
-          alignItems: "center",
-          paddingTop: 30,
+          text: "NO",
+          onPress: () => console.log("User pressed NO"),
+          style: "cancel"
         },
-      ]}
-    >
-      {/* Settings Icon - Cogwheel in the Top Right */}
-      <TouchableOpacity
-        onPress={openSettingsModal}
-        style={{
-          position: 'absolute',
-          top: 30,
-          right: 20,
-          zIndex: 1000,
-        }}
-      >
-        <Ionicons name="settings" size={30} color={COLORS.primary || "#5CC76D"} />
-      </TouchableOpacity>
+        {
+          text: "OK",
+          onPress: async () => {
+            const manager = new SessionManager('JWT_TOKEN');
+            const token = await manager.getToken();
 
-      {/* Modal */}
-      <Modal
-        animationType="slide"
-        transparent={true}
-        visible={displaySettings}
-        onRequestClose={() => setDisplaySettings(false)}
+            const requestHeaders = {
+              'Content-Type': 'application/json',
+              'Authorization': token
+            }
+
+            FetchHelper.makeRequest('http://localhost:3000/user/', 'DELETE', requestHeaders) // dont await, not needed
+            UserSignout.signoutUser(navigation)
+          }
+        }
+      ],
+      { cancelable: true }
+    );
+  };
+
+
+return (
+  <View
+    style={[
+      GLOBAL_STYLES.container,
+      {
+        justifyContent: "flex-start",
+        alignItems: "center",
+        paddingTop: 30,
+      },
+    ]}
+  >
+    {/* Settings Icon - Cogwheel in the Top Right */}
+    <TouchableOpacity
+      onPress={openSettingsModal}
+      style={{
+        position: 'absolute',
+        top: 30,
+        right: 20,
+        zIndex: 1000,
+      }}
+    >
+      <Ionicons name="settings" size={30} color={COLORS.primary || "#5CC76D"} />
+    </TouchableOpacity>
+
+    {/* Modal */}
+    <Modal
+      animationType="slide"
+      transparent={true}
+      visible={displaySettings}
+      onRequestClose={() => setDisplaySettings(false)}
+    >
+      <View
+        style={{
+          flex: 1,
+          justifyContent: 'center',
+          alignItems: 'center',
+          backgroundColor: 'rgba(0, 0, 0, 0.5)', // semi-transparent background
+        }}
       >
         <View
           style={{
-            flex: 1,
-            justifyContent: 'center',
+            width: '80%',
+            backgroundColor: '#fff', // modal background
+            padding: 20,
+            borderRadius: 10,
             alignItems: 'center',
-            backgroundColor: 'rgba(0, 0, 0, 0.5)', // semi-transparent background
+            justifyContent: 'center',
           }}
         >
-          <View
-            style={{
-              width: '80%',
-              backgroundColor: '#fff', // modal background
-              padding: 20,
-              borderRadius: 10,
-              alignItems: 'center',
-              justifyContent: 'center',
-            }}
+          {/* Sign Out Button */}
+          <TouchableOpacity
+            onPress={() => signoutUser()}
+            style={[
+              GLOBAL_STYLES.button,
+              { backgroundColor: COLORS.primary || "#5CC76D", width: "100%", marginBottom: 20 },
+            ]}
           >
-            {/* Sign Out Button */}
-            <TouchableOpacity
-              onPress={() => signoutUser()}
-              style={[
-                GLOBAL_STYLES.button,
-                { backgroundColor: COLORS.primary || "#5CC76D", width: "100%", marginBottom: 20 },
-              ]}
-            >
-              <Text style={[GLOBAL_STYLES.buttonText, { fontSize: 20, fontWeight: "600", color: "#fff" }]}>
-                Sign Out
-              </Text>
-            </TouchableOpacity>
-            {/* clear cache button */}
-            <TouchableOpacity
-              onPress={() => clearCache()}
-              style={[
-                GLOBAL_STYLES.button,
-                { backgroundColor: COLORS.primary || "#5CC76D", width: "100%", marginBottom: 20 },
-              ]}
-            >
-              <Text style={[GLOBAL_STYLES.buttonText, { fontSize: 20, fontWeight: "600", color: "#fff" }]}>
-                Clear Usage Cache
-              </Text>
-            </TouchableOpacity>
-            {/* Close Button */}
-            <TouchableOpacity
-              onPress={() => setDisplaySettings(false)}
-              style={[
-                GLOBAL_STYLES.button,
-                { backgroundColor: COLORS.primary || "#5CC76D", width: "100%", marginBottom: 20 },
-              ]}
-            >
-              <Text style={[GLOBAL_STYLES.buttonText, { fontSize: 20, fontWeight: "600", color: "#fff" }]}>
-                Close
-              </Text>
-            </TouchableOpacity>
-            <Text>Download Usage: {(Number(downloadUsage / (1024 * 1024))).toFixed(2)}MB</Text>
-            <Text>Upload Usage: {(Number(uploadUsage / (1024 * 1024)).toFixed(2))}MB</Text>
-          </View>
+            <Text style={[GLOBAL_STYLES.buttonText, { fontSize: 20, fontWeight: "600", color: "#fff" }]}>
+              Sign Out
+            </Text>
+          </TouchableOpacity>
+          {/* clear cache button */}
+          <TouchableOpacity
+            onPress={() => clearCache()}
+            style={[
+              GLOBAL_STYLES.button,
+              { backgroundColor: COLORS.primary || "#5CC76D", width: "100%", marginBottom: 20 },
+            ]}
+          >
+            <Text style={[GLOBAL_STYLES.buttonText, { fontSize: 20, fontWeight: "600", color: "#fff" }]}>
+              Clear Usage Cache
+            </Text>
+          </TouchableOpacity>
+          {/* Close Button */}
+          <TouchableOpacity
+            onPress={() => setDisplaySettings(false)}
+            style={[
+              GLOBAL_STYLES.button,
+              { backgroundColor: COLORS.primary || "#5CC76D", width: "100%", marginBottom: 20 },
+            ]}
+          >
+            <Text style={[GLOBAL_STYLES.buttonText, { fontSize: 20, fontWeight: "600", color: "#fff" }]}>
+              Close
+            </Text>
+          </TouchableOpacity>
+          {/* Delete user data button */}
+          <TouchableOpacity
+            onPress={async () => await showPopup()}
+            style={[
+              GLOBAL_STYLES.button,
+              { backgroundColor: COLORS.primary || "#e22019ff", width: "100%", marginBottom: 20 },
+            ]}
+          >
+            <Text style={[GLOBAL_STYLES.buttonText, { fontSize: 20, fontWeight: "600", color: "#fff" }]}>
+              Delete User Data
+            </Text>
+          </TouchableOpacity>
+          <Text>Download Usage: {(Number(downloadUsage / (1024 * 1024))).toFixed(2)}MB</Text>
+          <Text>Upload Usage: {(Number(uploadUsage / (1024 * 1024)).toFixed(2))}MB</Text>
         </View>
-      </Modal>
+      </View>
+    </Modal>
 
-      {/* Title */}
-      <Text
-        style={[
-          GLOBAL_STYLES.title,
-          { fontSize: 50, fontWeight: "700", marginBottom: 5 },
-        ]}
-      >
-        Welcome
+    {/* Title */}
+    <Text
+      style={[
+        GLOBAL_STYLES.title,
+        { fontSize: 50, fontWeight: "700", marginBottom: 5 },
+      ]}
+    >
+      Welcome
+    </Text>
+
+    {/* Username */}
+    <Text
+      style={[
+        GLOBAL_STYLES.subtitle,
+        { fontSize: 25, color: "#030403ff", marginBottom: 150 },
+      ]}
+    >
+      {username || "Username"}
+    </Text>
+
+    {/* Buttons */}
+    <TouchableOpacity
+      onPress={goToTrackJourney}
+      style={[
+        GLOBAL_STYLES.button,
+        { backgroundColor: COLORS.primary || "#5CC76D", width: "100%", marginBottom: 90 },
+      ]}
+    >
+      <Text style={[GLOBAL_STYLES.buttonText, { fontSize: 20, fontWeight: "600", color: "#fff" }]}>
+        Track a Journey
       </Text>
+    </TouchableOpacity>
 
-      {/* Username */}
-      <Text
-        style={[
-          GLOBAL_STYLES.subtitle,
-          { fontSize: 25, color: "#030403ff", marginBottom: 150 },
-        ]}
-      >
-        {username || "Username"}
+    <TouchableOpacity
+      style={[
+        GLOBAL_STYLES.button,
+        { backgroundColor: COLORS.primary || "#5CC76D", width: "100%", marginBottom: 100 },
+      ]}
+    >
+      <Text style={[GLOBAL_STYLES.buttonText, { fontSize: 20, fontWeight: "600", color: "#fff" }]}>
+        Journey Score
       </Text>
+    </TouchableOpacity>
 
-      {/* Buttons */}
-      <TouchableOpacity
-        onPress={goToTrackJourney}
-        style={[
-          GLOBAL_STYLES.button,
-          { backgroundColor: COLORS.primary || "#5CC76D", width: "100%", marginBottom: 90 },
-        ]}
-      >
-        <Text style={[GLOBAL_STYLES.buttonText, { fontSize: 20, fontWeight: "600", color: "#fff" }]}>
-          Track a Journey
-        </Text>
-      </TouchableOpacity>
+    <TouchableOpacity
+      style={[
+        GLOBAL_STYLES.button,
+        { backgroundColor: COLORS.primary || "#5CC76D", width: "100%" },
+      ]}
+    >
+      <Text style={[GLOBAL_STYLES.buttonText, { fontSize: 20, fontWeight: "600", color: "#fff" }]}>
+        Global Score
+      </Text>
+    </TouchableOpacity>
 
-      <TouchableOpacity
-        style={[
-          GLOBAL_STYLES.button,
-          { backgroundColor: COLORS.primary || "#5CC76D", width: "100%", marginBottom: 100 },
-        ]}
-      >
-        <Text style={[GLOBAL_STYLES.buttonText, { fontSize: 20, fontWeight: "600", color: "#fff" }]}>
-          Journey Score
-        </Text>
-      </TouchableOpacity>
-
-      <TouchableOpacity
-        style={[
-          GLOBAL_STYLES.button,
-          { backgroundColor: COLORS.primary || "#5CC76D", width: "100%" },
-        ]}
-      >
-        <Text style={[GLOBAL_STYLES.buttonText, { fontSize: 20, fontWeight: "600", color: "#fff" }]}>
-          Global Score
-        </Text>
-      </TouchableOpacity>
-
-    </View>
-  );
+  </View>
+);
 }
 export { HomeScreen };
 export default withAuthLoading(HomeScreen);
