@@ -97,7 +97,7 @@ function HomeScreen({ navigation }) {
               'Authorization': token
             }
 
-            FetchHelper.makeRequest('http://localhost:3000/user/', 'DELETE', requestHeaders) // dont await, not needed
+            FetchHelper.makeRequest('http://10.0.2.2:3000/user/', 'DELETE', requestHeaders) // dont await, not needed
             UserSignout.signoutUser(navigation)
           }
         }
@@ -197,7 +197,7 @@ return (
             onPress={async () => await showPopup()}
             style={[
               GLOBAL_STYLES.button,
-              { backgroundColor: COLORS.primary || "#e22019ff", width: "100%", marginBottom: 20 },
+              { backgroundColor: "#e22019ff", width: "100%", marginBottom: 20 },
             ]}
           >
             <Text style={[GLOBAL_STYLES.buttonText, { fontSize: 20, fontWeight: "600", color: "#fff" }]}>
