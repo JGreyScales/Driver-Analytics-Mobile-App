@@ -27,8 +27,12 @@ function globalScoreScreen({navigation}) {
                 );
                 const data = await response.json(); 
                 if(response.ok && data.statusCode === 200){
-                  setScoreData(data.data);
-                  setComparativeScore(data.data); 
+                  const userData = data.data || {}; 
+                  const safeScore = userData.setScoreData ?? 0; 
+                  const safeComparativeScore = userData.setComparativeScore ?? 0;
+
+                  setScoreData(safeScore);
+                  setComparativeScore(safeComparativeScore);
                 }else{
                   console.log("response not ok: ", data); 
                   Alert.alert("Failed to fetch user data", data.message); 
@@ -65,7 +69,7 @@ function globalScoreScreen({navigation}) {
 
       <View style={GLOBAL_STYLES.scoreContainer}>
         <Text style={GLOBAL_STYLES.label}>Global Score:</Text>
-        <Text style={GLOBAL_STYLES.score}>{scoreData.score ?? "N/A"}</Text>
+        <Text style={GLOBAL_STYLES.score}>{scoreData.score ?? scoreData ?? "N/A"}</Text>
       </View>
 
       <View style={GLOBAL_STYLES.scoreContainer}>
