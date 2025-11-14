@@ -10,6 +10,12 @@ jest.mock("../../src/utils/fetchHelper", () => ({
   makeRequest: jest.fn(),
 }));
 
+jest.mock('@react-native-async-storage/async-storage', () => ({
+  setItem: jest.fn(),
+  getItem: jest.fn(),
+  removeItem: jest.fn(),
+}));
+
 jest.mock("../../src/utils/SessionManager", () => {
   return jest.fn().mockImplementation(() => ({
     getToken: jest.fn(),
@@ -20,7 +26,8 @@ jest.mock("../../src/utils/SessionManager", () => {
 const mockNavigation = {
   navigate: jest.fn(),
   reset: jest.fn(),
-  replace: jest.fn(), 
+  replace: jest.fn(),
+  goBack: jest.fn(), 
   }; 
 
 describe("Global Score Screen", () => {

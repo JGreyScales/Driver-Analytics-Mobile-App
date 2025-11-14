@@ -8,6 +8,12 @@ jest.mock('@react-native-async-storage/async-storage', () => ({
 import {fireEvent, render, screen, waitFor} from '@testing-library/react-native';
 import SignInScreen from '../../src/screens/SignInScreen';
 
+const mockNavigation = {
+  navigate: jest.fn(),
+  reset: jest.fn(),
+  replace: jest.fn(),
+  goBack: jest.fn(), 
+  }; 
 
 
 describe("SignInScreen", () => {

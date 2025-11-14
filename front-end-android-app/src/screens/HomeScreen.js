@@ -94,6 +94,7 @@ function HomeScreen({ navigation }) {
     >
       {/* Settings Icon - Cogwheel in the Top Right */}
       <TouchableOpacity
+        testID="setting-icon"
         onPress={openSettingsModal}
         style={{
           position: 'absolute',
@@ -107,6 +108,7 @@ function HomeScreen({ navigation }) {
 
       {/* Modal */}
       <Modal
+        testID="settings-modal"
         animationType="slide"
         transparent={true}
         visible={displaySettings}
