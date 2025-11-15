@@ -7,6 +7,7 @@ import SessionManager from "../utils/SessionManager";
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import UserSignout from '../utils/userSignout'
 import FetchHelper from "../utils/fetchHelper";
+import globalScoreScreen from "./globalScoreScreen";
 
 
 function HomeScreen({ navigation }) {
@@ -246,19 +247,9 @@ return (
     <TouchableOpacity
       style={[
         GLOBAL_STYLES.button,
-        { backgroundColor: COLORS.primary || "#5CC76D", width: "100%", marginBottom: 100 },
-      ]}
-    >
-      <Text style={[GLOBAL_STYLES.buttonText, { fontSize: 20, fontWeight: "600", color: "#fff" }]}>
-        Journey Score
-      </Text>
-    </TouchableOpacity>
-
-    <TouchableOpacity
-      style={[
-        GLOBAL_STYLES.button,
         { backgroundColor: COLORS.primary || "#5CC76D", width: "100%" },
       ]}
+      onPress={() => navigation.navigate("globalScore")}
     >
       <Text style={[GLOBAL_STYLES.buttonText, { fontSize: 20, fontWeight: "600", color: "#fff" }]}>
         Global Score

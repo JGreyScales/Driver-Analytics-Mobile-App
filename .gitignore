@@ -86,3 +86,4 @@ back-end-api/coverage/lcov.info
 *.xml
 *.html
 /back-end-api/coverage
+front-end-android-app/package-lock.json
