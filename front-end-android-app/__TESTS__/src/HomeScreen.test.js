@@ -31,7 +31,6 @@ import { HomeScreen } from "../../src/screens/HomeScreen";
 import FetchHelper from "../../src/utils/fetchHelper";
 import UserSignout from "../../src/utils/userSignout";
 import { COLORS } from "../../src/styles/GlobalStyles";
-import SessionManager from "../../src/utils/SessionManager";
 
 describe("HomeScreen (unified tests covering all branches)", () => {
   beforeEach(() => {
