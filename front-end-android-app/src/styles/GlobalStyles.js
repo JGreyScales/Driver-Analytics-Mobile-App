@@ -70,4 +70,23 @@ export const GLOBAL_STYLES = StyleSheet.create({
     marginBottom: 6,
     marginLeft: 4,
   },
+  centered: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  scoreContainer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginBottom: 16,
+  },
+  label: {
+    fontSize: 18,
+    color: "#555",
+  },
+  score: {
+    fontSize: 18,
+    fontWeight: "600",
+    color: "#007BFF",
+  },
 });

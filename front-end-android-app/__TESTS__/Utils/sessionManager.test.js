@@ -53,7 +53,7 @@ describe('SessionManager', () => {
     AsyncStorage.setItem.mockRejectedValueOnce(new Error('fail'));
     await session.setToken({ Authorization: 'Bearer abc123' });
     expect(spy).toHaveBeenCalledWith(
-      'Error saving testKey:',
+      'Error saving testKey',
       expect.any(Error)
     );
     spy.mockRestore();

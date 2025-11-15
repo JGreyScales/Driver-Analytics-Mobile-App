@@ -45,6 +45,7 @@ describe("JourneyTrackScreen", () => {
     expect(getByText("Start Journey")).toBeTruthy();
     expect(getByText("Back")).toBeTruthy();
   });
+});
 
   // rewriting the journey screen to use the class'ified' version of the location tracking resutled in tests needing complete rewrites
   // too much work for single monitor & slow computer
