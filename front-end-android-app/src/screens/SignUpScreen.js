@@ -9,10 +9,12 @@ import {
   Platform,
   Animated,
   Alert,
+  ActivityIndicator
 } from "react-native";
 import { GLOBAL_STYLES, COLORS } from "../styles/GlobalStyles";
 import PasswordHash from "../utils/passwordHash"
 import FetchHelper from "../utils/fetchHelper";
+import SessionManager from "../utils/SessionManager";
 
 export default function SignUpScreen({ navigation }) {
   const [email, setEmail] = useState("");
@@ -20,6 +22,7 @@ export default function SignUpScreen({ navigation }) {
   const [password, setPassword] = useState("");
   const [errors, setErrors] = useState({});
   const [fadeAnim] = useState(new Animated.Value(0));
+  const [signingUp, setSigningUp] = useState(false);
 
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -50,6 +53,8 @@ export default function SignUpScreen({ navigation }) {
   const handleSignUp = async () => {
     if (!validate()) return;
 
+    setSigningUp(true);
+
     try {
       const passwordHash = PasswordHash.HashMethod(password);
       const requestHeaders = { "Content-Type": "application/json" }
@@ -72,12 +77,38 @@ export default function SignUpScreen({ navigation }) {
         setUsername("");
         setPassword("");
         setErrors({});
+        
+        // Auto sign-in after successful registration using same logic as SignIn
+        try {
+          const loginRequestBody = {
+            username: username.trim(),
+            passwordHash: passwordHash
+          }
+          const loginRequestHeaders = {'Content-Type': 'application/json'}
+          const loginResponse = await FetchHelper.makeRequest("http://10.0.2.2:3000/user/", 
+            'POST', 
+            loginRequestHeaders, 
+            loginRequestBody)
+          
+          const loginData = await loginResponse.json().catch(() => ({}));
+          
+          if (loginResponse.ok && loginData.token) {
+            const session = new SessionManager('JWT_TOKEN')
+            await session.setToken(loginData.token);
+            navigation.navigate('Home')
+          }
+        } catch (loginError) {
+          console.error('Auto sign-in error:', loginError);
+          // If auto sign-in fails, user can manually sign in
+        }
       } else {
         Alert.alert("⚠️ Error", data.message || "Failed to create account.");
       }
     } catch (error) {
       console.error("Signup error:", error);
       Alert.alert("❌ Network Error", "Could not connect to the server.");
+    } finally {
+      setSigningUp(false);
     }
   };
 
@@ -145,8 +176,12 @@ export default function SignUpScreen({ navigation }) {
         )}
 
         {/* Sign Up Button */}
-        <TouchableOpacity style={GLOBAL_STYLES.button} onPress={handleSignUp}>
-          <Text style={GLOBAL_STYLES.buttonText}>Sign Up</Text>
+        <TouchableOpacity style={GLOBAL_STYLES.button} onPress={handleSignUp} disabled={signingUp}>
+          {signingUp ? (
+            <ActivityIndicator size="small" color={COLORS.white} />
+          ) : (
+            <Text style={GLOBAL_STYLES.buttonText}>Sign Up</Text>
+          )}
         </TouchableOpacity>
 
         <TouchableOpacity onPress={goToSignIn}>
