@@ -97,6 +97,20 @@ class Database {
       })
     })
   }
+
+  async purgeDatabase(){
+    await this.dropSafety()
+    let userQuery = `TRUNCATE TABLE ${this.usersTable}`
+    let tripsQuery = `TRUNCATE TABLE ${this.tripsTable}`
+    let userBridgeQuery = `TRUNCATE TABLE ${this.userBridgeTable}`
+    let scoreQuery = `TRUNCATE TABLE ${this.userScoreTable}`
+
+    await this.submitQuery(userQuery, [], true)
+    await this.submitQuery(tripsQuery, [], true)
+    await this.submitQuery(userBridgeQuery, [], true)
+    await this.submitQuery(scoreQuery, [], true)
+    await this.raiseSafety()
+  }
 }
 
 

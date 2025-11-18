@@ -12,7 +12,7 @@ class Driving_Score {
     async uploadNewDrivingScore(tripDuration, incidentCount, averageSpeed, maxSpeed, userID) {
         try {
             // defination checking the parameters
-            if ((!Number.isInteger(tripDuration) && tripDuration >= 0) ||
+            if (!Number.isInteger(tripDuration) || tripDuration < 0 ||
                 !Number.isInteger(incidentCount) ||
                 !dataTypes.isValidDrivingParam(averageSpeed) ||
                 !dataTypes.isValidDrivingParam(maxSpeed) ||
@@ -141,9 +141,10 @@ class Driving_Score {
     async getDrivingResults(userID, offset) {
         try {
             if (!dataTypes.isID(userID)) { throw { statusCode: 400, message: "Invalid userID" } }
-            if(!Number.isInteger(offset) && !offset >= 0) {throw {statusCode: 400, message: "Invalid offset provided"}}
+            if(!Number.isInteger(offset) || offset < 0) {throw {statusCode: 400, message: "Invalid offset provided"}}
 
-            
+            await this.db.connect()
+
             const returnAmount = 5 
             const query = `SELECT T.*
             FROM ${this.db.tripsTable} T
@@ -155,12 +156,13 @@ class Driving_Score {
 
             const params = [userID, returnAmount, offset * returnAmount]
 
-            const trips = this.db.fetchQuery(query, params)
-            return { statusCode: 200, message: `trips fetched with offset ${offset * returnAmount}`, data: params }
+            const trips = await this.db.fetchQuery(query, params)
+            return { statusCode: 200, message: `trips fetched with offset ${offset * returnAmount}`, data: trips }
         } catch (e) {
             if (dataTypes.isDict(e)) {
                 return e
             } else {
+                console.log(e)
                 return { statusCode: 500, message: 'Unknown serverside error' }
             }
         } finally {
