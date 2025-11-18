@@ -127,35 +127,76 @@ class User {
         }
     }
 
-    async updateUserDetails(body, userID){
-        try{
-            if (!dataTypes.isID(userID) || Object.keys(body).length === 0) {throw {statusCode: 400, message: "Invalid parameters"}}
-            await this.db.connect()
-            let query = `UPDATE ${this.db.userScoreTable} SET `
-            const updates = [];
-            const valuesList = [];
-
-            for (let field in body) {
-                updates.push(`${field} = ?`)
-                valuesList.push(body[field])
+    async updateUserDetails(body, userID) {
+        try {
+            if (!dataTypes.isID(userID) || Object.keys(body).length === 0) {
+                throw { statusCode: 400, message: "Invalid parameters" };
             }
 
-            query += updates.join(', ') + " WHERE userID = ? LIMIT 1";
+            await this.db.connect();
+
+            const fields = Object.keys(body).map(f => `'${f}'`).join(',');
+            // Query information_schema to determine table for each column
+            const schemaQuery = `
+                SELECT TABLE_NAME, COLUMN_NAME
+                FROM INFORMATION_SCHEMA.COLUMNS
+                WHERE TABLE_SCHEMA = DATABASE()
+                AND COLUMN_NAME IN (${fields})
+            `;
+
+            const schemaResults = await this.db.fetchQuery(schemaQuery, []);
+
+            // Group fields by table
+            const tableFields = {};
+            for (let row of schemaResults) {
+                const table = row.TABLE_NAME;
+                const col = row.COLUMN_NAME;
+                if (!tableFields[table]) tableFields[table] = [];
+                tableFields[table].push(col);
+            }
+
+            // Build multi-table UPDATE query dynamically
+            const tables = Object.keys(tableFields);
+            const firstTable = tables[0];
+            const joins = [];
+            const setClauses = [];
+            const valuesList = [];
+
+            for (let table of tables) {
+                if (table !== firstTable) {
+                    joins.push(`JOIN ${table} AS ${table} ON ${firstTable}.userID = ${table}.userID`);
+                }
+                for (let col of tableFields[table]) {
+                    setClauses.push(`${table}.${col} = ?`);
+                    valuesList.push(body[col]);
+                }
+            }
+
+            const query = `
+                UPDATE ${firstTable} AS ${firstTable}
+                ${joins.join(' ')}
+                SET ${setClauses.join(', ')}
+                WHERE ${firstTable}.userID = ?
+                LIMIT 1
+            `;
             valuesList.push(userID);
 
-            await this.db.submitQuery(query, valuesList)
-            return {statusCode: 200, message: 'User updated'}
+            await this.db.submitQuery(query, valuesList);
+
+            return { statusCode: 200, message: 'User updated' };
 
         } catch (e) {
             if (dataTypes.isDict(e)) {
-                return e
+                return e;
             } else {
-                return {statusCode: 500, message: 'Unknown serverside error'}
-            } 
+                return { statusCode: 500, message: 'Unknown serverside error' };
+            }
         } finally {
-            await this.db.close()
+            await this.db.close();
         }
     }
+
+
 }
 
 module.exports = User

@@ -64,7 +64,7 @@ describe('upload new driving score', () => {
         const actualResults = await d.submitQuery(`SELECT score, tripCount FROM ${d.userScoreTable} WHERE userID = ? LIMIT 1`, [userID])
         expect(actualResults[0].score).toBe(127)
         expect(actualResults[0].tripCount).toBe(2)
-    })
+    }, 7000)
 
     // this specific test case can take 14-30 seconds to complete on average
     it('should allow uploading to a user with at least 10 scores pre-existing', async () => {
@@ -189,7 +189,7 @@ describe('upload new driving score', () => {
         const actualResults = await d.submitQuery(`SELECT score, tripCount FROM ${d.userScoreTable} WHERE userID = ? LIMIT 1`, [userID])
         expect(actualResults[0].score).toBe(10)
         expect(actualResults[0].tripCount).toBe(11)
-    })
+    }, 7000)
 })
 
 

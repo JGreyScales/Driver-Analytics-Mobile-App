@@ -110,7 +110,7 @@ describe('reading from table', () => {
 
     afterAll(async () => {
         await d.dropSafety();
-        const query = `TRUNCATE  TABLE ${d.defaultTable}`
+        const query = `TRUNCATE TABLE ${d.defaultTable}`
         await d.submitQuery(query, [], true)
         await d.raiseSafety();
         await d.close();
@@ -126,7 +126,6 @@ describe('reading from table', () => {
             username: 'testUsername',
             email: 'testEmail',
             passwordHash: 'testPassword',
-            score: null
         });
     })
 
@@ -140,7 +139,6 @@ describe('reading from table', () => {
             username: 'testUsername',
             email: 'testEmail',
             passwordHash: 'testPassword',
-            score: null
         });
 
         expect(results[1]).toBeDefined();
@@ -149,7 +147,6 @@ describe('reading from table', () => {
             username: 'testUsernamex',
             email: 'testEmailx',
             passwordHash: 'testPasswordx',
-            score: null
         });
     })
 
