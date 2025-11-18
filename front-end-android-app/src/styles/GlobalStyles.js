@@ -70,4 +70,41 @@ export const GLOBAL_STYLES = StyleSheet.create({
     marginBottom: 6,
     marginLeft: 4,
   },
+
+  card: {
+    backgroundColor: "#f2f2f2",
+    padding: 20,
+    borderRadius: 16,
+    width: "90%",
+    marginBottom: 20,
+    elevation: 2,
+  },
+  cardTitle: {
+    fontSize: 18,
+    fontWeight: "700",
+    color: COLORS.primary,
+    marginBottom: 10,
+  },
+  tripCard: {
+    backgroundColor: "#fff",
+    padding: 15,
+    borderRadius: 12,
+    marginBottom: 10,
+    elevation: 1,
+  },
+  buttonRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginTop: 15,
+  },
+  navButton: {
+    width: "48%",
+    backgroundColor: "#114f1bff",
+  },
+  buttonText: {
+    fontSize: 18,
+    fontWeight: "700",
+    color: "#fff",
+    textAlign: "center",
+  }
 });

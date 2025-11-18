@@ -21,10 +21,7 @@ describe('user creation method', () => {
     })
 
     afterEach(async () => {
-        await d.dropSafety();
-        const query = `TRUNCATE TABLE ${d.usersTable}`
-        await d.submitQuery(query, [], true)
-        await d.raiseSafety();
+        await d.purgeDatabase()
     })
 
     afterAll(async () => {
@@ -35,9 +32,7 @@ describe('user creation method', () => {
     it('should create a user with valid input', async () => {
         const input = {username: "someUsernameasdsa", email: "someEmailasdas", passwordHash: "somePasswordHashasdsa"}
         const result = await user.userCreate(input)
-
-        console.log(result.body)
-        console.log(result)
+    
         expect(result.statusCode).toBe(201)
         expect(result.message).toBe('User created successfully')
     })
@@ -70,10 +65,7 @@ describe('user authentication', () => {
     beforeAll(async () => {
         d = new Database(true)
         await d.connect()
-        await d.dropSafety();
-        const query = `TRUNCATE  TABLE ${d.usersTable}`
-        await d.submitQuery(query, [], true)
-        await d.raiseSafety();
+        await d.purgeDatabase()
         user = new User(true)
         await user.userCreate({username: "someUsername", email: "someEmail", passwordHash: "somePasswordHash"}) // closes the connection as users are only alive for 1 command
     })
@@ -100,8 +92,8 @@ describe('user authentication', () => {
         const body = {username: "someUsername", passwordHash: "someOtherPasswordHash"}
         const response = await user.authenticateUser(body)
 
-        expect(response.statusCode).toBe(404)
-        expect(response.message).toBe('No objects found')
+        expect(response.statusCode).toBe(401)
+        expect(response.message).toBe('User is not authenticated')
     })
 
     it('should throw error if username doesnt link to account', async () => {
@@ -128,10 +120,7 @@ describe('gathering user details', () => {
     beforeAll(async () => {
         d = new Database(true)
         await d.connect()
-        await d.dropSafety();
-        const query = `TRUNCATE TABLE ${d.usersTable}`
-        await d.submitQuery(query, [], true)
-        await d.raiseSafety();
+        await d.purgeDatabase()
         user = new User(true)
         await user.userCreate({username: "someUsername", email: "someEmail", passwordHash: "somePasswordHash"}) // closes the connection as users are only alive for 1 command
 
@@ -184,10 +173,7 @@ describe('updating user details', () => {
     })
 
     beforeEach(async () => {
-        await d.dropSafety();
-        const query = `TRUNCATE TABLE ${d.usersTable}`
-        await d.submitQuery(query, [], true)
-        await d.raiseSafety();
+        await d.purgeDatabase()
 
         user = new User(true)
         await user.userCreate({username: "someUsername", email: "someEmail", passwordHash: "somePasswordHash"}) // closes the connection as users are only alive for 1 command
@@ -257,8 +243,8 @@ describe('updating user details', () => {
     it('should deny when updating a non-existant', async () => {
         const updateResponse = await user.updateUserDetails({somethingMadeUp: "somethingMadeUP"}, 1)
         
-        expect(updateResponse.statusCode).toBe(400)
-        expect(updateResponse.message).toBe("Database query error: Unknown column 'somethingMadeUp' in 'field list'")
+        expect(updateResponse.statusCode).toBe(404)
+        expect(updateResponse.message).toBe("No objects found")
     })
 
     it('should deny on malformed data', async () => {

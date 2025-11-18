@@ -21,10 +21,9 @@ export default class FetchHelper {
 
     static async makeRequest(path, method, headers = {}, body = null) {
         try{
-            // Only include body for methods that allow it
-            const methodsWithBody = ["POST", "PUT", "PATCH", "DELETE"];
             let requestBody = null;
-            if (body && methodsWithBody.includes(method.toUpperCase())) {
+            if (body) {
+
                 requestBody = JSON.stringify(body);
             }
 
