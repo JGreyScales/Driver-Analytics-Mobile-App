@@ -57,5 +57,30 @@ router.get("/comparativeScore", validateGetScore, async (req, res) => {
   res.status(result.statusCode).send(result)
 })
 
+router.get("/history", validateGetScore, async (req, res) => {
+  let testing = false
+  if (req.body) {testing = dataTypes.isDefined(req.body.testing)}
+  else {res.status(400).send({statusCode: 400, message:'No body attached'})}
+  if(testing) {console.log("Running delete user in test mode")}
+  
+  let userID = undefined
+  try {
+      userID = await JWT_AUTH.getUserIDFromToken(req)
+  } catch (err) {
+      res.status(400).send({statusCode:400, message:'No token attached'})
+      return
+  }
+
+  if (req.body?.offset === undefined){
+    res.status(400).send({statusCode:400, message:'No offset attached'})
+    return
+  }
+
+
+  const DS = new Driving_Score(testing)
+  const result = await DS.getDrivingResults(userID, req.body.offset)
+  res.status(result.statusCode).send(result)
+})
+
 
 module.exports = router;

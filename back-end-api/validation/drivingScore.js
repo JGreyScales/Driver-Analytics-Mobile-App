@@ -4,11 +4,12 @@ async function validateGetScore(req, res, next) {
     try {
         await genericValidation(req);
 
-        const ALLOWED_FIELDS = [];
+        const ALLOWED_FIELDS = ['offset'];
         await validateFields(req, ALLOWED_FIELDS);
 
         next();
     } catch (err) {
+        console.log(err)
         res.status(err.statusCode).send(err);
     }
 }

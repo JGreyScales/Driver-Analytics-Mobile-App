@@ -166,3 +166,39 @@ describe('GET /comparativeScore', () => {
     expect(res.body.message).toBe('No token attached')
   })
 })
+
+describe('GET /history', () => {
+  let d = null
+  let token = null
+
+
+  beforeAll(async () => {
+    d = new Database(true)
+    await d.connect()
+    token = `Bearer ${JWT_AUTH.generateToken(1)}`
+  })
+
+  beforeEach(async () => {
+    await d.purgeDatabase()
+  })
+
+  afterAll(async () => {
+    await d.close()
+  })
+
+  it('should deny if no token', async () => {
+    const body = {testing:true, offset:0}
+    const res = await request(app).get("/driving/history").send(body).set('Accept', 'application/json')
+    expect(res.statusCode).toBe(401)
+    expect(res.body.statusCode).toBe(401)
+    expect(res.body.message).toBe('No token attached')
+  })
+
+  it('should deny if no offset', async () => {
+    const body = {testing:true}
+    const res = await request(app).get("/driving/history").send(body).set('Authorization', token).set('Accept', 'application/json')
+    expect(res.statusCode).toBe(400)
+    expect(res.body.statusCode).toBe(400)
+    expect(res.body.message).toBe('No offset attached')
+  })
+}, 15000)
