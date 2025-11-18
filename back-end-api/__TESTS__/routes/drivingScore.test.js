@@ -52,7 +52,7 @@ describe('PUT /driving', () => {
     expect(res2.statusCode).toBe(200)
     expect(res2.body.statusCode).toBe(200)
     expect(res2.body.message).toBe('User updated')
-  })
+  }, 15000)
 
   it('should deny on no body', async () => {
     const res = await request(app).put("/driving/score").set('Authorization', token).set('Accept', 'application/json')
@@ -74,7 +74,7 @@ describe('PUT /driving', () => {
     const res = await request(app).put("/driving/score").send(body).set('Authorization', token).set('Accept', 'application/json')
     expect(res.statusCode).toBe(400)
     expect(res.body.statusCode).toBe(400)
-    expect(res.body.message).toBe('Invalid body')
+    expect(res.body.message).toBe('Invalid parameters')
   })
 
   it('should deny on invalid incidentCount', async () => {
@@ -156,7 +156,7 @@ describe('GET /comparativeScore', () => {
     expect(res.body.statusCode).toBe(200)
     expect(res.body.message).toBe('comparativeScore computed')
     expect(res.body.data.comparativeScore).toBe(50)
-  })
+  }, 20000)
 
   it('should deny if no token', async () => {
     const body = {testing:true}

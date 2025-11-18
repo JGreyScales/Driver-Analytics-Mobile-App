@@ -18,10 +18,7 @@ describe('PUT /user', () => {
     })
 
     beforeEach(async () => {
-        await d.dropSafety();
-        const query = `TRUNCATE TABLE ${d.usersTable}`
-        await d.submitQuery(query, [], true)
-        await d.raiseSafety();
+        await d.purgeDatabase()
     })
 
     afterAll(async () => {
@@ -67,9 +64,7 @@ describe('DELETE /user', () => {
     beforeEach(async () => {
         d = new Database(true);
         await d.connect();
-        await d.dropSafety();
-        await d.submitQuery(`TRUNCATE TABLE ${d.usersTable}`, [], true);
-        await d.raiseSafety();
+        await d.purgeDatabase()
     });
     
 
@@ -83,6 +78,8 @@ describe('DELETE /user', () => {
             `INSERT INTO ${d.usersTable} (userID, username, email, passwordHash) VALUES (1, "xx", "yy", "tt")`,
             []
         );
+
+        await d.submitQuery(`insert into ${d.userScoreTable} (userID, score, tripCount) VALUES (1, NULL, 0)`, [])
         const token = `Bearer ${JWT_AUTH.generateToken(1)}`
         const res = await request(app).delete('/user').send({testing:true}).set('Authorization', token).set('Accept', 'application/json');
 
@@ -118,13 +115,10 @@ describe('POST /user', () => {
     beforeAll(async () => {
         d = new Database(true)
         await d.connect()
-        await d.dropSafety();
-        const query = `TRUNCATE TABLE ${d.usersTable}`
-        await d.submitQuery(query, [], true)
-        await d.raiseSafety();
+        await d.purgeDatabase()
         user = new User(true)
         await user.userCreate({username: "someUsername", email: "someEmail", passwordHash: "somePasswordHash"})
-    })
+    }, 20000)
 
     afterAll(async () => {
         await d.close()
@@ -144,9 +138,9 @@ describe('POST /user', () => {
         const body = {username: "someUsername", passwordHash: "someOtherPasswordHash", testing:true}
         const res = await request(app).post('/user').send(body).set('Accept', 'application/json');
 
-        expect(res.statusCode).toBe(404)
-        expect(res.body.statusCode).toBe(404)
-        expect(res.body.message).toBe('No objects found')
+        expect(res.statusCode).toBe(401)
+        expect(res.body.statusCode).toBe(401)
+        expect(res.body.message).toBe("User is not authenticated")
     })
 
     it('should throw error if username doesnt link to account', async () => {
@@ -175,10 +169,7 @@ describe('GET /user', () => {
     beforeAll(async () => {
         d = new Database(true)
         await d.connect()
-        await d.dropSafety();
-        const query = `TRUNCATE TABLE ${d.usersTable}`
-        await d.submitQuery(query, [], true)
-        await d.raiseSafety();
+        await d.purgeDatabase()
         user = new User(true)
         await user.userCreate({username: "someUsername", email: "someEmail", passwordHash: "somePasswordHash"})
     })

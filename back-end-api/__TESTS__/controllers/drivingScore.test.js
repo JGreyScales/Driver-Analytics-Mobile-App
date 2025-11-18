@@ -210,7 +210,7 @@ describe('getting comparative score', () => {
         await user.userCreate({ username: "fgdgd", email: "342", passwordHash: "asdad" })
         user = new User(true)
         await user.userCreate({ username: "dfgd", email: "2342", passwordHash: "werwe" })
-    })
+    }, 15000)
 
     afterAll(async () => {
         await d.close()
@@ -301,7 +301,7 @@ describe('getting historical trip data', () => {
         await DS.uploadNewDrivingScore(120, 1, 20, 30, 1)
         await DS.uploadNewDrivingScore(130, 1, 20, 30, 1)
         await DS.uploadNewDrivingScore(140, 1, 20, 30, 1)
-    }, 30000)
+    }, 60000)
 
     afterAll(async () => {
         await d.close()

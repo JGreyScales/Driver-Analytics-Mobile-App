@@ -32,7 +32,7 @@ describe('user creation method', () => {
     it('should create a user with valid input', async () => {
         const input = {username: "someUsernameasdsa", email: "someEmailasdas", passwordHash: "somePasswordHashasdsa"}
         const result = await user.userCreate(input)
-
+    
         expect(result.statusCode).toBe(201)
         expect(result.message).toBe('User created successfully')
     })
