@@ -44,7 +44,7 @@ class Driving_Score {
             const tripScore = 255 - Math.round(weightedScore * 255);
 
             // averages this score to the global score
-            const query = `SELECT score, tripCount FROM ${this.db.usersTable} WHERE userID = ? LIMIT 1`
+            const query = `SELECT score, tripCount FROM ${this.db.userScoreTable} WHERE userID = ? LIMIT 1`
             const params = [userID]
 
             let tripcount = 0 
@@ -68,11 +68,29 @@ class Driving_Score {
             // updates the new score in the database
             const userObj = new User(this.testing)
             const updateResult = await userObj.updateUserDetails({score: updatedScore, tripCount: tripcount + 1}, userID)
+
+            const storeSessionQuery = `INSERT INTO ${this.db.tripsTable} (
+                tripScore, 
+                tripDuration,
+                incidentCount,
+                averageSpeed,
+                maxSpeed
+                ) VALUES (?, ?, ?, ?, ?)`
+            const tripParams = [tripScore, tripDuration, incidentCount, averageSpeed, maxSpeed]
+            
+            const tripID = (await this.db.submitQuery(storeSessionQuery, tripParams)).insertId
+
+            const createBridgeQuery = `INSERT INTO ${this.db.userBridgeTable} (userID, tripID) VALUES (?, ?)`
+            const bridgeParams = [userID, tripID]
+
+            await this.db.submitQuery(createBridgeQuery, bridgeParams)
+
             return updateResult
         } catch (e) {
             if (dataTypes.isDict(e)) {
                 return e
             } else {
+                console.log(e)
                 return {statusCode: 500, message: 'Unknown serverside error'}
             } 
         } finally {
@@ -84,8 +102,8 @@ class Driving_Score {
         try {
             if (!dataTypes.isID(userID)) {throw {statusCode:400, message:"Invalid userID"}}
 
-            const globalQuery = `SELECT MIN(score) AS minScore, MAX(score) AS maxScore from ${this.db.usersTable}`
-            const userQuery = `SELECT score FROM ${this.db.usersTable} WHERE userID = ?`
+            const globalQuery = `SELECT MIN(score) AS minScore, MAX(score) AS maxScore from ${this.db.userScoreTable}`
+            const userQuery = `SELECT score FROM ${this.db.userScoreTable} WHERE userID = ?`
             const userQueryParams = [userID]
 
 

@@ -6,6 +6,9 @@ class Database {
     this.testing = testing;
     this.connection = null;
     this.usersTable = "Users"
+    this.tripsTable = "Trips"
+    this.userBridgeTable = "User_Bridge_Score"
+    this.userScoreTable = "UserScore"
 
 
     this.defaultTable = this.usersTable
