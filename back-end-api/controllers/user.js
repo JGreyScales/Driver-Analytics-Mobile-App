@@ -12,18 +12,24 @@ class User {
         try {
             await this.db.connect()
             const query = `INSERT INTO ${this.db.usersTable} (username, email, passwordHash) VALUES (?, ?, ?)`
+            const insertScoreTableQuery = `INSERT INTO ${this.db.userScoreTable} (userID) VALUES (?)`
             const params = [body.username, body.email, body.passwordHash]
             params.forEach(element => {
                 if (!dataTypes.isDefined(element)) {throw {statusCode: 400, message: "Required element not defined"}}
             });
 
-            await this.db.submitQuery(query, params)
+            const results = await this.db.submitQuery(query, params)
+
+            const insertScoreTableParams = [results.insertId]
+
+            await this.db.submitQuery(insertScoreTableQuery, insertScoreTableParams)
             return {statusCode: 201, message: 'User created successfully'}
         } 
         catch (e) {
             if (dataTypes.isDict(e)){
                 return e
             } else {
+                console.log(e)
                 return {statusCode: 500, message: 'Unknown serverside error'}
             }
         } finally {
@@ -37,9 +43,22 @@ class User {
 
             await this.db.connect()
             const query = `DELETE FROM ${this.db.usersTable} WHERE userID = ?`
+            const deleteScoreQuery = `DELETE FROM ${this.db.userScoreTable} WHERE userID = ?`
+            const deleteDrivesQuery = `DELETE T FROM ${this.db.tripsTable} T JOIN ${this.db.userBridgeTable} UBS ON T.tripID = UBS.tripID WHERE UBS.userID = ?`
+            const deleteBridgeQuery = `DELETE FROM ${this.db.userBridgeTable} WHERE userID = ?`
             const params = [userID]
 
             await this.db.submitQuery(query, params)
+            await this.db.submitQuery(deleteScoreQuery, params)
+            try {
+                await this.db.submitQuery(deleteDrivesQuery, params)
+                await this.db.submitQuery(deleteBridgeQuery, params)
+            } catch (sqlE) {
+                console.log("No drives to remove for this user")
+                console.log(sqlE)
+            }
+
+        
             return {statusCode: 200, message: `User successfully deleted with ID:${userID}`}
         } catch (e) {
             if (dataTypes.isDict(e)) {
@@ -55,7 +74,13 @@ class User {
     async getUserDetails(userID) {
         try{
             if (!dataTypes.isID(userID)) {throw {statusCode: 400, message: "Invalid userID"}}
-            const query = `SELECT username, score, tripCount FROM ${this.db.usersTable} WHERE userID = ? LIMIT 1`
+            const query = `
+                SELECT u.username, s.score, s.tripCount
+                FROM ${this.db.usersTable} AS u
+                JOIN ${this.db.userScoreTable} AS s
+                    ON u.userID = s.userID
+                WHERE u.userID = ?
+            `;
             const params = [userID]
 
             await this.db.connect()
@@ -106,7 +131,7 @@ class User {
         try{
             if (!dataTypes.isID(userID) || Object.keys(body).length === 0) {throw {statusCode: 400, message: "Invalid parameters"}}
             await this.db.connect()
-            let query = `UPDATE ${this.db.usersTable} SET `
+            let query = `UPDATE ${this.db.userScoreTable} SET `
             const updates = [];
             const valuesList = [];
 
