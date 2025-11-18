@@ -74,17 +74,15 @@ function GlobalScoreScreen({ navigation }) {
 
         const response = await FetchHelper.makeRequest(
           `http://10.0.2.2:3000/driving/history`,
-          "GET",
+          "POST",
           header,
           body
         );
-        const data = await response.json();
-        console.log(data)
         if (response.ok) {
           const data = await response.json();
           setDisplayableTrips(data.data || []);
         } else if (response.status === 404) {
-          setDisplayableTrips([]);
+          modifyHistoryPage(-1)
         }
       } catch (e) {
         console.log(e);
@@ -97,6 +95,7 @@ function GlobalScoreScreen({ navigation }) {
   const modifyHistoryPage = (modifyAmount) => {
     if (historyPage + modifyAmount < 0) return;
     setHistoryPage(historyPage + modifyAmount);
+    setDisplayableTrips([]);
   };
 
   const goToHome = () => navigation.navigate("Home");
@@ -113,25 +112,25 @@ function GlobalScoreScreen({ navigation }) {
   return (
     <View style={GLOBAL_STYLES.container}>
       {/* Score Card */}
-      <View style={styles.card}>
-        <Text style={styles.cardTitle}>📊 Your score</Text>
+      <View style={GLOBAL_STYLES.card}>
+        <Text style={GLOBAL_STYLES.cardTitle}>📊 Your score</Text>
         <Text>Score: {scoreData} / 255</Text>
         <Text>In top {comparativeScore}% of drivers</Text>
         <Text>Trips: {tripCount}</Text>
       </View>
 
       {/* Trip History */}
-      <View style={styles.card}>
-        <Text style={styles.cardTitle}>🛣️ Trip History</Text>
+      <View style={GLOBAL_STYLES.card}>
+        <Text style={GLOBAL_STYLES.cardTitle}>🛣️ Trip History</Text>
         {displayableTrips.length === 0 ? (
-          <Text style={{ textAlign: "center", marginVertical: 20 }}>Nothing to show here</Text>
+          <Text style={{ textAlign: "center", marginVertical: 20 }}>Loading...</Text>
         ) : (
           <FlatList
             data={displayableTrips}
             keyExtractor={(item, index) => index.toString()}
             renderItem={({ item }) => (
-              <View style={styles.tripCard}>
-                <Text style={styles.tripCardTitle}>Trip #{item.tripID}</Text>
+              <View style={GLOBAL_STYLES.tripCard}>
+                <Text style={GLOBAL_STYLES.tripCardTitle}>Trip #{tripCount - historyPage}</Text>
                 <Text>Score: {item.tripScore} / 255</Text>
                 <Text>Duration: {item.tripDuration} Min</Text>
                 <Text>Incidents: {item.incidentCount}</Text>
@@ -143,18 +142,18 @@ function GlobalScoreScreen({ navigation }) {
         )}
 
         {/* Previous / Next Buttons in the same row */}
-        <View style={styles.buttonRow}>
+        <View style={GLOBAL_STYLES.buttonRow}>
           <TouchableOpacity
             onPress={() => modifyHistoryPage(-1)}
-            style={[GLOBAL_STYLES.button, styles.navButton]}
+            style={[GLOBAL_STYLES.button, GLOBAL_STYLES.navButton]}
           >
-            <Text style={styles.buttonText}>Previous</Text>
+            <Text style={GLOBAL_STYLES.buttonText}>Previous</Text>
           </TouchableOpacity>
           <TouchableOpacity
             onPress={() => modifyHistoryPage(1)}
-            style={[GLOBAL_STYLES.button, styles.navButton]}
+            style={[GLOBAL_STYLES.button, GLOBAL_STYLES.navButton]}
           >
-            <Text style={styles.buttonText}>Next</Text>
+            <Text style={GLOBAL_STYLES.buttonText}>Next</Text>
           </TouchableOpacity>
         </View>
       </View>
@@ -164,49 +163,10 @@ function GlobalScoreScreen({ navigation }) {
         onPress={goToHome}
         style={[GLOBAL_STYLES.button, { backgroundColor: COLORS.primary, width: "40%" }]}
       >
-        <Text style={styles.buttonText}>Back</Text>
+        <Text style={GLOBAL_STYLES.buttonText}>Back</Text>
       </TouchableOpacity>
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  card: {
-    backgroundColor: "#f2f2f2",
-    padding: 20,
-    borderRadius: 16,
-    width: "90%",
-    marginBottom: 20,
-    elevation: 2,
-  },
-  cardTitle: {
-    fontSize: 18,
-    fontWeight: "700",
-    color: COLORS.primary,
-    marginBottom: 10,
-  },
-  tripCard: {
-    backgroundColor: "#fff",
-    padding: 15,
-    borderRadius: 12,
-    marginBottom: 10,
-    elevation: 1,
-  },
-  buttonRow: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    marginTop: 15,
-  },
-  navButton: {
-    width: "48%",
-    backgroundColor: "#114f1bff",
-  },
-  buttonText: {
-    fontSize: 18,
-    fontWeight: "700",
-    color: "#fff",
-    textAlign: "center",
-  },
-});
 
 export default withAuthLoading(GlobalScoreScreen);

@@ -57,7 +57,7 @@ router.get("/comparativeScore", validateGetScore, async (req, res) => {
   res.status(result.statusCode).send(result)
 })
 
-router.get("/history", validateGetScore, async (req, res) => {
+router.post("/history", validateGetScore, async (req, res) => {
   let testing = false
   if (req.body) {testing = dataTypes.isDefined(req.body.testing)}
   else {res.status(400).send({statusCode: 400, message:'No body attached'})}

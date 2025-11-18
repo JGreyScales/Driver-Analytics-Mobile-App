@@ -294,20 +294,13 @@ describe('getting historical trip data', () => {
         let DS = new Driving_Score(true)
         await DS.uploadNewDrivingScore(60, 1, 20, 30, 1)
         await DS.uploadNewDrivingScore(70, 1, 20, 30, 1)
-        await DS.uploadNewDrivingScore(80, 1, 20, 30, 1)
-        await DS.uploadNewDrivingScore(90, 1, 20, 30, 1)
-        await DS.uploadNewDrivingScore(100, 1, 20, 30, 1)
-        await DS.uploadNewDrivingScore(110, 1, 20, 30, 1)
-        await DS.uploadNewDrivingScore(120, 1, 20, 30, 1)
-        await DS.uploadNewDrivingScore(130, 1, 20, 30, 1)
-        await DS.uploadNewDrivingScore(140, 1, 20, 30, 1)
     }, 60000)
 
     afterAll(async () => {
         await d.close()
     })
 
-    it('should return 5 results at a time', async () => {
+    it('should return 1 results at a time', async () => {
         const DS = new Driving_Score(true)
 
         const result = await DS.getDrivingResults(1, 0)
@@ -322,39 +315,6 @@ describe('getting historical trip data', () => {
         expect(result.data[0].averageSpeed).toBe(20)
         expect(result.data[0].maxSpeed).toBe(30)
 
-
-        expect(result.data[1].tripID).toBe(8)
-        expect(result.data[1].tripScore).toBe(167)
-        expect(result.data[1].tripDuration).toBe(130)
-        expect(result.data[1].incidentCount).toBe(1)
-        expect(result.data[1].averageSpeed).toBe(20)
-        expect(result.data[1].maxSpeed).toBe(30)
-
-
-        expect(result.data[2].tripID).toBe(7)
-        expect(result.data[2].tripScore).toBe(171)
-        expect(result.data[2].tripDuration).toBe(120)
-        expect(result.data[2].incidentCount).toBe(1)
-        expect(result.data[2].averageSpeed).toBe(20)
-        expect(result.data[2].maxSpeed).toBe(30)
-
-
-        expect(result.data[3].tripID).toBe(6)
-        expect(result.data[3].tripScore).toBe(174)
-        expect(result.data[3].tripDuration).toBe(110)
-        expect(result.data[3].incidentCount).toBe(1)
-        expect(result.data[3].averageSpeed).toBe(20)
-        expect(result.data[3].maxSpeed).toBe(30)
-
-
-        expect(result.data[4].tripID).toBe(5)
-        expect(result.data[4].tripScore).toBe(178)
-        expect(result.data[4].tripDuration).toBe(100)
-        expect(result.data[4].incidentCount).toBe(1)
-        expect(result.data[4].averageSpeed).toBe(20)
-        expect(result.data[4].maxSpeed).toBe(30)
-
-
     })
 
     it('should allow offsetting to retrieve end results', async () => {
@@ -365,36 +325,12 @@ describe('getting historical trip data', () => {
         expect(result.statusCode).toBe(200)
         expect(result.message).toBe('trips fetched with offset 5')
 
-        expect(result.data[0].tripID).toBe(4)
-        expect(result.data[0].tripScore).toBe(181)
-        expect(result.data[0].tripDuration).toBe(90)
-        expect(result.data[0].incidentCount).toBe(1)
-        expect(result.data[0].averageSpeed).toBe(20)
-        expect(result.data[0].maxSpeed).toBe(30)
-
-
-        expect(result.data[1].tripID).toBe(3)
-        expect(result.data[1].tripScore).toBe(185)
-        expect(result.data[1].tripDuration).toBe(80)
+        expect(result.data[1].tripID).toBe(8)
+        expect(result.data[1].tripScore).toBe(167)
+        expect(result.data[1].tripDuration).toBe(130)
         expect(result.data[1].incidentCount).toBe(1)
         expect(result.data[1].averageSpeed).toBe(20)
         expect(result.data[1].maxSpeed).toBe(30)
-
-
-        expect(result.data[2].tripID).toBe(2)
-        expect(result.data[2].tripScore).toBe(189)
-        expect(result.data[2].tripDuration).toBe(70)
-        expect(result.data[2].incidentCount).toBe(1)
-        expect(result.data[2].averageSpeed).toBe(20)
-        expect(result.data[2].maxSpeed).toBe(30)
-
-
-        expect(result.data[3].tripID).toBe(1)
-        expect(result.data[3].tripScore).toBe(192)
-        expect(result.data[3].tripDuration).toBe(60)
-        expect(result.data[3].incidentCount).toBe(1)
-        expect(result.data[3].averageSpeed).toBe(20)
-        expect(result.data[3].maxSpeed).toBe(30)
     })
 
     it('should return nothing if there is no trips', async () => {

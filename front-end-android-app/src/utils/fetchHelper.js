@@ -38,7 +38,6 @@ export default class FetchHelper {
             await uploadUsageManager.setToken(String(uploadSizeHistory + requestSize));
 
             // Perform the fetch request
-            console.log(requestBody)
             const response = await fetch(path, {
                 method,
                 headers,

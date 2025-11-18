@@ -145,7 +145,7 @@ class Driving_Score {
 
             await this.db.connect()
 
-            const returnAmount = 5 
+            const returnAmount = 1
             const query = `SELECT T.*
             FROM ${this.db.tripsTable} T
             JOIN ${this.db.userBridgeTable} UBS 

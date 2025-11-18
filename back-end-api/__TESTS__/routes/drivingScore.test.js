@@ -188,7 +188,7 @@ describe('GET /history', () => {
 
   it('should deny if no token', async () => {
     const body = {testing:true, offset:0}
-    const res = await request(app).get("/driving/history").send(body).set('Accept', 'application/json')
+    const res = await request(app).post("/driving/history").send(body).set('Accept', 'application/json')
     expect(res.statusCode).toBe(401)
     expect(res.body.statusCode).toBe(401)
     expect(res.body.message).toBe('No token attached')
@@ -196,7 +196,7 @@ describe('GET /history', () => {
 
   it('should deny if no offset', async () => {
     const body = {testing:true}
-    const res = await request(app).get("/driving/history").send(body).set('Authorization', token).set('Accept', 'application/json')
+    const res = await request(app).post("/driving/history").send(body).set('Authorization', token).set('Accept', 'application/json')
     expect(res.statusCode).toBe(400)
     expect(res.body.statusCode).toBe(400)
     expect(res.body.message).toBe('No offset attached')
