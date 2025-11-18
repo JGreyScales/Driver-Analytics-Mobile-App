@@ -1,7 +1,6 @@
 const Database = require("../../models/db")
 const Driving_Score = require("../../controllers/drivingScore")
 const User = require("../../controllers/user")
-const JWT_AUTH = require("../../middleware/auth")
 
 
 describe('upload new driving score', () => {
@@ -190,7 +189,7 @@ describe('upload new driving score', () => {
         expect(result.statusCode).toBe(200)
         expect(result.message).toBe("User updated")
 
-        const actualResults = await d.submitQuery(`SELECT score, tripCount FROM ${d.usersTable} WHERE userID = ? LIMIT 1`, [userID])
+        const actualResults = await d.submitQuery(`SELECT score, tripCount FROM ${d.userScoreTable} WHERE userID = ? LIMIT 1`, [userID])
         expect(actualResults[0].score).toBe(10)
         expect(actualResults[0].tripCount).toBe(11)
     })
@@ -285,4 +284,49 @@ describe('getting comparative score', () => {
         expect(res.statusCode).toBe(500)
         expect(res.message).toBe("Not all values could be gathered")
     })
+})
+
+describe('getting historical trip data', () => {
+    let d = null
+
+    beforeAll(async () => {
+        d = new Database(true)
+        await d.connect()
+    })
+
+    afterAll(async () => {
+        await d.close()
+    })
+
+    beforeEach(async () => {
+        await d.dropSafety();
+        const query = `TRUNCATE TABLE ${d.usersTable}`
+        await d.submitQuery(query, [], true)
+        await d.raiseSafety();
+
+        let user = new User(true)
+        await user.userCreate({username: "somedsfUsessdrna", email: "234df32", passwordHash: "soasdmePasswoasrsdsa"})
+    })
+
+    it('should return 5 results at a time', () => {
+
+    })
+
+    it ('should allow offsetting to retrieve 10 results at a time', () => {
+
+    })
+
+    it('should return nothing if there is no trips', () => {
+
+    })
+
+    it('should deny if invalid userID', () => {
+
+    })
+
+    it('should deny if invalid offset', () => {
+        
+    })
+
+
 })
