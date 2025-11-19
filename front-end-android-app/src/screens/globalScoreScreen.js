@@ -36,7 +36,7 @@ function GlobalScoreScreen({ navigation }) {
           setTripCount(userData.tripCount ?? 0);
 
           const compResponse = await FetchHelper.makeRequest(
-            "comparativeScore",
+            "driving/comparativeScore",
             "GET",
             header
           );
