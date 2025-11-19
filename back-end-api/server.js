@@ -21,7 +21,7 @@ app.use("/user", user);
 app.use("/auth", authCheck);
 app.use("/driving", drivingScore)
 
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 8000;
 // listen on all network intefaces
 app.listen(PORT, '0.0.0.0', () => {
     console.log(`Server running on port ${PORT}`);
