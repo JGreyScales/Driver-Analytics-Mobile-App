@@ -15,6 +15,9 @@ import { GLOBAL_STYLES, COLORS } from "../styles/GlobalStyles";
 import PasswordHash from "../utils/passwordHash"
 import FetchHelper from "../utils/fetchHelper";
 import SessionManager from "../utils/SessionManager";
+import { emailInputSanitize } from "../utils/SanitizeInputs";
+import { userNameInputSanitize } from "../utils/SanitizeInputs";
+import { passWordInputSanitize } from "../utils/SanitizeInputs";
 
 export default function SignUpScreen({ navigation }) {
   const [email, setEmail] = useState("");
@@ -132,7 +135,7 @@ export default function SignUpScreen({ navigation }) {
         <TextInput
           placeholder="Email"
           value={email}
-          onChangeText={setEmail}
+          onChangeText={(text) => setEmail(emailInputSanitize(text))}
           style={[
             GLOBAL_STYLES.input,
             errors.email && { borderColor: COLORS.error },
@@ -148,7 +151,7 @@ export default function SignUpScreen({ navigation }) {
         <TextInput
           placeholder="Username"
           value={username}
-          onChangeText={setUsername}
+          onChangeText={(text) => setUsername(userNameInputSanitize(text))}
           style={[
             GLOBAL_STYLES.input,
             errors.username && { borderColor: COLORS.error },
@@ -163,7 +166,7 @@ export default function SignUpScreen({ navigation }) {
         <TextInput
           placeholder="Password"
           value={password}
-          onChangeText={setPassword}
+          onChangeText={(text) => setPassword(passWordInputSanitize(text))}
           style={[
             GLOBAL_STYLES.input,
             errors.password && { borderColor: COLORS.error },
