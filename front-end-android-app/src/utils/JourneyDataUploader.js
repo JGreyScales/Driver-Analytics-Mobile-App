@@ -27,7 +27,8 @@ export async function uploadDriverScore(journeyData) {
     console.log("Uploading journey data:", requestBody);
 
     // Send PUT request to backend
-    const response = await FetchHelper.makeRequest("http://10.0.2.2:3000/driving/score",
+    const response = await FetchHelper.makeRequest(
+      "driving/score",
       "PUT",
       requestHeaders,
       requestBody

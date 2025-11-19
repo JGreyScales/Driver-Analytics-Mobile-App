@@ -61,7 +61,8 @@ export default function SignInScreen({ navigation }) {
         passwordHash: passwordHash
       }
       const requestHeaders = {'Content-Type': 'application/json'}
-      const response = await FetchHelper.makeRequest("http://10.0.2.2:3000/user/", 
+      const response = await FetchHelper.makeRequest(
+        "user/", 
         'POST', 
         requestHeaders, 
         requestBody)

@@ -36,7 +36,8 @@ function HomeScreen({ navigation }) {
             'Authorization': token
           }
 
-          const response = await FetchHelper.makeRequest("http://10.0.2.2:3000/user/",
+          const response = await FetchHelper.makeRequest(
+            "user/",
             "GET",
             requestHeaders
           )

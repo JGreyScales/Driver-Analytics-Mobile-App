@@ -25,7 +25,8 @@ export class LoadingAuthManager {
         Authorization: token,//send token in headers
         "Content-Type": "application/json",
       }
-      const response = await FetchHelper.makeRequest("http://10.0.2.2:3000/auth/",
+      const response = await FetchHelper.makeRequest(
+        "auth/",
         "GET",
         requestHeaders
       ) 
