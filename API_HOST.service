@@ -1,0 +1,15 @@
+[Unit]
+Description=Node.js Express API
+Documentation=https://nodejs.org/en/docs/
+After=network.target
+
+[Service]
+ExecStart=/usr/bin/node /home/root/GROUP20F25/back-end-api/server.js
+WorkingDirectory= /home/root/GROUP20F25/back-end-api
+Restart=always
+
+# run the API at production levels of optimization
+Environment=NODE_ENV=production 
+
+[Install]
+WantedBy=multi-user.target
