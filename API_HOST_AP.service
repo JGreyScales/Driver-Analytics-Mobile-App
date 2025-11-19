@@ -4,8 +4,8 @@ Documentation=https://nodejs.org/en/docs/
 After=network.target
 
 [Service]
-ExecStart=/usr/bin/node /home/root/GROUP20F25/back-end-api/server.js
-WorkingDirectory= /home/root/GROUP20F25/back-end-api
+ExecStart=/usr/bin/node /home/root/Group20F25/back-end-api/server.js
+WorkingDirectory= /home/root/Group20F25/back-end-api#
 Restart=always
 
 # run the API at production levels of optimization
