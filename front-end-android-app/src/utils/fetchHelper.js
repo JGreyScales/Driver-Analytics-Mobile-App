@@ -21,6 +21,7 @@ export default class FetchHelper {
 
     static async makeRequest(path, method, headers = {}, body = null) {
         try{
+            path = "http://155.133.23.208:8000/" + path
             let requestBody = null;
             if (body) {
 

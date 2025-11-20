@@ -66,7 +66,8 @@ export default function SignUpScreen({ navigation }) {
         "email": email,
         "passwordHash": passwordHash,
       }
-      const response = await FetchHelper.makeRequest("http://10.0.2.2:3000/user/",
+      const response = await FetchHelper.makeRequest(
+        "user/",
         "PUT",
         requestHeaders,
         requestBody
@@ -88,7 +89,8 @@ export default function SignUpScreen({ navigation }) {
             passwordHash: passwordHash
           }
           const loginRequestHeaders = {'Content-Type': 'application/json'}
-          const loginResponse = await FetchHelper.makeRequest("http://10.0.2.2:3000/user/", 
+          const loginResponse = await FetchHelper.makeRequest(
+            "user/", 
             'POST', 
             loginRequestHeaders, 
             loginRequestBody)

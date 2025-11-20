@@ -24,7 +24,7 @@ function GlobalScoreScreen({ navigation }) {
         };
 
         const response = await FetchHelper.makeRequest(
-          "http://10.0.2.2:3000/user",
+          "user",
           "GET",
           header
         );
@@ -36,7 +36,7 @@ function GlobalScoreScreen({ navigation }) {
           setTripCount(userData.tripCount ?? 0);
 
           const compResponse = await FetchHelper.makeRequest(
-            "http://10.0.2.2:3000/driving/comparativeScore",
+            "driving/comparativeScore",
             "GET",
             header
           );
@@ -73,7 +73,7 @@ function GlobalScoreScreen({ navigation }) {
         }
 
         const response = await FetchHelper.makeRequest(
-          `http://10.0.2.2:3000/driving/history`,
+          `driving/history`,
           "POST",
           header,
           body
