@@ -247,14 +247,6 @@ return (
         </TouchableOpacity>
       </View>
 
-      {/* Quick Stats Preview (Optional) */}
-      <View style={styles.quickStatsContainer}>
-        <View style={styles.quickStat}>
-          <Ionicons name="speedometer-outline" size={24} color={COLORS.primary} />
-          <Text style={styles.quickStatLabel}>Ready to drive</Text>
-        </View>
-      </View>
-
     </Animated.View>
   </View>
 );
