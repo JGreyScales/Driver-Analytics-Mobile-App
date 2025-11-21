@@ -14,6 +14,8 @@ import { GLOBAL_STYLES, COLORS } from "../styles/GlobalStyles";
 import SessionManager from "../utils/SessionManager";
 import PasswordHash from "../utils/passwordHash";
 import FetchHelper from "../utils/fetchHelper";
+import { passWordInputSanitize } from "../utils/SanitizeInputs";
+import { userNameInputSanitize } from "../utils/SanitizeInputs";
 
 export default function SignInScreen({ navigation }) {
   const [username, setUsername] = useState("");
@@ -102,7 +104,7 @@ export default function SignInScreen({ navigation }) {
       <TextInput
         placeholder="Username"
         value={username}
-        onChangeText={setUsername}
+        onChangeText={(text) => setUsername(userNameInputSanitize(text))}
         style={[GLOBAL_STYLES.input,
         errors.username && { borderColor: COLORS.error },
         ]}
@@ -116,7 +118,7 @@ export default function SignInScreen({ navigation }) {
       <TextInput
         placeholder="Password"
         value={password}
-        onChangeText={setPassword}
+        onChangeText={(text) => setPassword(passWordInputSanitize(text))}
         style={GLOBAL_STYLES.input}
         secureTextEntry
         maxLength={32}

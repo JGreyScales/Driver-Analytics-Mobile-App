@@ -1,5 +1,6 @@
 import React from 'react';
 import { Alert } from 'react-native';
+import FetchHelper from '../../src/utils/fetchHelper';
 jest.mock('@react-native-async-storage/async-storage', () => ({
   setItem: jest.fn(),
   getItem: jest.fn(),
@@ -7,6 +8,9 @@ jest.mock('@react-native-async-storage/async-storage', () => ({
 }));
 import {fireEvent, render, screen, waitFor} from '@testing-library/react-native';
 import SignInScreen from '../../src/screens/SignInScreen';
+jest.mock("../../src/utils/fetchHelper", () => ({
+    makeRequest: jest.fn(), 
+}));
 
 
 
@@ -89,8 +93,7 @@ describe("SignInScreen", () => {
         //simulate mock successful login
         global.fetch = jest.fn();
         global.alert = jest.fn();
-        //const response = {}; 
-       global.fetch.mockResolvedValueOnce({
+       FetchHelper.makeRequest.mockResolvedValueOnce({
             ok: true,
             status: 200,
             json: async () => ({message: 'Welcome Back Driver', token: 'fakeToken Bearer'}),
@@ -111,11 +114,10 @@ describe("SignInScreen", () => {
     test('shows Failed login alert after recieving response', async ()=> { 
         global.fetch = jest.fn();
         global.alert = jest.fn();
-        const response = {message: 'Invalid Username or Password'}; 
-        global.fetch.mockResolvedValueOnce({
+        FetchHelper.makeRequest.mockResolvedValueOnce({
             ok: false,
             status: 401,
-            json: async () => ({response}),
+            json: async () => ({ message: "Invalid Username or Password" })
         });
         const {getByTestId, getByPlaceholderText} = render(<SignInScreen />);
 
@@ -133,8 +135,7 @@ describe("SignInScreen", () => {
         //simulate mock successful login
         global.fetch = jest.fn();
         global.alert = jest.fn();
-        //const response = {}; 
-       global.fetch.mockResolvedValueOnce({
+       FetchHelper.makeRequest.mockResolvedValueOnce({
             ok: true,
             status: 200,
             json: async () => ({token: 'fakeToken Bearer'}),//message is missing
@@ -157,4 +158,11 @@ describe("SignInScreen", () => {
         fireEvent.press(getByText("Don't have an account? Sign Up"));
         expect(getByText("Don't have an account? Sign Up")).toBeTruthy(); 
     })
+    test("ensure sanitation for username", () => {
+        const {getByPlaceholderText} = render(<SignInScreen/>);
+        const input = getByPlaceholderText("Username");  
+
+        fireEvent.changeText(input, "something!@#"); 
+        expect(input.props.value).toBe("something");
+    });
 });
