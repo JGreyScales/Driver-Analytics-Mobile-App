@@ -1,5 +1,5 @@
 import React, { useState, useContext, useEffect, useRef } from "react";
-import { View, Text, TouchableOpacity } from "react-native";
+import { View, Text, TouchableOpacity, StyleSheet, Animated } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { GLOBAL_STYLES, COLORS } from "../styles/GlobalStyles";
 import { LoadingAuthManager, withAuthLoading } from "../utils/LoadingClass";
@@ -20,8 +20,43 @@ function JourneyTrackScreen({ navigation }) {
   // Timer
   const [elapsedTime, setElapsedTime] = useState(0);
   const timerRef = useRef(null);
+  
+  // Animations
+  const pulseAnim = useRef(new Animated.Value(1)).current;
+  const fadeAnim = useRef(new Animated.Value(0)).current;
 
   const auth = new LoadingAuthManager(navigation);
+
+  // Pulse animation for tracking button
+  useEffect(() => {
+    if (isTracking) {
+      Animated.loop(
+        Animated.sequence([
+          Animated.timing(pulseAnim, {
+            toValue: 1.05,
+            duration: 1000,
+            useNativeDriver: true,
+          }),
+          Animated.timing(pulseAnim, {
+            toValue: 1,
+            duration: 1000,
+            useNativeDriver: true,
+          }),
+        ])
+      ).start();
+    } else {
+      pulseAnim.setValue(1);
+    }
+  }, [isTracking]);
+
+  // Fade in animation on mount
+  useEffect(() => {
+    Animated.timing(fadeAnim, {
+      toValue: 1,
+      duration: 600,
+      useNativeDriver: true,
+    }).start();
+  }, []);
 
   // 🔁 Sync tracking state
   useEffect(() => {
@@ -129,91 +164,299 @@ function JourneyTrackScreen({ navigation }) {
   };
 
   return (
-    <View
-      style={[
-        GLOBAL_STYLES.container,
-        {
-          justifyContent: "flex-start",
-          alignItems: "center",
-          paddingTop: 30,
-        },
-      ]}
-    >
-      <Text
-        style={[
-          GLOBAL_STYLES.title,
-          { fontSize: 32, fontWeight: "800", marginBottom: 20 },
-        ]}
-      >
-        Track Your Journey
-      </Text>
+    <View style={styles.container}>
+      <Animated.View style={[styles.contentWrapper, { opacity: fadeAnim }]}>
+        
+        {/* Header */}
+        <View style={styles.header}>
+          <Text style={styles.headerTitle}>Journey Tracking</Text>
+          <View style={[styles.statusBadge, isTracking && styles.statusBadgeActive]}>
+            <View style={[styles.statusDot, isTracking && styles.statusDotActive]} />
+            <Text style={styles.statusText}>
+              {isTracking ? "LIVE" : "READY"}
+            </Text>
+          </View>
+        </View>
 
-      {/* Live Stats Section */}
-      <View
-        style={{
-          backgroundColor: "#f2f2f2",
-          padding: 20,
-          borderRadius: 16,
-          width: "90%",
-          marginBottom: 40,
-          elevation: 2,
-        }}
-      >
-        <Text
-          style={{ fontSize: 18, fontWeight: "700", color: COLORS.primary }}
+        {/* Timer Card - Prominent when tracking */}
+        <View style={[styles.timerCard, isTracking && styles.timerCardActive]}>
+          <Text style={styles.timerLabel}>Duration</Text>
+          <Text style={styles.timerValue}>{formatTime(elapsedTime)}</Text>
+          {isTracking && (
+            <View style={styles.recordingIndicator}>
+              <View style={styles.recordingDot} />
+              <Text style={styles.recordingText}>Recording...</Text>
+            </View>
+          )}
+        </View>
+
+        {/* Stats Grid */}
+        <View style={styles.statsGrid}>
+          {/* Max Speed */}
+          <View style={styles.statCard}>
+            <View style={styles.statIconContainer}>
+              <Text style={styles.statIcon}>🚀</Text>
+            </View>
+            <Text style={styles.statLabel}>Max Speed</Text>
+            <Text style={styles.statValue}>{maxSpeed}</Text>
+            <Text style={styles.statUnit}>km/h</Text>
+          </View>
+
+          {/* Avg Speed */}
+          <View style={styles.statCard}>
+            <View style={styles.statIconContainer}>
+              <Text style={styles.statIcon}>📈</Text>
+            </View>
+            <Text style={styles.statLabel}>Avg Speed</Text>
+            <Text style={styles.statValue}>{avgSpeed}</Text>
+            <Text style={styles.statUnit}>km/h</Text>
+          </View>
+
+          {/* Incidents */}
+          <View style={styles.statCard}>
+            <View style={styles.statIconContainer}>
+              <Text style={styles.statIcon}>⚠️</Text>
+            </View>
+            <Text style={styles.statLabel}>Incidents</Text>
+            <Text style={styles.statValue}>{incidents}</Text>
+            <Text style={styles.statUnit}>events</Text>
+          </View>
+        </View>
+
+        {/* Main Action Button */}
+        <Animated.View style={{ transform: [{ scale: pulseAnim }] }}>
+          <TouchableOpacity
+            onPress={isTracking ? stopTracking : startTracking}
+            style={[
+              styles.mainButton,
+              isTracking ? styles.stopButton : styles.startButton
+            ]}
+            activeOpacity={0.8}
+          >
+            <View style={styles.buttonContent}>
+              <Text style={styles.buttonIcon}>
+                {isTracking ? "⏹" : "▶️"}
+              </Text>
+              <Text style={styles.mainButtonText}>
+                {isTracking ? "End Journey" : "Start Journey"}
+              </Text>
+            </View>
+          </TouchableOpacity>
+        </Animated.View>
+
+        {/* Back Button */}
+        <TouchableOpacity
+          onPress={goToHome}
+          style={styles.backButton}
+          activeOpacity={0.7}
         >
-          📊 Live Statistics
-        </Text>
+          <Text style={styles.backButtonText}>← Back to Home</Text>
+        </TouchableOpacity>
 
-        <Text style={{ fontSize: 16, marginTop: 10 }}>
-          🕒 Duration: {formatTime(elapsedTime)}
-        </Text>
-        <Text style={{ fontSize: 16 }}>🚀 Max Speed: {maxSpeed} km/h</Text>
-        <Text style={{ fontSize: 16 }}>📈 Avg Speed: {avgSpeed} km/h</Text>
-        <Text style={{ fontSize: 16 }}>⚠️ Incidents: {incidents}</Text>
-      </View>
-
-      {/* Start/Stop Button */}
-      <TouchableOpacity
-        onPress={isTracking ? stopTracking : startTracking}
-        style={[
-          GLOBAL_STYLES.button,
-          {
-            backgroundColor: isTracking ? "#960800ff" : COLORS.primary,
-            width: "80%",
-            marginBottom: 40,
-          },
-        ]}
-      >
-        <Text
-          style={[
-            GLOBAL_STYLES.buttonText,
-            { fontSize: 28, fontWeight: "700", color: "#fff" },
-          ]}
-        >
-          {isTracking ? "End Journey" : "Start Journey"}
-        </Text>
-      </TouchableOpacity>
-
-      {/* Back Button */}
-      <TouchableOpacity
-        onPress={goToHome}
-        style={[
-          GLOBAL_STYLES.button,
-          { backgroundColor: "#114f1bff", width: "40%" },
-        ]}
-      >
-        <Text
-          style={[
-            GLOBAL_STYLES.buttonText,
-            { fontSize: 20, fontWeight: "700", color: "#fff" },
-          ]}
-        >
-          Back
-        </Text>
-      </TouchableOpacity>
+      </Animated.View>
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#F8F9FA',
+  },
+  contentWrapper: {
+    flex: 1,
+    paddingHorizontal: 20,
+    paddingTop: 50,
+    paddingBottom: 30,
+  },
+  header: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 30,
+  },
+  headerTitle: {
+    fontSize: 28,
+    fontWeight: '800',
+    color: '#1A1A1A',
+    letterSpacing: -0.5,
+  },
+  statusBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#E8E8E8',
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 20,
+    gap: 6,
+  },
+  statusBadgeActive: {
+    backgroundColor: '#FFE8E8',
+  },
+  statusDot: {
+    width: 8,
+    height: 8,
+    borderRadius: 4,
+    backgroundColor: '#9E9E9E',
+  },
+  statusDotActive: {
+    backgroundColor: '#EF5350',
+  },
+  statusText: {
+    fontSize: 12,
+    fontWeight: '700',
+    color: '#666',
+    letterSpacing: 0.5,
+  },
+  
+  // Timer Card
+  timerCard: {
+    backgroundColor: '#FFFFFF',
+    borderRadius: 24,
+    padding: 30,
+    marginBottom: 24,
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.08,
+    shadowRadius: 12,
+    elevation: 4,
+    borderWidth: 2,
+    borderColor: '#F0F0F0',
+  },
+  timerCardActive: {
+    borderColor: COLORS.primary,
+    backgroundColor: '#FAFFF9',
+  },
+  timerLabel: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#888',
+    textTransform: 'uppercase',
+    letterSpacing: 1,
+    marginBottom: 8,
+  },
+  timerValue: {
+    fontSize: 56,
+    fontWeight: '700',
+    color: COLORS.primary,
+    fontVariant: ['tabular-nums'],
+  },
+  recordingIndicator: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginTop: 12,
+    gap: 8,
+  },
+  recordingDot: {
+    width: 10,
+    height: 10,
+    borderRadius: 5,
+    backgroundColor: '#EF5350',
+  },
+  recordingText: {
+    fontSize: 13,
+    fontWeight: '600',
+    color: '#EF5350',
+  },
+
+  // Stats Grid
+  statsGrid: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginBottom: 32,
+    gap: 12,
+  },
+  statCard: {
+    flex: 1,
+    backgroundColor: '#FFFFFF',
+    borderRadius: 20,
+    padding: 20,
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.05,
+    shadowRadius: 8,
+    elevation: 2,
+  },
+  statIconContainer: {
+    width: 48,
+    height: 48,
+    borderRadius: 24,
+    backgroundColor: '#F0F9F1',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 12,
+  },
+  statIcon: {
+    fontSize: 24,
+  },
+  statLabel: {
+    fontSize: 11,
+    fontWeight: '600',
+    color: '#888',
+    textTransform: 'uppercase',
+    letterSpacing: 0.5,
+    marginBottom: 6,
+    textAlign: 'center',
+  },
+  statValue: {
+    fontSize: 28,
+    fontWeight: '800',
+    color: '#1A1A1A',
+    marginBottom: 2,
+  },
+  statUnit: {
+    fontSize: 11,
+    fontWeight: '500',
+    color: '#AAA',
+  },
+
+  // Main Button
+  mainButton: {
+    borderRadius: 28,
+    paddingVertical: 20,
+    paddingHorizontal: 32,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.2,
+    shadowRadius: 16,
+    elevation: 8,
+    marginBottom: 16,
+  },
+  startButton: {
+    backgroundColor: COLORS.primary,
+  },
+  stopButton: {
+    backgroundColor: '#EF5350',
+  },
+  buttonContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 12,
+  },
+  buttonIcon: {
+    fontSize: 24,
+  },
+  mainButtonText: {
+    color: '#FFFFFF',
+    fontSize: 20,
+    fontWeight: '700',
+    letterSpacing: 0.5,
+  },
+
+  // Back Button
+  backButton: {
+    alignSelf: 'center',
+    paddingVertical: 12,
+    paddingHorizontal: 24,
+  },
+  backButtonText: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#666',
+  },
+});
 
 export default withAuthLoading(JourneyTrackScreen);

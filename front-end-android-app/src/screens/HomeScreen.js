@@ -1,6 +1,6 @@
 // src/screens/HomeScreen.js
-import React, { useState, useEffect } from "react";
-import { Modal, View, Text, TouchableOpacity, Alert } from "react-native";
+import React, { useState, useEffect, useRef } from "react";
+import { Modal, View, Text, TouchableOpacity, Alert, StyleSheet, Animated, ScrollView } from "react-native";
 import { GLOBAL_STYLES, COLORS, FONTS } from "../styles/GlobalStyles";
 import { withAuthLoading } from "../utils/LoadingClass";
 import SessionManager from "../utils/SessionManager";
@@ -15,11 +15,28 @@ function HomeScreen({ navigation }) {
   const [displaySettings, setDisplaySettings] = useState(false)
   const [downloadUsage, setDownloadUsage] = useState(0)
   const [uploadUsage, setUploadUsage] = useState(0)
+  
+  const fadeAnim = useRef(new Animated.Value(0)).current;
+  const slideAnim = useRef(new Animated.Value(50)).current;
 
   useEffect(() => {
+    Animated.parallel([
+      Animated.timing(fadeAnim, {
+        toValue: 1,
+        duration: 800,
+        useNativeDriver: true,
+      }),
+      Animated.spring(slideAnim, {
+        toValue: 0,
+        tension: 20,
+        friction: 7,
+        useNativeDriver: true,
+      }),
+    ]).start();
+  }, []);
 
+  useEffect(() => {
     async function fetchUsername() {
-
       if (username === "") {
         const usernameManager = new SessionManager('Username')
         // try to fetch the username from cache
@@ -53,7 +70,7 @@ function HomeScreen({ navigation }) {
       }
     }
     fetchUsername();
-  }, []);  // Empty dependency array so it runs only once when the component mounts
+  }, []);
 
 
   const goToTrackJourney = () => {
@@ -110,155 +127,361 @@ function HomeScreen({ navigation }) {
 
 
 return (
-  <View
-    style={[
-      GLOBAL_STYLES.container,
-      {
-        justifyContent: "flex-start",
-        alignItems: "center",
-        paddingTop: 30,
-      },
-    ]}
-  >
-    {/* Settings Icon - Cogwheel in the Top Right */}
+  <View style={styles.container}>
+    {/* Settings Icon */}
     <TouchableOpacity
       onPress={openSettingsModal}
-      style={{
-        position: 'absolute',
-        top: 30,
-        right: 20,
-        zIndex: 1000,
-      }}
+      style={styles.settingsButton}
+      activeOpacity={0.7}
     >
-      <Ionicons name="settings" size={30} color={COLORS.primary || "#5CC76D"} />
+      <Ionicons name="settings-outline" size={28} color="#666" />
     </TouchableOpacity>
 
-    {/* Modal */}
+    {/* Settings Modal */}
     <Modal
       animationType="slide"
       transparent={true}
       visible={displaySettings}
       onRequestClose={() => setDisplaySettings(false)}
     >
-      <View
-        style={{
-          flex: 1,
-          justifyContent: 'center',
-          alignItems: 'center',
-          backgroundColor: 'rgba(0, 0, 0, 0.5)', // semi-transparent background
-        }}
-      >
-        <View
-          style={{
-            width: '80%',
-            backgroundColor: '#fff', // modal background
-            padding: 20,
-            borderRadius: 10,
-            alignItems: 'center',
-            justifyContent: 'center',
-          }}
-        >
-          {/* Sign Out Button */}
-          <TouchableOpacity
-            onPress={() => signoutUser()}
-            style={[
-              GLOBAL_STYLES.button,
-              { backgroundColor: COLORS.primary || "#5CC76D", width: "100%", marginBottom: 20 },
-            ]}
-          >
-            <Text style={[GLOBAL_STYLES.buttonText, { fontSize: 20, fontWeight: "600", color: "#fff" }]}>
-              Sign Out
-            </Text>
-          </TouchableOpacity>
-          {/* clear cache button */}
+      <View style={styles.modalOverlay}>
+        <View style={styles.modalContent}>
+          <Text style={styles.modalTitle}>Settings</Text>
+          
+          {/* Usage Stats */}
+          <View style={styles.usageStats}>
+            <View style={styles.usageStat}>
+              <Text style={styles.usageLabel}>Download</Text>
+              <Text style={styles.usageValue}>{(Number(downloadUsage / (1024 * 1024))).toFixed(2)} MB</Text>
+            </View>
+            <View style={styles.usageStat}>
+              <Text style={styles.usageLabel}>Upload</Text>
+              <Text style={styles.usageValue}>{(Number(uploadUsage / (1024 * 1024)).toFixed(2))} MB</Text>
+            </View>
+          </View>
+
+          {/* Action Buttons */}
           <TouchableOpacity
             onPress={() => clearCache()}
-            style={[
-              GLOBAL_STYLES.button,
-              { backgroundColor: COLORS.primary || "#5CC76D", width: "100%", marginBottom: 20 },
-            ]}
+            style={[styles.modalButton, styles.modalButtonSecondary]}
           >
-            <Text style={[GLOBAL_STYLES.buttonText, { fontSize: 20, fontWeight: "600", color: "#fff" }]}>
-              Clear Usage Cache
-            </Text>
+            <Ionicons name="trash-outline" size={20} color={COLORS.primary} />
+            <Text style={[styles.modalButtonText, { color: COLORS.primary }]}>Clear Cache</Text>
           </TouchableOpacity>
-          {/* Close Button */}
+
           <TouchableOpacity
-            onPress={() => setDisplaySettings(false)}
-            style={[
-              GLOBAL_STYLES.button,
-              { backgroundColor: COLORS.primary || "#5CC76D", width: "100%", marginBottom: 20 },
-            ]}
+            onPress={() => signoutUser()}
+            style={[styles.modalButton, styles.modalButtonPrimary]}
           >
-            <Text style={[GLOBAL_STYLES.buttonText, { fontSize: 20, fontWeight: "600", color: "#fff" }]}>
-              Close
-            </Text>
+            <Ionicons name="log-out-outline" size={20} color="#FFF" />
+            <Text style={styles.modalButtonText}>Sign Out</Text>
           </TouchableOpacity>
-          {/* Delete user data button */}
+
           <TouchableOpacity
             onPress={async () => await showPopup()}
-            style={[
-              GLOBAL_STYLES.button,
-              { backgroundColor: "#e22019ff", width: "100%", marginBottom: 20 },
-            ]}
+            style={[styles.modalButton, styles.modalButtonDanger]}
           >
-            <Text style={[GLOBAL_STYLES.buttonText, { fontSize: 20, fontWeight: "600", color: "#fff" }]}>
-              Delete User Data
-            </Text>
+            <Ionicons name="warning-outline" size={20} color="#FFF" />
+            <Text style={styles.modalButtonText}>Delete Account</Text>
           </TouchableOpacity>
-          <Text>Download Usage: {(Number(downloadUsage / (1024 * 1024))).toFixed(2)}MB</Text>
-          <Text>Upload Usage: {(Number(uploadUsage / (1024 * 1024)).toFixed(2))}MB</Text>
+
+          <TouchableOpacity
+            onPress={() => setDisplaySettings(false)}
+            style={styles.modalCloseButton}
+          >
+            <Text style={styles.modalCloseText}>Close</Text>
+          </TouchableOpacity>
         </View>
       </View>
     </Modal>
 
-    {/* Title */}
-    <Text
+    {/* Main Content */}
+    <Animated.View 
       style={[
-        GLOBAL_STYLES.title,
-        { fontSize: 50, fontWeight: "700", marginBottom: 5 },
+        styles.contentWrapper,
+        {
+          opacity: fadeAnim,
+          transform: [{ translateY: slideAnim }]
+        }
       ]}
     >
-      Welcome
-    </Text>
+      {/* Welcome Section */}
+      <View style={styles.welcomeSection}>
+        <Text style={styles.welcomeLabel}>Welcome back,</Text>
+        <Text style={styles.username}>{username || "Driver"}</Text>
+        <Text style={styles.welcomeSubtitle}>Ready to track your journey?</Text>
+      </View>
 
-    {/* Username */}
-    <Text
-      style={[
-        GLOBAL_STYLES.subtitle,
-        { fontSize: 25, color: "#030403ff", marginBottom: 150 },
-      ]}
-    >
-      {username || "Username"}
-    </Text>
+      {/* Navigation Cards */}
+      <View style={styles.cardsContainer}>
+        {/* Track Journey Card */}
+        <TouchableOpacity
+          onPress={goToTrackJourney}
+          style={styles.primaryCard}
+          activeOpacity={0.9}
+        >
+          <View style={styles.cardIconContainer}>
+            <Ionicons name="navigate" size={40} color="#FFF" />
+          </View>
+          <View style={styles.cardContent}>
+            <Text style={styles.primaryCardTitle}>Track Journey</Text>
+            <Text style={styles.primaryCardSubtitle}>Start monitoring your drive</Text>
+          </View>
+          <Ionicons name="chevron-forward" size={24} color="rgba(255,255,255,0.8)" />
+        </TouchableOpacity>
 
-    {/* Buttons */}
-    <TouchableOpacity
-      onPress={goToTrackJourney}
-      style={[
-        GLOBAL_STYLES.button,
-        { backgroundColor: COLORS.primary || "#5CC76D", width: "100%", marginBottom: 90 },
-      ]}
-    >
-      <Text style={[GLOBAL_STYLES.buttonText, { fontSize: 20, fontWeight: "600", color: "#fff" }]}>
-        Track a Journey
-      </Text>
-    </TouchableOpacity>
+        {/* Global Score Card */}
+        <TouchableOpacity
+          onPress={() => navigation.navigate("globalScore")}
+          style={styles.secondaryCard}
+          activeOpacity={0.9}
+        >
+          <View style={styles.secondaryCardIcon}>
+            <Ionicons name="trophy" size={32} color={COLORS.primary} />
+          </View>
+          <View style={styles.cardContent}>
+            <Text style={styles.secondaryCardTitle}>Global Score</Text>
+            <Text style={styles.secondaryCardSubtitle}>View your stats & ranking</Text>
+          </View>
+          <Ionicons name="chevron-forward" size={24} color="#999" />
+        </TouchableOpacity>
+      </View>
 
-    <TouchableOpacity
-      style={[
-        GLOBAL_STYLES.button,
-        { backgroundColor: COLORS.primary || "#5CC76D", width: "100%" },
-      ]}
-      onPress={() => navigation.navigate("globalScore")}
-    >
-      <Text style={[GLOBAL_STYLES.buttonText, { fontSize: 20, fontWeight: "600", color: "#fff" }]}>
-        Global Score
-      </Text>
-    </TouchableOpacity>
-
+    </Animated.View>
   </View>
 );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#F8F9FA',
+  },
+  settingsButton: {
+    position: 'absolute',
+    top: 50,
+    right: 20,
+    zIndex: 1000,
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    backgroundColor: '#FFFFFF',
+    justifyContent: 'center',
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 8,
+    elevation: 4,
+  },
+  
+  // Modal Styles
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.6)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  modalContent: {
+    width: '85%',
+    backgroundColor: '#FFFFFF',
+    borderRadius: 24,
+    padding: 24,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.3,
+    shadowRadius: 20,
+    elevation: 10,
+  },
+  modalTitle: {
+    fontSize: 24,
+    fontWeight: '800',
+    color: '#1A1A1A',
+    marginBottom: 20,
+    textAlign: 'center',
+  },
+  usageStats: {
+    flexDirection: 'row',
+    gap: 12,
+    marginBottom: 24,
+  },
+  usageStat: {
+    flex: 1,
+    backgroundColor: '#F8F9FA',
+    borderRadius: 16,
+    padding: 16,
+    alignItems: 'center',
+  },
+  usageLabel: {
+    fontSize: 12,
+    fontWeight: '600',
+    color: '#888',
+    textTransform: 'uppercase',
+    letterSpacing: 0.5,
+    marginBottom: 4,
+  },
+  usageValue: {
+    fontSize: 18,
+    fontWeight: '700',
+    color: '#1A1A1A',
+  },
+  modalButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 14,
+    borderRadius: 12,
+    marginBottom: 12,
+    gap: 8,
+  },
+  modalButtonPrimary: {
+    backgroundColor: COLORS.primary,
+  },
+  modalButtonSecondary: {
+    backgroundColor: '#F0F9F1',
+  },
+  modalButtonDanger: {
+    backgroundColor: '#EF5350',
+  },
+  modalButtonText: {
+    fontSize: 16,
+    fontWeight: '700',
+    color: '#FFFFFF',
+  },
+  modalCloseButton: {
+    paddingVertical: 12,
+    alignItems: 'center',
+    marginTop: 8,
+  },
+  modalCloseText: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#999',
+  },
+
+  // Content
+  contentWrapper: {
+    flex: 1,
+    paddingHorizontal: 20,
+    paddingTop: 120,
+  },
+  welcomeSection: {
+    marginBottom: 40,
+  },
+  welcomeLabel: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#888',
+    marginBottom: 4,
+  },
+  username: {
+    fontSize: 40,
+    fontWeight: '800',
+    color: '#1A1A1A',
+    marginBottom: 8,
+    letterSpacing: -1,
+  },
+  welcomeSubtitle: {
+    fontSize: 16,
+    fontWeight: '500',
+    color: '#999',
+  },
+
+  // Cards
+  cardsContainer: {
+    gap: 16,
+    marginBottom: 32,
+  },
+  primaryCard: {
+    backgroundColor: COLORS.primary,
+    borderRadius: 24,
+    padding: 24,
+    flexDirection: 'row',
+    alignItems: 'center',
+    shadowColor: COLORS.primary,
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.3,
+    shadowRadius: 20,
+    elevation: 8,
+  },
+  cardIconContainer: {
+    width: 64,
+    height: 64,
+    borderRadius: 32,
+    backgroundColor: 'rgba(255,255,255,0.2)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginRight: 16,
+  },
+  cardContent: {
+    flex: 1,
+  },
+  primaryCardTitle: {
+    fontSize: 22,
+    fontWeight: '800',
+    color: '#FFFFFF',
+    marginBottom: 4,
+  },
+  primaryCardSubtitle: {
+    fontSize: 14,
+    fontWeight: '500',
+    color: 'rgba(255,255,255,0.8)',
+  },
+  
+  secondaryCard: {
+    backgroundColor: '#FFFFFF',
+    borderRadius: 20,
+    padding: 20,
+    flexDirection: 'row',
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.08,
+    shadowRadius: 12,
+    elevation: 4,
+  },
+  secondaryCardIcon: {
+    width: 56,
+    height: 56,
+    borderRadius: 28,
+    backgroundColor: '#F0F9F1',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginRight: 16,
+  },
+  secondaryCardTitle: {
+    fontSize: 18,
+    fontWeight: '700',
+    color: '#1A1A1A',
+    marginBottom: 4,
+  },
+  secondaryCardSubtitle: {
+    fontSize: 13,
+    fontWeight: '500',
+    color: '#999',
+  },
+
+  // Quick Stats
+  quickStatsContainer: {
+    backgroundColor: '#FFFFFF',
+    borderRadius: 16,
+    padding: 16,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.05,
+    shadowRadius: 8,
+    elevation: 2,
+  },
+  quickStat: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+  },
+  quickStatLabel: {
+    fontSize: 15,
+    fontWeight: '600',
+    color: '#666',
+  },
+});
 export { HomeScreen };
 export default withAuthLoading(HomeScreen);
