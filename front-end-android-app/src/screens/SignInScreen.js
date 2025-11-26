@@ -16,6 +16,7 @@ import PasswordHash from "../utils/passwordHash";
 import FetchHelper from "../utils/fetchHelper";
 import { passWordInputSanitize } from "../utils/SanitizeInputs";
 import { userNameInputSanitize } from "../utils/SanitizeInputs";
+import { Ionicons } from '@expo/vector-icons';
 
 export default function SignInScreen({ navigation }) {
   const [username, setUsername] = useState("");
@@ -23,6 +24,7 @@ export default function SignInScreen({ navigation }) {
   const [errors, setErrors] = useState({});
   const [fadeAnim] = useState(new Animated.Value(0));
   const [signingIn, setSigningIn] = useState(false)
+  const [showPassword, setShowPassword] = useState(false);
 
   useEffect(() => {
     Animated.timing(fadeAnim, {
@@ -120,12 +122,23 @@ export default function SignInScreen({ navigation }) {
         value={password}
         onChangeText={(text) => setPassword(passWordInputSanitize(text))}
         style={GLOBAL_STYLES.input}
-        secureTextEntry
+        secureTextEntry={!showPassword}
         maxLength={32}
       />
       {errors.password && (
         <Text style={GLOBAL_STYLES.errorText}>{errors.password}</Text>
       )}
+      <TouchableOpacity
+        onPress={() => setShowPassword(!showPassword)}>
+          <Ionicons
+            name={showPassword ? "eye-off-outline" : "eye-outline"}
+            size={30}
+            color={COLORS.textLight}
+            position="absolute"
+            right={10}
+            bottom = {15}
+            />
+        </TouchableOpacity>
 
       <TouchableOpacity
         style={GLOBAL_STYLES.button}

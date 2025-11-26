@@ -18,6 +18,7 @@ import SessionManager from "../utils/SessionManager";
 import { emailInputSanitize } from "../utils/SanitizeInputs";
 import { userNameInputSanitize } from "../utils/SanitizeInputs";
 import { passWordInputSanitize } from "../utils/SanitizeInputs";
+import { Ionicons } from '@expo/vector-icons';
 
 export default function SignUpScreen({ navigation }) {
   const [email, setEmail] = useState("");
@@ -26,6 +27,7 @@ export default function SignUpScreen({ navigation }) {
   const [errors, setErrors] = useState({});
   const [fadeAnim] = useState(new Animated.Value(0));
   const [signingUp, setSigningUp] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -169,13 +171,24 @@ export default function SignUpScreen({ navigation }) {
           placeholder="Password"
           value={password}
           onChangeText={(text) => setPassword(passWordInputSanitize(text))}
+          secureTextEntry={!showPassword}
           style={[
             GLOBAL_STYLES.input,
             errors.password && { borderColor: COLORS.error },
           ]}
-          secureTextEntry
           maxLength={32}
         />
+        <TouchableOpacity
+          onPress={() => setShowPassword(!showPassword)}>
+            <Ionicons
+              name={showPassword ? "eye-off-outline" : "eye-outline"}
+              size={30}
+              color={COLORS.textLight}
+              position="absolute"
+              right={10}
+              bottom={19}
+              />
+          </TouchableOpacity>
         {errors.password && (
           <Text style={GLOBAL_STYLES.errorText}>{errors.password}</Text>
         )}
