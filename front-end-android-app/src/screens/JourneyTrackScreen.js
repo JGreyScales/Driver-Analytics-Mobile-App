@@ -16,10 +16,14 @@ function JourneyTrackScreen({ navigation }) {
   const [maxSpeed, setMaxSpeed] = useState(0);
   const [avgSpeed, setAvgSpeed] = useState(0);
   const [incidents, setIncidents] = useState(0);
-
+ 
   // Timer
   const [elapsedTime, setElapsedTime] = useState(0);
   const timerRef = useRef(null);
+
+  //button cooldown
+  const [coolDown, setCoolDown]= useState(false);
+  const [coolDownTime, setCoolDownTime] = useState(0);
   
   // Animations
   const pulseAnim = useRef(new Animated.Value(1)).current;
@@ -106,6 +110,11 @@ function JourneyTrackScreen({ navigation }) {
     const startTime = Date.now();
     await AsyncStorage.setItem("tripStartTime", startTime.toString());
 
+    if(coolDown){
+      return;
+    }
+    startCoolDown();
+
     setElapsedTime(0);
     startTimer();
   };
@@ -116,7 +125,11 @@ function JourneyTrackScreen({ navigation }) {
     await locationSubscription.stopSubscription();
     setIsTracking(false);
     stopTimer();
+    if(coolDown){
+      return;
+    }
 
+    startCoolDown();
     await AsyncStorage.removeItem("tripStartTime");
     await handleEndJourney();
   };
@@ -161,6 +174,23 @@ function JourneyTrackScreen({ navigation }) {
 
   const goToHome = () => {
     navigation.navigate("Home");
+  };
+
+  const startCoolDown = () => {// 10 second cooldown timer (prevent DOS)
+    setCoolDown(true);
+    setCoolDownTime(10); // 10 seconds cooldown
+
+    let timer = 10;
+
+    const interval = setInterval(() => {
+      timer--;
+      setCoolDownTime(timer);
+
+      if(timer <= 0) {
+        clearInterval(interval);
+        setCoolDown(false);
+      }
+    }, 1000);
   };
 
   return (
@@ -226,10 +256,12 @@ function JourneyTrackScreen({ navigation }) {
         {/* Main Action Button */}
         <Animated.View style={{ transform: [{ scale: pulseAnim }] }}>
           <TouchableOpacity
+          disabled={coolDown}
             onPress={isTracking ? stopTracking : startTracking}
             style={[
               styles.mainButton,
-              isTracking ? styles.stopButton : styles.startButton
+              isTracking ? styles.stopButton : styles.startButton,
+              coolDown && { opacity: 0.6 }
             ]}
             activeOpacity={0.8}
           >
@@ -239,6 +271,7 @@ function JourneyTrackScreen({ navigation }) {
               </Text>
               <Text style={styles.mainButtonText}>
                 {isTracking ? "End Journey" : "Start Journey"}
+                {coolDown ? ` \nWait (${coolDownTime})` : ""}
               </Text>
             </View>
           </TouchableOpacity>
