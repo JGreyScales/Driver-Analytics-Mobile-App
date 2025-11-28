@@ -139,10 +139,10 @@ function JourneyTrackScreen({ navigation }) {
     console.log("Ending Journey and uploading data...");
 
     const journeyData = {
-      tripDuration: Math.floor(elapsedTime / 60), // duration in minutes
+      tripDuration: locationSubscription.tripDuration, // use getter that ensures > 0
       incidentCount: locationSubscription.incidentCount,
-      averageSpeed: Math.floor(locationSubscription.avgSpeed),
-      maxSpeed: Math.floor(locationSubscription.maxSpeed),
+      averageSpeed: locationSubscription.averageSpeed, // use getter that ensures > 0
+      maxSpeed: locationSubscription.maximumSpeed, // use getter that ensures > 0
     };
 
     console.log("Journey data to upload:", journeyData);

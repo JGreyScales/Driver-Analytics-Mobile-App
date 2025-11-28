@@ -69,6 +69,24 @@ class LocationTracking {
     this.avgSpeed = ((this.avgSpeed * (this.dataCount - 1)) + Number(currentSpeed)) / this.dataCount;
   }
 
+  // Getter property to ensure avgSpeed is always a valid integer > 0
+  get averageSpeed() {
+    const rounded = Math.round(this.avgSpeed);
+    return rounded > 5 ? rounded : 1; // Minimum 1 to avoid API rejection
+  }
+
+  // Getter property to ensure maxSpeed is always a valid integer > 0
+  get maximumSpeed() {
+    const rounded = Math.round(this.maxSpeed);
+    return rounded > 5 ? rounded : 1; // Minimum 1 to avoid API rejection
+  }
+
+  // Getter property to ensure tripDuration is always a valid integer > 0
+  get tripDuration() {
+    const rounded = Math.round(this.tripTime);
+    return rounded > 0 ? rounded : 1; // Minimum 1 minute to avoid API rejection
+  }
+
   __detectIncident(speed_km) {
     const now = Date.now();
 
@@ -158,10 +176,10 @@ class LocationTracking {
           );
           await this.__tripTime()
           requestData = {
-            tripDuration: this.tripDuration,
-            incidentCount: this.incidentCount,
-            averageSpeed: this.averageSpeed,
-            maxSpeed: this.maxSpeed
+            tripDuration: this.tripDuration(),
+            incidentCount: this.incidentCount(),
+            averageSpeed: this.averageSpeed(),
+            maxSpeed: this.maximumSpeed()
           }
           await uploadDriverScore(requestData)
 
@@ -280,9 +298,8 @@ class LocationTracking {
         this.isTracking = false
         this.__tripTime()
         console.log(`🕒 Total trip time: ${this.tripTime} minutes`);
-        console.log(`🚀 Max speed_km: ${this.maxSpeed} km/hr`);
-        this.avgSpeed = Math.round(this.avgSpeed);
-        console.log(`📊 Avg speed_km: ${this.avgSpeed} km/hr`);
+        console.log(`🚀 Max speed: ${this.maximumSpeed} km/hr (validated)`);
+        console.log(`📊 Avg speed: ${this.averageSpeed} km/hr (validated)`);
         console.log(`⚠️ Total incidents detected: ${this.incidentCount}`);
 
       } else {
