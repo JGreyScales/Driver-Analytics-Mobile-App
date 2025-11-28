@@ -133,8 +133,9 @@ return (
       onPress={openSettingsModal}
       style={styles.settingsButton}
       activeOpacity={0.7}
+      disabled={displaySettings}
     >
-      <Ionicons name="settings-outline" size={28} color="#666" />
+      <Ionicons name="settings-outline" size={28} color={displaySettings ? "#ccc" : "#666"} />
     </TouchableOpacity>
 
     {/* Settings Modal */}
