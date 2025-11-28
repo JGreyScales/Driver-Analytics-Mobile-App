@@ -27,13 +27,13 @@ function validateJourneyData(data) {
   }
 
   // Validate averageSpeed (must be positive integer, > 0)
-  if (!Number.isInteger(averageSpeed) || averageSpeed <= 0) {
-    return { isValid: false, error: `Invalid average speed: ${averageSpeed}. Must be greater than 0.` };
+  if (!Number.isInteger(averageSpeed) || averageSpeed <= 5) {
+    return { isValid: false, error: `Invalid average speed: ${averageSpeed}. Must be greater than 5.` };
   }
 
   // Validate maxSpeed (must be positive integer, > 0)
-  if (!Number.isInteger(maxSpeed) || maxSpeed <= 0) {
-    return { isValid: false, error: `Invalid max speed: ${maxSpeed}. Must be greater than 0.` };
+  if (!Number.isInteger(maxSpeed) || maxSpeed <= 5) {
+    return { isValid: false, error: `Invalid max speed: ${maxSpeed}. Must be greater than 5.` };
   }
 
   // Validate maxSpeed >= averageSpeed
