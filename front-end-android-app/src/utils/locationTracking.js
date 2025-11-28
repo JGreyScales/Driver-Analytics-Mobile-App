@@ -72,13 +72,13 @@ class LocationTracking {
   // Getter property to ensure avgSpeed is always a valid integer > 0
   get averageSpeed() {
     const rounded = Math.round(this.avgSpeed);
-    return rounded > 0 ? rounded : 1; // Minimum 1 to avoid API rejection
+    return rounded > 5 ? rounded : 1; // Minimum 1 to avoid API rejection
   }
 
   // Getter property to ensure maxSpeed is always a valid integer > 0
   get maximumSpeed() {
     const rounded = Math.round(this.maxSpeed);
-    return rounded > 0 ? rounded : 1; // Minimum 1 to avoid API rejection
+    return rounded > 5 ? rounded : 1; // Minimum 1 to avoid API rejection
   }
 
   // Getter property to ensure tripDuration is always a valid integer > 0
@@ -176,10 +176,10 @@ class LocationTracking {
           );
           await this.__tripTime()
           requestData = {
-            tripDuration: this.tripDuration,
-            incidentCount: this.incidentCount,
-            averageSpeed: this.averageSpeed,
-            maxSpeed: this.maximumSpeed
+            tripDuration: this.tripDuration(),
+            incidentCount: this.incidentCount(),
+            averageSpeed: this.averageSpeed(),
+            maxSpeed: this.maximumSpeed()
           }
           await uploadDriverScore(requestData)
 
