@@ -3,6 +3,7 @@ import React, { useEffect } from "react";
 import { LocationProvider } from "./src/utils/LocationContext";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
+import Toast from 'react-native-toast-message';
 
 // 📱 Screens
 import SignInScreen from "./src/screens/SignInScreen";
@@ -26,16 +27,19 @@ export default function App() {
   }, []);
 
   return (
-    <LocationProvider>
-      <NavigationContainer>
-        <Stack.Navigator initialRouteName="SignIn" screenOptions={{ headerShown: false }}>
-          <Stack.Screen name="SignIn" component={SignInScreen} options={{ title: 'Sign In' }} />
-          <Stack.Screen name="SignUp" component={SignUpScreen} options={{ title: 'Sign Up' }} />
-          <Stack.Screen name="Home" component={HomeScreen} options={{ title: 'Home' }} />
-          <Stack.Screen name="globalScore" component={globalScoreScreen} options={{ title: 'Global Score' }} />
-          <Stack.Screen name="Journey" component={JourneyTrackScreen} options={{ title: 'Journey' }} />
-        </Stack.Navigator>
-      </NavigationContainer>
-    </LocationProvider>
+    <>
+      <LocationProvider>
+        <NavigationContainer>
+          <Stack.Navigator initialRouteName="SignIn" screenOptions={{ headerShown: false }}>
+            <Stack.Screen name="SignIn" component={SignInScreen} options={{ title: 'Sign In' }} />
+            <Stack.Screen name="SignUp" component={SignUpScreen} options={{ title: 'Sign Up' }} />
+            <Stack.Screen name="Home" component={HomeScreen} options={{ title: 'Home' }} />
+            <Stack.Screen name="globalScore" component={globalScoreScreen} options={{ title: 'Global Score' }} />
+            <Stack.Screen name="Journey" component={JourneyTrackScreen} options={{ title: 'Journey' }} />
+          </Stack.Navigator>
+        </NavigationContainer>
+      </LocationProvider>
+      <Toast />
+    </>
   );
 }
