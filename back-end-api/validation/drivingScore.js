@@ -18,7 +18,7 @@ async function validatePutScore(req, res, next) {
     try{
         await genericValidation(req);
 
-        const ALLOWED_FIELDS = ["tripDuration", "incidentCount", "averageSpeed", "maxSpeed"]
+        const ALLOWED_FIELDS = ["tripDuration", "incidentCount", "averageSpeed", "maxSpeed", "startLat", "startLong"]
         await validateFields(req, ALLOWED_FIELDS, true)
 
         next()

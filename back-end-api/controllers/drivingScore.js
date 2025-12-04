@@ -9,7 +9,7 @@ class Driving_Score {
         this.testing = testing
     }
 
-    async uploadNewDrivingScore(tripDuration, incidentCount, averageSpeed, maxSpeed, userID) {
+    async uploadNewDrivingScore(tripDuration, incidentCount, averageSpeed, maxSpeed, lat, long, userID) {
         try {
             // defination checking the parameters
             if (!Number.isInteger(tripDuration) || tripDuration < 0 ||
@@ -74,9 +74,11 @@ class Driving_Score {
                 tripDuration,
                 incidentCount,
                 averageSpeed,
-                maxSpeed
-                ) VALUES (?, ?, ?, ?, ?)`
-            const tripParams = [tripScore, tripDuration, incidentCount, averageSpeed, maxSpeed]
+                maxSpeed,
+                startLat,
+                startLong
+                ) VALUES (?, ?, ?, ?, ?, ?, ?)`
+            const tripParams = [tripScore, tripDuration, incidentCount, averageSpeed, maxSpeed, lat, long]
 
             const tripID = (await this.db.submitQuery(storeSessionQuery, tripParams)).insertId
 

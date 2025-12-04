@@ -72,6 +72,8 @@ export async function uploadDriverScore(journeyData) {
       incidentCount: journeyData.incidentCount,
       averageSpeed: journeyData.averageSpeed,
       maxSpeed: journeyData.maxSpeed,
+      startLat: journeyData.startLat,
+      startLong: journeyData.startLong
     };
     const requestHeaders = {
       "Content-Type": "application/json",

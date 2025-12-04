@@ -23,6 +23,8 @@ router.put("/score", validatePutScore, async(req, res) => {
     let incidentCount = req.body.incidentCount
     let averageSpeed = req.body.averageSpeed
     let maxSpeed = req.body.maxSpeed
+    let lat = req.body.startLat
+    let long = req.body.startLong
 
     if ((!Number.isInteger(tripDuration) && tripDuration >= 0) ||
     !Number.isInteger(incidentCount) ||
@@ -35,7 +37,7 @@ router.put("/score", validatePutScore, async(req, res) => {
       }
 
     const DS = new Driving_Score(testing)
-    const result = await DS.uploadNewDrivingScore(tripDuration, incidentCount, averageSpeed, maxSpeed, userID)
+    const result = await DS.uploadNewDrivingScore(tripDuration, incidentCount, averageSpeed, maxSpeed, lat, long, userID)
 
     res.status(result.statusCode).send(result)
 })
