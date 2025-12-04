@@ -38,8 +38,8 @@ class LocationTracking {
         this.dataCount = 0
         this.currentSpeed = 0
         this.prevSpeed = 0;
-        this.startLat = 0;
-        this.startLong = 0;
+        this.startLat = undefined;
+        this.startLong = undefined;
         this.prevTimestamp = null;
         this.maxAllowedSpeed = 110; // km/h
         this.isTracking = false
@@ -230,15 +230,20 @@ class LocationTracking {
 
       const { locations } = data;
       const { latitude, longitude, speed } = locations[0].coords;
-      if (this.startLat == 0){
+      if (this.startLat == undefined){
+        console.log("Updated start lat")
         this.startLat = latitude;
+        console.log(`system ${latitude} new lat ${this.startLat}`)
       }
 
-      if (this.startLong == 0){
+      if (this.startLong == undefined){
+        console.log("Updated start long")
         this.startLong = longitude;
+        console.log(`system ${longitude} new long ${this.startLong}`)
+
       }
       
-      
+
       const speed_km = Math.round(speed * 3.6); // convert m/s to km/h
       console.log(`current speed_km: ${speed_km}`);
 
@@ -286,6 +291,8 @@ class LocationTracking {
 
     this.__tripStartTime()
     this.isTracking = true
+    this.startLat = undefined
+    this.startLong = undefined
     // start feeding info to the task
     await Location.startLocationUpdatesAsync(this.taskName, {
       accuracy: Location.Accuracy.Highest,

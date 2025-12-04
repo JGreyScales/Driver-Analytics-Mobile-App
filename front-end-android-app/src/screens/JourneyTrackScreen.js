@@ -143,6 +143,8 @@ function JourneyTrackScreen({ navigation }) {
       incidentCount: locationSubscription.incidentCount,
       averageSpeed: locationSubscription.averageSpeed, // use getter that ensures > 0
       maxSpeed: locationSubscription.maximumSpeed, // use getter that ensures > 0
+      startLong: locationSubscription.startLong,
+      startLat: locationSubscription.startLat
     };
 
     console.log("Journey data to upload:", journeyData);
