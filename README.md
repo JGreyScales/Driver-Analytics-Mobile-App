@@ -77,5 +77,5 @@ Technologies used in the project:
 
 **Users table**  
 Showcasing the password hashing (No plaintext passwords stored)  
-<img src="https://raw.githubusercontent.com/JGreyScales/DriveMotion/blob/92ecd8fdafbb7e53f46a1763deb522bbb6865edc/demo-images/mysql_users_table.png" alt="sql users table">
+<img src="https://raw.githubusercontent.com/JGreyScales/DriveMotion/92ecd8fdafbb7e53f46a1763deb522bbb6865edc/demo-images/mysql_users_table.png" alt="sql users table">
 
