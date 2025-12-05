@@ -1,6 +1,6 @@
-# DriveMotion
+# Driver Analytics Mobile App
 
-This is a school project for fall of 2025 where we were tasked with creating a mobile application that tracks drivers data for insurance tracking purposes.
+This is a  project created in fall of 2025 where we were tasked with creating a mobile application that tracks drivers data for insurance tracking purposes. This program is designed to have reduced network usage while still maintaining secured resources and best pratices for production code. Our primary objective was storing telementary data about peoples driving habits that can be sold or integrated into automobible insurance companies to allow them to create dynamic pricing options. This aims to replace or replicate what physical hardware does but easier to use and cheaper to maintain
 
 ---
 
@@ -20,6 +20,11 @@ High-level objectives of the project.
   - [x] User session authentication
     - [x] encrypted tokens with expirey
   - [x] Real-sensor monitoring from hardware
+    - [x] Starting journeys
+    - [x] Stopping journeys
+      - [x] Automatic detection of when the user stops driving
+  - [x] Account & data deletion requests
+  - [x] Viewing trip history
   - [x] Externally hosted Database
     - [x] less than 1mb of storage per user
   - [x] Externally hosted API
